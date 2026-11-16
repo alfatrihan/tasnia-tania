@@ -136,7 +136,7 @@
     const rnd = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
     const CITY_COLORS = ['', 'c1', 'c2'];
     const cityBuild = [], cityRoad = [];
-    let cityStart = null;   // time the city started to grow; null while the city is off
+    let lastCityFade = '', cityStart = null;   // time the city started to grow; null while the city is off
     function buildCity(lon, lat, R, count, roads) {
         for (let k = 0; k < count; k++) {
             const a = rnd() * Math.PI * 2;
@@ -151,7 +151,7 @@
             rect.setAttribute('width', bw.toFixed(5));
             rect.setAttribute('height', 0);
             cityG.appendChild(rect);
-            cityBuild.push({ el: rect, x: x - bw / 2, bottom: y + bh / 2, w: bw, h: bh, d: rnd() * 0.7 });
+            cityBuild.push({ el: rect, x: x - bw / 2, bottom: y + bh / 2, w: bw, h: bh, d: r / R });   // grows outward from the centre
         }
         for (let k = 0; k < roads; k++) {
             let x = lon, y = -lat;
@@ -200,11 +200,13 @@
     }
 
     const ease01 = v => { v = clamp(v); return 1 - Math.pow(1 - v, 3); };
+    // rises with a small overshoot, so the buildings feel like they spring up
+    const easeBack = v => { v = clamp(v); const c1 = 1.25, c3 = c1 + 1; return 1 + c3 * Math.pow(v - 1, 3) + c1 * Math.pow(v - 1, 2); };
     const life = (from, to) => t => clamp((t - from) / (to - from));
 
     DISTRICTS.forEach(([en, bn, lon, lat, pos]) => addLabel({
         en, bn, lon, lat, pos, cls: 'dist', withDot: true,
-        op: () => 1, px: () => 9.5
+        op: () => 1, px: () => 7
     }));
 
     // Bogura: the light name turns into a bold, larger name as the zoom reaches the district
@@ -216,12 +218,12 @@
         op: t => boguraIn(t) * boguraOut(t), px: t => lerp(11, 18, life(0.5, 2.0)(t)) });
 
     // the college and the department appear one after another, in bold, with a short line of description
-    addLabel({ en: 'Govt. Azizul Haque College', bn: 'সরকারি আজিজুল হক কলেজ',
-        dEn: 'Bogura city college', dBn: 'বগুড়া শহরের একটি সরকারি কলেজ',
+    addLabel({ en: 'Govt. Azizul Haque College', bn: 'গভর্নমেন্ট আজিজুল হক কলেজ',
+        dEn: 'College of Bogura', dBn: 'গভর্নমেন্ট কলেজ অফ বগুড়া',
         lon: 89.3566, lat: 24.8464, pos: 't', cls: 'poi', withDot: false,
         op: life(2.2, 2.7), px: () => 15, dpx: () => 10 });
-    addLabel({ en: 'Economics Department', bn: 'ইকোনমিক্স ডিপার্টমেন্ট',
-        dEn: 'Department of Economics', dBn: 'অর্থনীতি বিভাগ',
+    addLabel({ en: 'Economics Department', bn: 'অর্থনীতি বিভাগ',
+        dEn: 'Social Science', dBn: 'সমাজবিজ্ঞান',
         lon: 89.36, lat: 24.845, pos: 'b', cls: 'poi', withDot: false,
         op: life(3.2, 3.7), px: () => 15, dpx: () => 10 });
 
@@ -246,7 +248,7 @@
         return {
             cx: (x1 + x2) / 2,
             cy: -(y1 + y2) / 2,
-            w: Math.max(x2 - x1, (y2 - y1) / ratio) * 1.12
+            w: Math.max(x2 - x1, (y2 - y1) / ratio) * (ratio > 1.2 ? 1.25 : 1.1)   // tall phone screens get extra side room for the names
         };
     }
 
@@ -257,8 +259,10 @@
     };
 
     function frame(now) {
+        if (!visible) { requestAnimationFrame(frame); return; }   // off screen: skip all the work
         const total = Math.max(1, track.offsetHeight - innerHeight);
-        const p = clamp(-track.getBoundingClientRect().top / total);
+        const lead = innerHeight * 0.25;   // the map waits a moment before it starts to zoom
+        const p = clamp((-track.getBoundingClientRect().top - lead) / (total - lead));
         const N = STAGES.length, t = p * (N - 1);
         const i = Math.min(N - 2, Math.floor(t)), f = t - i;
         const e = f * f * (3 - 2 * f);            // smooth start and stop between stops
@@ -268,30 +272,30 @@
         const cx = lerp(a.cx, b.cx, e), cy = lerp(a.cy, b.cy, e), h = w * ratio;
         svg.setAttribute('viewBox', (cx - w / 2) + ' ' + (cy - h / 2) + ' ' + w + ' ' + h);
 
-        measure();   // the box can change size (fonts, rotation); read it every frame, it is cheap
         const u = w / pxW;   // SVG units per screen pixel: keeps names the same size on screen
 
         // the country fades once the zoom is inside Bogura, the district fill only lightly tints it
         countryG.setAttribute('opacity', clamp(1 - (t - 0.6) / 0.8).toFixed(3));
-        cityG.style.opacity = clamp((t - 0.4) / 0.4).toFixed(3);
+        const cityFade = clamp((t - 0.4) / 0.4).toFixed(3);
+        if (cityFade !== lastCityFade) { cityG.style.opacity = cityFade; lastCityFade = cityFade; }
         const cityOn = t > 0.7;
         if (cityOn && cityStart === null) cityStart = now;
         if (!cityOn && cityStart !== null) {
             // reset so the city grows again the next time it comes on
             cityStart = null;
-            cityBuild.forEach(b => { b.el.setAttribute('height', 0); });
+            cityBuild.forEach(b => { b.el.setAttribute('height', 0); b.done = false; });
         }
         if (cityOn) {
             const age = now - cityStart;
             cityBuild.forEach(b => {
-                const g = ease01((age - b.d * 1000) / 900);
-                if (g <= 0) return;
+                if (b.done) return;                       // already fully grown: no more DOM writes
+                const raw = clamp((age - b.d * 450) / 600);
+                if (raw <= 0) return;
+                const g = easeBack(raw);
                 b.el.setAttribute('y', (b.bottom - b.h * g).toFixed(5));
                 b.el.setAttribute('height', (b.h * g).toFixed(5));
+                if (raw >= 1) b.done = true;
             });
-            // roads: the dashes flow along the road
-            const off = ((now / 60) % 24).toFixed(2);
-            cityRoad.forEach(p => { p.style.strokeDashoffset = -off; });
         }
         boguraG.style.setProperty('--bf', (0.2 * clamp((t - 0.4) / 0.6) * clamp(1 - (t - 1.8) / 0.6)).toFixed(3));
 
@@ -339,5 +343,7 @@
 
     measure();
     addEventListener('resize', measure);
+    let visible = true;
+    new IntersectionObserver(es => { visible = es[0].isIntersecting; }).observe(track);
     requestAnimationFrame(frame);
 })();

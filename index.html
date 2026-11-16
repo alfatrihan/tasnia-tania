@@ -36,7 +36,7 @@
     <div class="brand"><svg class="lotus" viewBox="0 0 64 40">
         <use href="#lotus" />
       </svg>Tania</div>
-    <nav id="nav"><a href="#home">Home</a><a href="#about">About</a><a href="#vibe">Vibe</a><a href="#says">Her
+    <nav id="nav"><a href="#home">Home</a><a href="#about">About</a><a href="#vibe">Vibe</a><a href="#social">Social</a><a href="#says">Her
         Words</a><a href="#why">Why Her</a><a href="#time">Timeline</a><a href="#letter">Letter</a><a
         href="#game">Play</a></nav>
   </header>
@@ -59,8 +59,6 @@
     </div>
 
     <section id="about">
-      <h2 class="rv">About Tania</h2>
-      <div class="div rv">&#10022;</div>
       <div class="map-track" id="map-track">
         <div class="map-sticky">
           <div class="map-frame">
@@ -178,6 +176,60 @@
       <p class="tap">Tap a photo to turn it over</p>
     </section>
 
+    <!-- ===== Social Platforms: profile-style cards in a swipe carousel =====
+         Profile picture: images/profile.jpg
+         Facebook cover: images/fb-cover.jpg
+         Instagram posts: images/post1.jpg ... images/post6.jpg
+         Replace the two href values below with the real profile links. -->
+    <section id="social">
+      <h2 class="rv">Social Platforms</h2>
+      <div class="div rv">&#10022;</div>
+      <div class="soc-track" id="soc-track">
+
+        <div class="soc-card soc-fb">
+          <div class="soc-fb-cover"><img src="images/fb-cover.jpg" alt="" onerror="this.remove()"></div>
+          <div class="soc-fb-av"><img src="images/profile.jpg" alt="" onerror="this.remove()"><span>T</span></div>
+          <div class="soc-fb-body">
+            <h3>Tasnia Tania</h3>
+            <p class="soc-bio">Quiet kindness, loud laughter &#10022;</p>
+            <div class="soc-fb-stats">
+              <div><b>856</b><span>Friends</span></div>
+              <div><b>64</b><span>Posts</span></div>
+              <div><b>1.2K</b><span>Followers</span></div>
+            </div>
+            <a class="soc-btn soc-btn-fb" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg><span>Visit Facebook</span></a>
+          </div>
+        </div>
+
+        <div class="soc-card soc-ig">
+          <div class="soc-ig-top"><span>_tasnia_tania</span><span class="soc-ig-dots">&#8226;&#8226;&#8226;</span></div>
+          <div class="soc-ig-head">
+            <div class="soc-ig-ring"><div class="soc-ig-img"><img src="images/profile.jpg" alt="" onerror="this.remove()"><span>T</span></div></div>
+            <div class="soc-ig-stats">
+              <div><b>48</b><span>posts</span></div>
+              <div><b>1,284</b><span>followers</span></div>
+              <div><b>312</b><span>following</span></div>
+            </div>
+          </div>
+          <div class="soc-ig-bio">
+            <b>Tasnia Tania</b>
+            <p class="soc-bio">Quiet kindness, loud laughter &#10022;</p>
+          </div>
+          <div class="soc-ig-grid">
+            <div><img src="images/post1.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>412</span></div>
+            <div><img src="images/post2.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>288</span></div>
+            <div><img src="images/post3.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>530</span></div>
+            <div><img src="images/post4.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>196</span></div>
+            <div><img src="images/post5.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>741</span></div>
+            <div><img src="images/post6.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>365</span></div>
+          </div>
+          <a class="soc-btn soc-btn-ig" href="https://www.instagram.com/_tasnia_tania/" target="_blank" rel="noopener noreferrer">Visit Instagram</a>
+        </div>
+
+      </div>
+      <p class="tap">Swipe to see her profiles, then tap Visit</p>
+    </section>
+
     <section id="says">
       <h2 class="rv">Things She Says</h2>
       <div class="div rv">&#10022;</div>
@@ -264,13 +316,13 @@
       <h2 class="rv">Our Timeline</h2>
       <div class="div rv">&#10022;</div>
       <ol class="tl" id="tl">
-        <li class="rv rl"><b>Year</b>
+        <li><b>Year</b>
           <p>The day we met. Write what you remember.</p>
         </li>
-        <li class="rv rl"><b>Year</b>
+        <li><b>Year</b>
           <p>A moment that made us closer.</p>
         </li>
-        <li class="rv rl"><b>Today</b>
+        <li><b>Today</b>
           <p>And here we are, with a website to prove it.</p>
         </li>
       </ol>
@@ -294,11 +346,21 @@
         <p style="animation-delay:2.6s">Always,<br>Your friend</p>
       </article>
     </section>
+    <section id="quiz">
+      <div class="qz" id="quiz-box"></div>
+    </section>
+
     <section id="game">
       <h2 class="rv" id="game-title">Tania's Run</h2>
       <div class="div rv">&#10022;</div>
       <div class="runner-wrap" id="runner-wrap" tabindex="0">
-        <div class="runner-hud"><span id="runner-hi">BEST 00000</span><span id="runner-score">00000</span></div>
+        <div class="runner-hud">
+          <div class="hud-row">
+            <span class="hud-pill hud-coins" id="runner-coins"><i class="coin-ico"></i><b id="runner-coin-n">0</b><span class="runner-plus" id="runner-plus">+5</span></span>
+            <span class="hud-pill hud-score" id="runner-score-wrap"><span id="runner-score">0</span></span>
+          </div>
+          <span class="hud-best" id="runner-hi">BEST 0</span>
+        </div>
         <canvas id="runner-canvas" aria-label="Tania's Run game"></canvas>
         <div class="runner-bubble" id="runner-bubble" aria-live="polite">
           <div class="lang-en"><b>Hello, I am Tania</b><span><br>Tap me to save!</span></div>
@@ -328,6 +390,8 @@
         <span>Developer Info</span>
       </button>
     </div>
+
+  </footer>
 
     <!-- Developer Information Modal -->
     <div id="devModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="devModalTitle">
@@ -392,8 +456,6 @@
         </blockquote>
       </div>
     </div>
-  </footer>
-
   <!-- Music toggle button -->
   <button id="musicFab" type="button" aria-label="Turn music on or off" title="Music">&#9835;</button>
 
@@ -405,6 +467,7 @@
   <script src="data/bogura.js"></script>
   <script src="map.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="quiz.js"></script>
   <script src="game.js"></script>
   <script>
     (function () {

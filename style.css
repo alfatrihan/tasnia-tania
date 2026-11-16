@@ -85,10 +85,23 @@ header {
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 12px 20px;
-    background: transparent;
-    backdrop-filter: none;
+    padding: 12px 20px 30px;
+    /* looks transparent, but fades to dark at the top so page content cannot run through the links */
+    background: linear-gradient(to bottom, rgba(20, 14, 31, .96) 0%, rgba(20, 14, 31, .8) 55%, rgba(20, 14, 31, 0) 100%);
     border-bottom: 0
+}
+
+/* a soft blur that fades out downwards, so the text under the bar is hidden near the links only */
+header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    mask-image: linear-gradient(to bottom, #000 40%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, #000 40%, transparent);
+    pointer-events: none
 }
 
 .brand {
@@ -146,7 +159,7 @@ section {
 .hero {
     max-width: none;
     padding: 0;
-    height: 380vh;
+    height: 220vh;
     position: relative
 }
 
@@ -1230,3 +1243,505 @@ html[lang="bn"] .note,
 html[lang="bn"] .paper p {
     font-style: normal
 }
+
+/* About: the text starts only after the map has finished its zoom */
+#about .words {
+    margin-top: 16vh
+}
+
+/* timeline: each year fades and rises as you scroll past it (--q is set by script.js) */
+.tl li {
+    opacity: var(--q, 0);
+    transform: translateY(calc((1 - var(--q, 0)) * 36px));
+    will-change: opacity, transform
+}
+
+/* ===== Quiz: photo-card style, centred on screen, flips to the next question ===== */
+#quiz {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 20px
+}
+
+#quiz-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%
+}
+
+#quiz-box .qz-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.7rem, 5vw, 2.2rem);
+    color: var(--blush);
+    margin: 0 0 18px;
+    text-align: center
+}
+
+html[lang="bn"] #quiz-box .qz-title {
+    font-family: 'Hind Siliguri', sans-serif
+}
+
+.qz-intro {
+    color: var(--mute);
+    text-align: center;
+    margin: 0 0 22px
+}
+
+.qz-center {
+    display: grid;
+    justify-items: center
+}
+
+/* stack: the cards underneath show their pages, the last card has none */
+.qz-stack {
+    position: relative;
+    isolation: isolate;
+    width: min(92vw, 520px)
+}
+
+.qz-stack.more::before,
+.qz-stack.more::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: #1a1224;
+    pointer-events: none
+}
+
+.qz-stack.more::before {
+    transform: translate(10px, 10px) rotate(2.5deg)
+}
+
+.qz-stack.more::after {
+    background: #140e1c;
+    transform: translate(-8px, 14px) rotate(-2deg)
+}
+
+.qz-card {
+    position: relative;
+    z-index: 1;
+    padding: 28px 26px 24px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: linear-gradient(160deg, #2b1830, #181221 70%);
+    box-shadow: 0 18px 40px #0009;
+    transition: transform .4s cubic-bezier(.3, .8, .3, 1)
+}
+
+.qz-card:hover {
+    transform: translateY(-4px)
+}
+
+/* submit: the current page is pushed away to the side and fades out */
+.qz-card.flip-out {
+    transform: translate(-115%, 30px) rotate(-16deg);
+    opacity: 0;
+    transition: transform .5s ease-in, opacity .45s ease-in
+}
+
+/* the next page slides in from the right, onto the stack */
+.qz-card.enter {
+    animation: qzEnter .5s ease-out both
+}
+
+@keyframes qzEnter {
+    from { opacity: 0; transform: translateX(60px) rotate(5deg) scale(.96) }
+    to { opacity: 1; transform: none }
+}
+
+.qz-btn {
+    padding: 11px 32px;
+    border-radius: 99px;
+    border: 0;
+    background: linear-gradient(135deg, #ee8fb5, #c2467f);
+    color: #2b0f1e;
+    font: 600 .92rem 'DM Sans', sans-serif;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: transform .3s, opacity .3s
+}
+
+.qz-btn:not(:disabled):hover {
+    transform: translateY(-2px)
+}
+
+.qz-btn:disabled {
+    opacity: .35;
+    cursor: default
+}
+
+/* counter and progress bar, centred above the question */
+.qz-top {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    width: 100%
+}
+
+.qz-count {
+    font: 600 1rem 'DM Sans', sans-serif;
+    color: var(--blush);
+    letter-spacing: 1px;
+    font-variant-numeric: tabular-nums
+}
+
+.qz-bar {
+    width: 100%;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--line);
+    overflow: hidden
+}
+
+.qz-bar i {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--lil), var(--rose));
+    transition: width .4s
+}
+
+.qz-q {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1.25rem, 4vw, 1.5rem);
+    color: var(--ink);
+    margin: 20px 0 18px;
+    line-height: 1.4;
+    text-align: center
+}
+
+html[lang="bn"] .qz-q {
+    font-family: 'Hind Siliguri', sans-serif;
+    font-style: normal;
+    font-size: clamp(1.1rem, 3.8vw, 1.3rem)
+}
+
+.qz-opts {
+    display: grid;
+    gap: 10px
+}
+
+.qz-opt {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 13px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: #1c1226;
+    color: var(--ink);
+    font: 500 .98rem 'DM Sans', sans-serif;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s
+}
+
+.qz-opt:hover {
+    border-color: var(--rose)
+}
+
+/* the tick box: ticked when chosen */
+.qz-tick {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 1.5px solid var(--mute);
+    position: relative
+}
+
+.qz-opt.sel {
+    border-color: var(--rose);
+    background: #2b1830
+}
+
+.qz-opt.sel .qz-tick {
+    border-color: var(--rose);
+    background: var(--rose)
+}
+
+.qz-opt.sel .qz-tick::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid #2b0f1e;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg)
+}
+
+.qz-foot {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px
+}
+
+/* result */
+.qz-end {
+    display: grid;
+    justify-items: center;
+    gap: 12px;
+    text-align: center
+}
+
+.qz-tania {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(#4a2a45, #1c1226);
+    border: 1px solid var(--blush);
+    box-shadow: 0 0 36px #ee8fb566;
+    animation: qzBob 2.4s ease-in-out infinite
+}
+
+.qz-lotus {
+    width: 58%;
+    color: var(--blush)
+}
+
+@keyframes qzBob {
+    0%, 100% { transform: translateY(0) rotate(-2deg) }
+    50% { transform: translateY(-10px) rotate(2deg) }
+}
+
+.qz-bubble {
+    max-width: 380px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: #140e1c;
+    border: 1px solid rgba(255, 214, 228, .25);
+    color: var(--ink);
+    animation: qzIn .6s .2s ease-out both
+}
+
+@keyframes qzIn {
+    from { opacity: 0; transform: translateY(10px) scale(.96) }
+    to { opacity: 1; transform: none }
+}
+
+.qz-pct {
+    font: 700 3rem 'Cormorant Garamond', serif;
+    color: var(--blush);
+    font-variant-numeric: tabular-nums
+}
+
+.qz-sub {
+    margin: 0;
+    color: var(--mute)
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .qz-tania, .qz-bubble, .qz-card, .qz-card.enter { animation: none; transition: none }
+}
+
+
+
+/* ===== Social Platforms: profile-style cards in a swipe carousel (3:4) ===== */
+.soc-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    gap: 16px;
+    padding: 24px calc(50% - min(38vw, 180px)) 0
+}
+.soc-track::-webkit-scrollbar { display: none }
+.soc-card {
+    flex: 0 0 min(76vw, 360px);
+    aspect-ratio: 3/5;
+    scroll-snap-align: center;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    color: #1c1e21;
+    font-family: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    box-shadow: 0 20px 40px #0009;
+    text-align: center;
+    transform: scale(.94);
+    opacity: .7;
+    transition: transform .5s ease, opacity .5s ease
+}
+.soc-card.active { transform: scale(1); opacity: 1 }
+.soc-card img { display: block; width: 100%; height: 100%; object-fit: cover }
+.soc-card a { text-decoration: none }
+.soc-bio { margin: 0; color: #65676b; font-size: .8rem; line-height: 1.4 }
+
+/* Facebook-style profile */
+.soc-fb-cover {
+    position: relative;
+    height: 150px;
+    background: linear-gradient(135deg, #5b3f8c, #ee8fb5)
+}
+.soc-fb-av {
+    position: relative;
+    z-index: 1;
+    margin: -48px auto 6px;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    border: 4px solid #fff;
+    background: #e4e6eb;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    color: #65676b;
+    font-size: 1.6rem;
+    font-weight: 600
+}
+.soc-fb-av img { position: absolute; inset: 0 }
+.soc-fb-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 16px 16px
+}
+.soc-fb-body h3 { font-size: 1.1rem; font-weight: 700; margin: 0 }
+.soc-fb-stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 8px 0;
+    padding: 10px 0;
+    border-top: 1px solid #e4e6eb;
+    border-bottom: 1px solid #e4e6eb
+}
+.soc-fb-stats div { display: flex; flex-direction: column; gap: 2px }
+.soc-fb-stats b { font-size: 1rem }
+.soc-fb-stats span { color: #65676b; font-size: .74rem }
+
+/* Instagram-style profile */
+.soc-ig-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    border-bottom: 1px solid #efefef;
+    font-weight: 700;
+    font-size: 1rem
+}
+.soc-ig-dots { color: #262626; letter-spacing: 1px }
+.soc-ig-head {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 14px 14px 6px
+}
+.soc-ig-ring {
+    flex: 0 0 auto;
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    padding: 3px;
+    background: linear-gradient(45deg, #f9ce34, #ee2a7b, #6228d7)
+}
+.soc-ig-img {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    background: #ffd6e4;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    color: #8e3a63;
+    font-weight: 600;
+    font-size: 1.4rem
+}
+.soc-ig-img img { position: absolute; inset: 0 }
+.soc-ig-stats { display: flex; gap: 12px; flex: 1; justify-content: space-between }
+.soc-ig-stats div { display: flex; flex-direction: column; align-items: center }
+.soc-ig-stats b { font-size: 1rem; color: #262626 }
+.soc-ig-stats span { color: #262626; font-size: .74rem }
+.soc-ig-bio {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 0 14px 10px;
+    text-align: left
+}
+.soc-ig-bio b { font-size: .88rem }
+.soc-ig-grid {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 1fr;
+    gap: 2px;
+    background: #fff
+}
+.soc-ig-grid div { overflow: hidden; background: linear-gradient(135deg, #ffd6e4, #cdb4f0); position: relative }
+.soc-ig-grid img { position: absolute; inset: 0 }
+
+/* Visit buttons */
+.soc-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 12px 16px 16px;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: .9rem;
+    color: #fff;
+    transition: filter .2s
+}
+.soc-btn:hover { filter: brightness(1.08) }
+.soc-btn-fb { background: #1877f2 }
+.soc-btn-ig { background: #efefef; color: #262626; margin: 10px 16px 14px }
+
+/* dots sit close under the cards */
+.soc-track + .g-dots { margin-top: 30px }
+
+.soc-heart {
+    position: absolute;
+    left: 6px;
+    bottom: 6px;
+    z-index: 2;
+    padding: 2px 7px;
+    border-radius: 10px;
+    background: #000a;
+    color: #fff;
+    font-size: .7rem;
+    font-weight: 600
+}
+.soc-ig-grid img { z-index: 1 }
+.soc-btn:active { transform: scale(.97) }
+
+.soc-heart-ico { display: block; flex: 0 0 auto }
+.soc-heart { display: inline-flex; align-items: center; gap: 4px }
+
+/* bigger text on phones */
+@media (max-width: 600px) {
+    .soc-bio { font-size: .9rem }
+    .soc-fb-body h3 { font-size: 1.25rem }
+    .soc-fb-stats b, .soc-ig-stats b { font-size: 1.1rem }
+    .soc-fb-stats span, .soc-ig-stats span { font-size: .85rem }
+    .soc-ig-top { font-size: 1.1rem }
+    .soc-ig-bio b { font-size: 1rem }
+    .soc-btn { font-size: 1rem }
+    .soc-heart { font-size: .8rem }
+}
+
+/* Instagram like hearts stay white in every language */
+.soc-heart-ico, .soc-heart svg, html[lang="bn"] .soc-heart-ico { fill: #fff !important; color: #fff !important }

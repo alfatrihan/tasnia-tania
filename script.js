@@ -38,6 +38,59 @@ function flower(x, y, R, b, rot, layers, n, a) {
     }
     cx.globalAlpha = a; const c = cx.createRadialGradient(0, 0, 0, 0, 0, R * .16); c.addColorStop(0, '#ffe9a8'); c.addColorStop(1, '#e8a86a00'); cx.fillStyle = c; cx.beginPath(); cx.arc(0, 0, R * .16, 0, 6.3); cx.fill(); cx.restore()
 }
+// Butterfly drawn in the site's palette: rose body, blush-to-lavender wings with soft veins and eyespots.
+// Local frame: head at -y, wings spread along x. `heading` is the flight direction in radians.
+function wingPath(s, fore) {
+    cx.beginPath();
+    if (fore) {
+        cx.moveTo(0, -s * .15);
+        cx.bezierCurveTo(s * .55, -s * 1.3, s * 1.5, -s * 1.1, s * 1.25, -s * .3);
+        cx.bezierCurveTo(s * 1.1, s * .12, s * .55, s * .3, 0, s * .12);
+    } else {
+        cx.moveTo(0, s * .05);
+        cx.bezierCurveTo(s * .95, s * .02, s * 1.1, s * .95, s * .5, s * 1.05);
+        cx.bezierCurveTo(s * .25, s * 1.1, s * .05, s * .65, 0, s * .25);
+    }
+    cx.closePath();
+}
+function butterfly(x, y, s, heading, flap, a) {
+    if (a <= 0.01) return;
+    const sc = .2 + .8 * Math.abs(Math.sin(flap));          // wing opening, from closed to fully spread
+    cx.save(); cx.globalAlpha = a; cx.translate(x, y); cx.rotate(heading + Math.PI / 2);
+    cx.shadowColor = 'rgba(238,143,181,.55)'; cx.shadowBlur = s * .6;
+    const g = cx.createLinearGradient(0, 0, s * 1.4, 0);
+    g.addColorStop(0, '#c2467f'); g.addColorStop(.55, '#d9b8f2'); g.addColorStop(1, '#f8bcd3');
+    for (const side of [1, -1]) {
+        cx.save(); cx.scale(side * sc, 1);
+        // hind wing, then fore wing on top
+        wingPath(s, false); cx.fillStyle = g; cx.globalAlpha = a * .85; cx.fill();
+        wingPath(s, true); cx.fillStyle = g; cx.globalAlpha = a * .95; cx.fill();
+        cx.shadowBlur = 0; cx.globalAlpha = a;
+        // veins
+        cx.strokeStyle = 'rgba(255,240,248,.35)'; cx.lineWidth = .7;
+        cx.beginPath(); cx.moveTo(0, -s * .1); cx.quadraticCurveTo(s * .6, -s * .5, s * 1.15, -s * .4);
+        cx.moveTo(0, -s * .05); cx.quadraticCurveTo(s * .5, s * .05, s * .9, s * .15); cx.stroke();
+        // eyespot on the hind wing
+        cx.beginPath(); cx.arc(s * .5, s * .78, s * .14, 0, Math.PI * 2);
+        cx.fillStyle = '#3f2f56'; cx.fill();
+        cx.beginPath(); cx.arc(s * .5, s * .78, s * .07, 0, Math.PI * 2);
+        cx.fillStyle = '#ffd6e4'; cx.fill();
+        cx.restore();
+        cx.shadowColor = 'rgba(238,143,181,.55)'; cx.shadowBlur = s * .6;
+    }
+    cx.shadowBlur = 0; cx.globalAlpha = a;
+    // body
+    cx.beginPath(); cx.ellipse(0, 0, s * .13, s * .72, 0, 0, Math.PI * 2); cx.fillStyle = '#3f2f56'; cx.fill();
+    cx.beginPath(); cx.ellipse(-s * .03, -s * .1, s * .04, s * .4, 0, 0, Math.PI * 2); cx.fillStyle = 'rgba(248,188,211,.5)'; cx.fill();
+    // antennae with small knobs
+    cx.strokeStyle = '#3f2f56'; cx.lineWidth = .9;
+    cx.beginPath(); cx.moveTo(0, -s * .6); cx.quadraticCurveTo(s * .2, -s * 1.1, s * .4, -s * 1.2);
+    cx.moveTo(0, -s * .6); cx.quadraticCurveTo(-s * .2, -s * 1.1, -s * .4, -s * 1.2); cx.stroke();
+    cx.beginPath(); cx.arc(s * .4, -s * 1.2, s * .05, 0, Math.PI * 2); cx.arc(-s * .4, -s * 1.2, s * .05, 0, Math.PI * 2);
+    cx.fillStyle = '#ee8fb5'; cx.fill();
+    cx.restore();
+}
+
 const P = [], B = []; let ptr = { x: -999, y: -999 }, sv = 0, lastY = scrollY, lastT = 0;
 function spawn(x, y, burst, amb) { const a = Math.random() * 6.283, s = burst ? 2 + Math.random() * 5 : 0; P.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - (burst ? 2 : 0), r: Math.random() * 6.3, vr: (Math.random() - .5) * .06, s: PS, ph: Math.random() * 6.3, c: PAL[Math.random() * 5 | 0], a: 1, amb }) }
 for (let i = 0; i < 34; i++)spawn(Math.random() * W, Math.random() * H, 0, 1);
@@ -97,7 +150,6 @@ function draw(t) {
     const sp = scrollY / ((document.documentElement.scrollHeight - innerHeight) || 1);
     const hs = hero.offsetHeight - H, p = clamp(scrollY / hs), fade = 1 - seg(scrollY, hs, hs + H * .8);
     bar.style.transform = 'scaleX(' + sp + ')';
-    vine(0, clamp(sp * 1.15) * H); vine(1, clamp(sp * 1.15) * H);
     const R = Math.min(W, H) * (W < 700 ? .4 : .36), b = ease(seg(p, 0, .62));
     // keep the big flower fully inside the screen so no petal is cut
     const fxRaw = W / 2 + (ptr.x > 0 ? (ptr.x - W / 2) * .015 : 0), fyRaw = H * .44;
@@ -108,6 +160,32 @@ function draw(t) {
     }
     c1.style.opacity = seg(p, .02, .12) * (1 - seg(p, .36, .46)); c1.style.transform = 'translateY(' + (1 - seg(p, .02, .12)) * 24 + 'px)';
     const o2 = seg(p, .62, .8); c2.style.opacity = o2; c2.style.transform = 'translateY(' + (1 - o2) * 30 + 'px)'; cue.style.opacity = 1 - seg(p, 0, .04);
+    // Butterflies: several passes spread over the whole page, so a longer site gets more of them.
+    // Each pass gradually reveals, then flies: left->right, right->left, or rises up from the bottom.
+    {
+        const base = document.getElementById('about').offsetTop, docH = document.documentElement.scrollHeight;
+        const N = Math.max(4, Math.min(8, Math.round((docH - base) / (H * 1.6))));
+        const span = (docH - base - H) / N, bs = Math.min(W, H) * .07, flap = t * .0075;
+        for (let i = 0; i < N; i++) {
+            const s0 = base + H * .15 + i * span, dur = Math.min(span * .85, H * 2.2), e0 = s0 + dur;
+            if (scrollY < s0 || scrollY > e0) continue;
+            const u = (scrollY - s0) / dur;
+            const a = ease(seg(u, 0, .2)) * (1 - seg(u, .8, 1));
+            const mode = i % 3, ph = u * Math.PI * 2 * 1.5 + i, ww = W + 100;
+            let x, y, hd;
+            if (mode === 0) {              // left -> right, a wave across the screen
+                x = -50 + u * ww; y = H * (.25 + .12 * (i % 2)) + Math.sin(ph) * H * .07;
+                hd = Math.atan2(Math.cos(ph) * Math.PI * 3 * H * .07, ww);
+            } else if (mode === 1) {       // right -> left
+                x = W + 50 - u * ww; y = H * (.4 + .12 * (i % 2)) + Math.sin(ph) * H * .07;
+                hd = Math.atan2(Math.cos(ph) * Math.PI * 3 * H * .07, -ww);
+            } else {                       // from the bottom side, up and out at the top
+                x = W * .7 + Math.sin(u * Math.PI * 2 * 1.2 + i) * W * .1; y = H * 1.1 - u * H * 1.3;
+                hd = Math.atan2(-H * 1.3, Math.cos(u * Math.PI * 2 * 1.2 + i) * Math.PI * 2.4 * W * .1);
+            }
+            butterfly(x, y, bs * (.5 + .5 * a), hd, flap + i, .95 * a);
+        }
+    }
     for (let i = P.length - 1; i >= 0; i--) {
         const q = P[i];
         const dx = q.x - ptr.x, dyy = q.y - ptr.y, d = Math.hypot(dx, dyy); if (d < 110 && d > 0) { q.vx += dx / d * .7; q.vy += dyy / d * .4 }
@@ -118,6 +196,7 @@ function draw(t) {
     }
     for (let i = B.length - 1; i >= 0; i--) { const o = B[i]; o.t += .016; flower(o.x, o.y, o.R, ease(Math.min(1, o.t / 1.3)), o.rot + o.t * .25, 2, 6, o.t > 5 ? 1 - (o.t - 5) : 1); if (o.t > 6) B.splice(i, 1) }
     const tl = G('tl'), tr = tl.getBoundingClientRect(); tl.style.setProperty('--p', clamp((H * .7 - tr.top) / tr.height));
+    tl.querySelectorAll('li').forEach(li => { const q = clamp((H * .9 - li.getBoundingClientRect().top) / (H * .4)); li.style.setProperty('--q', q.toFixed(3)); });
     $('.words').forEach(e => { const q = clamp((H * .85 - e.getBoundingClientRect().top) / (H * .45)), ws = e.children, n = ws.length * q; for (let i = 0; i < ws.length; i++)ws[i].classList.toggle('lit', i < n) });
     requestAnimationFrame(draw)
 }
@@ -190,3 +269,40 @@ $('.gallery').forEach(g => {
     g.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(update) }, { passive: true });
     update();
 });
+
+
+// ---------- Social Platforms carousel (swipe cards with dots) ----------
+(function () {
+    const track = document.getElementById('soc-track');
+    if (!track) return;
+    const cards = [...track.children];
+    const bar = document.createElement('div');
+    bar.className = 'g-dots';
+    const dots = cards.map((c, i) => {
+        const d = document.createElement('button');
+        d.type = 'button';
+        d.setAttribute('aria-label', 'Profile ' + (i + 1));
+        d.onclick = () => goTo(i);
+        bar.appendChild(d);
+        return d;
+    });
+    track.after(bar);
+    function goTo(i) {
+        const tr = track.getBoundingClientRect(), cr = cards[i].getBoundingClientRect();
+        track.scrollTo({ left: track.scrollLeft + (cr.left - tr.left) - (track.clientWidth - cr.width) / 2, behavior: 'smooth' });
+    }
+    let raf = 0;
+    function update() {
+        raf = 0;
+        const mid = track.getBoundingClientRect().left + track.clientWidth / 2;
+        let best = 0, bd = Infinity;
+        cards.forEach((c, i) => {
+            const r = c.getBoundingClientRect(), d = Math.abs(r.left + r.width / 2 - mid);
+            if (d < bd) { bd = d; best = i }
+        });
+        dots.forEach((d, i) => d.classList.toggle('on', i === best));
+        cards.forEach((c, i) => c.classList.toggle('active', i === best));
+    }
+    track.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(update) }, { passive: true });
+    update();
+})();

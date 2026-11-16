@@ -11,6 +11,7 @@
     const titleEl = document.getElementById('runner-title');
     const subEl = document.getElementById('runner-sub');
     const scoreEl = document.getElementById('runner-score');
+    const coinNEl = document.getElementById('runner-coin-n');
     const hiEl = document.getElementById('runner-hi');
     const sectionTitle = document.getElementById('game-title');
     const hintEl = document.getElementById('runner-hint');
@@ -26,8 +27,8 @@
     const THREE_MISSING = { en: 'The 3D game could not load. Check your internet connection.', bn: '3D গেমটি লোড হয়নি। ইন্টারনেট সংযোগ দেখুন।' };
 
     const TEXT = {
-        en: { title: "Tania's Run", hint: 'Tap, click or press Space to jump', start: 'Press PLAY to start', play: 'PLAY', over: 'Game over', again: 'tap or press Space to try again', best: 'BEST', greet: 'Hi, I am Tania. Tap me to play!', full: 'Full screen', exit: 'Exit full screen', rotate: 'Turn your phone sideways for the best view' },
-        bn: { title: 'তানিয়ার দৌড়', hint: 'লাফ দিতে ট্যাপ, ক্লিক বা স্পেস চাপুন', start: 'খেলা শুরু করতে প্লে চাপুন', play: 'প্লে করুন', over: 'খেলা শেষ', again: 'আবার খেলতে ট্যাপ করুন বা স্পেস চাপুন', best: 'সেরা', greet: 'হ্যালো, আমি তানিয়া। খেলতে আমাকে ট্যাপ করো!', full: 'ফুল স্ক্রিন', exit: 'ছোট করুন', rotate: 'ফোনটি পাশে ঘুরিয়ে খেলুন' }
+        en: { title: "Tania's Run", hint: 'Tap, click or press Space to jump', start: 'Press PLAY to start', play: 'PLAY', over: 'Game over', again: 'tap or press Space to try again', best: 'BEST', greet: 'Hi, I am Tania. Tap me to play!', full: 'Full screen', exit: 'Exit full screen', rotate: 'Turn your phone sideways for the best view', score: 'Score', high: 'Highest', newBest: 'New best!', coins: 'Coins' },
+        bn: { title: 'তানিয়ার দৌড়', hint: 'লাফ দিতে ট্যাপ, ক্লিক বা স্পেস চাপুন', start: 'খেলা শুরু করতে প্লে চাপুন', play: 'প্লে করুন', over: 'খেলা শেষ', again: 'আবার খেলতে ট্যাপ করুন বা স্পেস চাপুন', best: 'সেরা', greet: 'হ্যালো, আমি তানিয়া। খেলতে আমাকে ট্যাপ করো!', full: 'ফুল স্ক্রিন', exit: 'ছোট করুন', rotate: 'ফোনটি পাশে ঘুরিয়ে খেলুন', score: 'স্কোর', high: 'সর্বোচ্চ', newBest: 'নতুন সেরা!', coins: 'কয়েন' }
     };
     const lang = () => (document.documentElement.lang === 'bn' ? 'bn' : 'en');
 
@@ -41,6 +42,7 @@
     const clamp01 = (x, lo) => Math.min(1, Math.max(lo, x));
     let state = 'ready';               // ready | intro | running | over
     let v = SPEED0, distance = 0, score = 0, cooldown = 0, overAt = 0;
+    let bonus = 0, coins = 0, coinCool = 3, finalScore = 0, finalCoins = 0, isNewBest = false, countRaf = 0;
     let inView = false;
     let hi = 0;
     try { hi = Number(localStorage.getItem('tania-runner-hi')) || 0; } catch (e) { hi = 0; }
@@ -338,14 +340,24 @@
         add(new THREE.SphereGeometry(0.19, 28, 18, 0, Math.PI * 2, 0, Math.PI * 0.58), mHair, 0, 2.31, -0.015).scale.set(1.04, 1.08, 1.02);
         add(new THREE.SphereGeometry(0.17, 20, 16), mHair, 0, 2.25, -0.09).scale.set(1, 1.15, 0.8);
         add(new THREE.SphereGeometry(0.045, 10, 10), mRose, 0.14, 2.4, 0.06);
-        // braid: a chain of pivots, so it bends and swings like real hair
-        const braid = []; let bp = root;
-        for (let k = 0; k < 4; k++) {
-            const pv = new THREE.Group(); pv.position.set(0, k ? -0.2 : 2.2, k ? 0 : -0.17); bp.add(pv);
-            add(new THREE.SphereGeometry(0.075 - k * 0.01, 12, 10), mHair, 0, -0.08, 0, pv).scale.set(1, 1.5, 0.9);
-            bp = pv; braid.push(pv);
-        }
-        add(new THREE.SphereGeometry(0.04, 8, 8), mRose, 0, -0.2, 0, braid[3]);
+        // open hair: three long strands falling down the back and shoulders; each is a chain of pivots,
+        // so it bends and sways like real loose hair (see the animation in update)
+        const braid = [];
+        [[0, -0.12], [-0.12, -0.08], [0.12, -0.08]].forEach(([sx, sz]) => {
+            let parent = root;
+            for (let k = 0; k < 4; k++) {
+                const pv = new THREE.Group();
+                pv.position.set(k ? 0 : sx, k ? -0.27 : 2.2, k ? 0 : sz);
+                parent.add(pv);
+                const len = 0.3, r0 = 0.07 - k * 0.01, r1 = 0.058 - k * 0.008;
+                const geo = new THREE.CylinderGeometry(r1, r0, len, 10);
+                geo.translate(0, -len / 2, 0);
+                const seg = new THREE.Mesh(geo, mHair);
+                pv.add(seg);
+                braid.push(pv);
+                parent = pv;
+            }
+        });
 
         // cape: a segmented cloth that ripples (see animateCape)
         const capePivot = new THREE.Group(); capePivot.position.set(0, 1.95, -0.2); root.add(capePivot);
@@ -410,6 +422,33 @@
         return g;
     }
 
+    // ---------- coins ----------
+    const pad = n => String(Math.floor(n));
+    const coinGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.05, 20);
+    coinGeo.rotateZ(Math.PI / 2);                 // the coin stands up, facing the camera side
+    const coinMat = new THREE.MeshStandardMaterial({ color: 0xffd36b, emissive: 0x7a5200, metalness: 0.6, roughness: 0.3 });
+    const coinList = [];
+    // a short line of 5 coins on the road: low (walk through) or high (jump for it)
+    function spawnCoins() {
+        const z0 = -DIR * SPAWN_D;
+        if (obstacles.some(o => Math.abs(o.g.position.z - z0) < 5)) return false;   // not right on top of an obstacle
+        // low coins: walk through them; high coins: sit above Tania's head, so she has to jump for them
+        const y = Math.random() < 0.5 ? 0.45 : 2.0;
+        for (let k = 0; k < 5; k++) {
+            const m = new THREE.Mesh(coinGeo, coinMat);
+            m.position.set(0, y, z0 - DIR * k * 0.85);
+            scene.add(m);
+            coinList.push({ m, y });
+        }
+        return true;
+    }
+    const plusEl = document.getElementById('runner-plus');
+    const scoreWrap = document.getElementById('runner-score-wrap');
+    function collectPop() {
+        scoreWrap.classList.remove('pop'); void scoreWrap.offsetWidth; scoreWrap.classList.add('pop');
+        plusEl.classList.remove('go'); void plusEl.offsetWidth; plusEl.classList.add('go');
+    }
+
     function spawn(dist) {
         const early = distance < 150;                       // easy start: only low, simple obstacles
         const r = Math.random();
@@ -418,13 +457,13 @@
         let g, w, h, d;
         if (kind === 'stone') {
             w = 0.9 + Math.random() * 0.5; d = 0.9;
-            h = tall ? 1.7 + Math.random() * 0.3 : 0.7 + Math.random() * 0.5;
+            h = tall ? 1.0 + Math.random() * 0.2 : 0.7 + Math.random() * 0.3;   // always lower than Tania, so a jump clears it
             g = makeStone(w, h, d);
         } else if (kind === 'stump') {
             w = d = 0.8; h = 0.7 + Math.random() * 0.3;
             g = makeStump(0.4, h);
         } else {
-            w = d = 0.9; h = tall ? 1.8 : 0.8 + Math.random() * 0.2;
+            w = d = 0.9; h = tall ? 1.2 : 0.8 + Math.random() * 0.2;   // lower than Tania (about 2.4 tall)
             g = makeCrate(w, h, d);
         }
         g.position.set(0, 0, -DIR * (dist || SPAWN_D));
@@ -453,9 +492,11 @@
     function clearObstacles() {
         for (const o of obstacles) { scene.remove(o.g); disposeGroup(o.g); }
         obstacles = [];
+        for (const c of coinList) scene.remove(c.m);
+        coinList.length = 0;
     }
     function reset() {
-        state = 'running'; v = SPEED0; distance = 0; score = 0;
+        state = 'running'; v = SPEED0; distance = 0; score = 0; bonus = 0; coins = 0; coinCool = 2;
         clearObstacles();
         hero.y = 0; hero.vy = 0; hero.onGround = true; hero.holding = false;
         overlay.classList.add('hidden');
@@ -475,7 +516,7 @@
         state = 'intro';
         clearObstacles();
         hero.y = 0; hero.vy = 0; hero.onGround = true; hero.holding = false;
-        v = SPEED0; distance = 0; score = 0;
+        v = SPEED0; distance = 0; score = 0; bonus = 0; coins = 0; coinCool = 2;
         overlay.classList.add('hidden');
         bubble.classList.add('show');
     }
@@ -488,12 +529,16 @@
     function gameOver() {
         state = 'over'; overAt = performance.now();
         const best = Math.floor(score);
+        finalScore = best; finalCoins = coins;
+        isNewBest = best > hi && best > 0;
         if (best > hi) {
             hi = best;
             try { localStorage.setItem('tania-runner-hi', String(hi)); } catch (e) { /* storage blocked */ }
         }
+        renderResult('0');                 // fresh scoreboard, so the entrance animation plays every time
         updateTexts();
         overlay.classList.remove('hidden');
+        countUp(best);
     }
 
     // ---------- update (dt = frames since last update) ----------
@@ -509,10 +554,14 @@
         ffGeo.attributes.position.needsUpdate = true;
         if (state === 'running') {
             distance += v * dt;
-            score = Math.floor(distance * 2);
+            score = Math.floor(distance * 2) + bonus;
             v = Math.min(SPEED_MAX, SPEED0 + distance * RAMP);
             const mv = v * dt;
             for (const o of obstacles) o.g.position.z += DIR * mv;
+            for (const c of coinList) c.m.position.z += DIR * mv;
+            for (let i = coinList.length - 1; i >= 0; i--) {
+                if (DIR * coinList[i].m.position.z > KILL_D) { scene.remove(coinList[i].m); coinList.splice(i, 1); }
+            }
             for (let i = obstacles.length - 1; i >= 0; i--) {
                 if (DIR * obstacles[i].g.position.z > KILL_D) {
                     scene.remove(obstacles[i].g);
@@ -522,6 +571,8 @@
             }
             cooldown -= mv;
             if (cooldown <= 0) spawn();
+            coinCool -= mv;
+            if (coinCool <= 0) coinCool = spawnCoins() ? 18 + Math.random() * 16 : 2;
             for (const o of obstacles) {
                 const dz = DIR * o.g.position.z;
                 const near = clamp01((SPAWN_D + 2 - Math.abs(o.g.position.z)) / 8, 0.15);
@@ -546,6 +597,18 @@
             if (hero.y <= 0) { hero.y = 0; hero.vy = 0; hero.onGround = true; hero.squash = 1; }
         }
         hero.squash = Math.max(0, hero.squash - 0.06 * dt);
+
+        // coins: spin, and collect the ones Tania runs or jumps through
+        for (const c of coinList) c.m.rotation.y = tt * 3;
+        if (state === 'running') {
+            for (let i = coinList.length - 1; i >= 0; i--) {
+                const c = coinList[i];
+                if (Math.abs(c.m.position.z - HERO_Z) < 0.55 && Math.abs(hero.y - c.y) < 0.8) {
+                    scene.remove(c.m); coinList.splice(i, 1);
+                    coins++; bonus += 5; collectPop();
+                }
+            }
+        }
 
         if (state === 'running') {
             for (const o of obstacles) {
@@ -631,11 +694,44 @@
 
     // ---------- score display ----------
     function refreshHi() {
-        hiEl.textContent = TEXT[lang()].best + ' ' + String(Math.floor(hi)).padStart(5, '0');
+        hiEl.textContent = TEXT[lang()].best + ' ' + pad(hi);
     }
     function updateHud() {
-        const s = String(Math.floor(score)).padStart(5, '0');
+        const s = pad(score);
         if (scoreEl.textContent !== s) scoreEl.textContent = s;
+        const c = String(coins);
+        if (coinNEl.textContent !== c) coinNEl.textContent = c;
+    }
+
+    // ---------- result screen (scoreboard): built once per game over ----------
+    let resultLang = null;
+    function renderResult(numText) {
+        const L = TEXT[lang()];
+        subEl.innerHTML =
+            '<span class="sb">' +
+              '<span class="sb-label">' + L.score + '</span>' +
+              '<span class="sb-num" id="res-num">' + numText + '</span>' +
+              '<span class="sb-grid">' +
+                '<span class="sb-cell"><small>' + L.high + '</small><b>' + pad(hi) + '</b></span>' +
+                '<span class="sb-cell"><small>' + L.coins + '</small><b><i class="coin-ico"></i>' + finalCoins + '</b></span>' +
+              '</span>' +
+              (isNewBest ? '<span class="sb-new">' + L.newBest + '</span>' : '') +
+              '<span class="sb-again">' + L.again + '</span>' +
+            '</span>';
+        resultLang = lang();
+    }
+    function countUp(target) {
+        cancelAnimationFrame(countRaf);
+        const el = document.getElementById('res-num');
+        if (!el) return;
+        const t0 = performance.now(), dur = 1200;
+        const step = now => {
+            const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+            el.textContent = String(Math.round(target * e));
+            if (k < 1) countRaf = requestAnimationFrame(step);
+        };
+        el.textContent = '0';
+        countRaf = requestAnimationFrame(step);
     }
 
     // ---------- language (follows the site's EN / BN button) ----------
@@ -649,7 +745,7 @@
         refreshHi();
         if (state === 'over') {
             titleEl.textContent = L.over;
-            subEl.textContent = (lang() === 'bn' ? 'স্কোর ' : 'Score ') + Math.floor(score) + ' · ' + L.again;
+            if (resultLang !== lang()) renderResult(String(finalScore));   // only when the language changes
         } else {
             titleEl.textContent = L.title;
             subEl.textContent = L.start;
@@ -685,7 +781,7 @@
         if (!gameMusic) {
             gameMusic = new Audio(GAME_MUSIC);
             gameMusic.loop = true;
-            gameMusic.volume = 0.4;
+            gameMusic.volume = 0.2;   // half the earlier loudness
             gameMusic.onerror = () => { gameMusic = null; };   // file not added yet -> stay silent
         }
         gameMusic.play().catch(() => {});

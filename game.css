@@ -291,3 +291,221 @@ html[lang="bn"] .runner-bubble .lang-en { display: none }
 .runner-bubble .lang-bn span {
     font: 500 .85rem 'Hind Siliguri', sans-serif
 }
+
+/* ===== HUD: coins left, score right, best centred underneath (no overlaps) ===== */
+.runner-hud {
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    right: 14px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    pointer-events: none
+}
+
+.hud-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px
+}
+
+.hud-pill {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 99px;
+    background: rgba(23, 16, 32, .6);
+    border: 1px solid rgba(255, 214, 228, .2);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transform-origin: center
+}
+
+.hud-coins {
+    font: 600 .95rem 'DM Sans', sans-serif;
+    color: #ffd36b
+}
+
+.hud-coins b {
+    font-variant-numeric: tabular-nums
+}
+
+.hud-score {
+    min-width: 96px;
+    justify-content: flex-end
+}
+
+#runner-score {
+    font: 700 1.2rem 'DM Sans', sans-serif;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(90deg, #ffd6e4, #ee8fb5 55%, #ffd36b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent
+}
+
+.hud-best {
+    align-self: center;
+    padding: 3px 12px;
+    border-radius: 99px;
+    background: rgba(23, 16, 32, .5);
+    font: 500 .7rem 'DM Sans', sans-serif;
+    letter-spacing: 2px;
+    color: var(--mute)
+}
+
+/* the score pill pops when a coin is taken */
+.hud-score.pop {
+    animation: pillPop .45s cubic-bezier(.2, 1.4, .4, 1)
+}
+
+@keyframes pillPop {
+    0% { transform: scale(1) }
+    35% { transform: scale(1.18) }
+    100% { transform: scale(1) }
+}
+
+/* +5 floats up from the coin pill */
+.runner-plus {
+    position: absolute;
+    left: 50%;
+    top: 4px;
+    opacity: 0;
+    font: 700 .85rem 'DM Sans', sans-serif;
+    color: #ffd36b;
+    text-shadow: 0 0 8px #ffd36b;
+    pointer-events: none
+}
+
+.runner-plus.go {
+    animation: plusUp .8s ease-out forwards
+}
+
+@keyframes plusUp {
+    0% { opacity: 0; transform: translate(-50%, 6px) }
+    20% { opacity: 1; transform: translate(-50%, 0) }
+    100% { opacity: 0; transform: translate(-50%, -26px) }
+}
+
+/* ===== Game over scoreboard ===== */
+.sb {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    min-width: 230px;
+    padding: 18px 26px 16px;
+    border-radius: 18px;
+    background: rgba(23, 16, 32, .78);
+    border: 1px solid rgba(255, 214, 228, .25);
+    box-shadow: 0 16px 40px #0009;
+    animation: sbIn .45s cubic-bezier(.2, .9, .3, 1.1) both
+}
+
+@keyframes sbIn {
+    from { opacity: 0; transform: scale(.9) translateY(10px) }
+    to { opacity: 1; transform: none }
+}
+
+.sb > * {
+    animation: sbItem .5s ease-out both
+}
+
+.sb > :nth-child(2) { animation-delay: .1s }
+.sb > :nth-child(3) { animation-delay: .25s }
+.sb > :nth-child(4) { animation-delay: .4s }
+.sb > :nth-child(5) { animation-delay: .5s }
+.sb > :nth-child(6) { animation-delay: .65s }
+
+@keyframes sbItem {
+    from { opacity: 0; transform: translateY(6px) }
+    to { opacity: 1; transform: none }
+}
+
+.sb-label {
+    font: 500 .7rem 'DM Sans', sans-serif;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--mute)
+}
+
+.sb-num {
+    font: 700 3rem 'Cormorant Garamond', serif;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(90deg, #ffd6e4, #ee8fb5, #ffd36b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent
+}
+
+.sb-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 22px;
+    margin-top: 4px
+}
+
+.sb-cell {
+    display: grid;
+    justify-items: center;
+    gap: 2px
+}
+
+.sb-cell small {
+    font: 500 .65rem 'DM Sans', sans-serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--mute)
+}
+
+.sb-cell b {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font: 600 1.05rem 'DM Sans', sans-serif;
+    color: var(--blush);
+    font-variant-numeric: tabular-nums
+}
+
+.sb-cell .coin-ico {
+    width: 13px;
+    height: 13px
+}
+
+.sb-new {
+    margin-top: 2px;
+    padding: 4px 14px;
+    border-radius: 99px;
+    font: 600 .8rem 'DM Sans', sans-serif;
+    color: #2b0f1e;
+    background: linear-gradient(135deg, #ffd36b, #ee8fb5);
+    animation: newPulse 1s ease-in-out infinite alternate
+}
+
+@keyframes newPulse {
+    from { transform: scale(1) }
+    to { transform: scale(1.08) }
+}
+
+.sb-again {
+    margin-top: 4px;
+    font-size: .75rem;
+    color: var(--mute)
+}
+
+html[lang="bn"] .sb-label,
+html[lang="bn"] .sb-cell small {
+    font-family: 'Hind Siliguri', sans-serif;
+    letter-spacing: 0
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sb, .sb > *, .sb-new, .hud-score.pop, .runner-plus.go { animation: none }
+}

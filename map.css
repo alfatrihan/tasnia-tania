@@ -4,6 +4,7 @@
     max-width: none;
     padding-left: 0;
     padding-right: 0;
+    padding-top: 0;   /* no gap between the name and the map */
     overflow-x: clip;
 }
 
@@ -12,8 +13,8 @@
     width: 100vw;
     left: 50%;
     transform: translateX(-50%);
-    height: 520vh;
-    height: 520svh;
+    height: 200vh;
+    height: 200svh;
 }
 
 #about .map-sticky {
@@ -48,9 +49,10 @@
 
 /* Bangladesh: green, to match the site's sage accent */
 #map-svg .bd {
-    fill: #4f8f63;
-    fill-opacity: .32;
-    stroke: #9bd3a0;
+    fill: #cdb4f0;
+    fill-opacity: .14;
+    stroke: #ee8fb5;
+    stroke-opacity: .8;
     stroke-width: 1.2;
     vector-effect: non-scaling-stroke;
 }
@@ -77,7 +79,7 @@
 }
 
 /* small dots for the districts (green) and Bogura (rose) */
-#map-svg .d.dist { fill: #9bd3a0; }
+#map-svg .d.dist { fill: #cdb4f0; }
 #map-svg .d.bogura { fill: #ffd6e4; }
 
 /* names: light for districts; bold and larger for Bogura and the two places in it */
@@ -90,7 +92,9 @@
 }
 
 #map-svg .nm.dist {
-    fill: #d9ecd2;
+    fill: #f6ebf2;
+    fill-opacity: .55;
+    stroke-opacity: .5;
     font-weight: 300;
 }
 
@@ -121,22 +125,23 @@ html[lang="bn"] .lang-en { display: none !important; }
 #map-svg #map-city { transition: opacity .3s; }
 
 #map-svg .b {
-    fill: #3a2d4d;
-    fill-opacity: .9;
-    stroke: #9bd3a0;
-    stroke-opacity: .25;
-    stroke-width: .5;
+    fill: #3f2f56;
+    fill-opacity: .92;
+    stroke: #ffd6e4;
+    stroke-opacity: .3;
+    stroke-width: .6;
     vector-effect: non-scaling-stroke;   /* stroke width in screen pixels, not map units */
 }
 
-#map-svg .b.c1 { fill: #4f8f63; }
-#map-svg .b.c2 { fill: #ee8fb5; fill-opacity: .6; }
+/* sage buildings and rose buildings, with a soft glow on the tops */
+#map-svg .b.c1 { fill: #cdb4f0; fill-opacity: .8; stroke: #f0e2f7; stroke-opacity: .5; }
+#map-svg .b.c2 { fill: #ee8fb5; fill-opacity: .85; stroke: #ffd6e4; stroke-opacity: .6; }
 
 #map-svg .road {
     fill: none;
     stroke: #cdb4f0;
-    stroke-opacity: .55;
-    stroke-width: 1.2;
+    stroke-opacity: .6;
+    stroke-width: 1.4;
     stroke-dasharray: 6 6;
     vector-effect: non-scaling-stroke;
 }
