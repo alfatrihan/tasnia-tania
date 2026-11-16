@@ -1,0 +1,232 @@
+/* ===== Tania's Run (endless runner) ===== */
+#game {
+    padding-bottom: 80px
+}
+
+.runner-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    box-shadow: 0 20px 50px #0008;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer
+}
+
+.runner-wrap:focus-visible {
+    outline: 2px solid var(--rose)
+}
+
+#runner-canvas {
+    display: block;
+    touch-action: none
+}
+
+.runner-hud {
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    right: 16px;
+    display: flex;
+    justify-content: space-between;
+    font: 500 .78rem 'DM Sans', sans-serif;
+    letter-spacing: 2px;
+    color: var(--mute);
+    z-index: 2;
+    pointer-events: none
+}
+
+#runner-score {
+    color: var(--blush)
+}
+
+.runner-overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 6px;
+    text-align: center;
+    padding: 20px;
+    background: radial-gradient(ellipse at center, #0e0a14b8, #0e0a14e6);
+    z-index: 3;
+    pointer-events: none;
+    transition: opacity .35s
+}
+
+.runner-overlay.hidden {
+    opacity: 0
+}
+
+#runner-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 2rem;
+    color: var(--blush)
+}
+
+#runner-sub {
+    color: var(--mute);
+    font-size: .92rem
+}
+
+.runner-voice {
+    pointer-events: auto;
+    margin-top: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 99px;
+    border: 1px solid rgba(255, 214, 228, .35);
+    background: rgba(23, 16, 32, .85);
+    color: var(--blush);
+    font: 500 .85rem 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: transform .3s, border-color .3s
+}
+
+.runner-voice:hover {
+    transform: translateY(-2px);
+    border-color: var(--rose)
+}
+
+.runner-overlay.hidden .runner-voice {
+    pointer-events: none
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .runner-overlay {
+        transition: none
+    }
+}
+
+/* ===== Full screen (phones) ===== */
+.runner-full {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    z-index: 4;
+    pointer-events: auto;
+    padding: 6px 12px;
+    border-radius: 99px;
+    border: 1px solid rgba(255, 214, 228, .35);
+    background: rgba(23, 16, 32, .8);
+    color: var(--blush);
+    font: 500 .75rem 'DM Sans', sans-serif;
+    cursor: pointer
+}
+
+.runner-rotate {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 56px;
+    z-index: 4;
+    margin: 0;
+    padding: 10px;
+    text-align: center;
+    color: var(--blush);
+    font-size: .9rem;
+    background: rgba(14, 10, 20, .75);
+    pointer-events: none
+}
+
+.runner-wrap.fake-full {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-width: none;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    z-index: 9999
+}
+
+.runner-wrap.fake-full .runner-full {
+    right: 16px;
+    bottom: 16px
+}
+
+body.runner-lock {
+    overflow: hidden
+}
+
+/* in portrait, ask the player to turn the phone sideways */
+@media (orientation: portrait) {
+    .runner-wrap.fake-full .runner-rotate {
+        display: block
+    }
+}
+
+/* ===== Start / PLAY screen ===== */
+.runner-play {
+    pointer-events: auto;
+    margin-top: 18px;
+    padding: 12px 44px;
+    border-radius: 99px;
+    border: 0;
+    background: linear-gradient(135deg, #ee8fb5, #c2467f);
+    color: #2b0f1e;
+    font: 600 1rem 'DM Sans', sans-serif;
+    letter-spacing: 3px;
+    cursor: pointer;
+    box-shadow: 0 10px 30px #ee8fb566;
+    transition: transform .3s
+}
+
+.runner-play:hover {
+    transform: translateY(-2px) scale(1.03)
+}
+
+.runner-overlay.hidden .runner-play {
+    pointer-events: none
+}
+
+/* the rotate hint is no longer needed: the game is played vertically */
+.runner-rotate {
+    display: none !important
+}
+
+/* ===== Fixes: page scroll, true full screen, safe areas ===== */
+.runner-wrap {
+    touch-action: pan-y
+}
+
+.runner-wrap.fake-full {
+    touch-action: none;
+    z-index: 2147483000
+}
+
+#runner-canvas {
+    touch-action: inherit
+}
+
+body.runner-lock {
+    overflow: hidden;
+    overscroll-behavior: none
+}
+
+/* while playing, hide the rest of the page (footer, buttons, music, language) */
+body.runner-lock>*:not(#runner-wrap) {
+    visibility: hidden !important
+}
+
+.runner-wrap.fake-full .runner-hud {
+    top: calc(12px + env(safe-area-inset-top, 0px))
+}
+
+.runner-wrap.fake-full .runner-full {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px))
+}
