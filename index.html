@@ -288,19 +288,6 @@
     </div>
   </footer>
 
-  <!-- Music popup -->
-  <div id="musicPop" hidden role="dialog" aria-modal="true" aria-labelledby="mpTitle">
-    <div class="mp-card">
-      <h3 id="mpTitle">A Gentle Invitation</h3>
-      <p>For the most immersive experience, we invite you to listen with music.
-        Please adjust your device volume to a comfortable level.</p>
-      <div class="mp-btns">
-        <button id="mpYes" type="button">Play with music</button>
-        <button id="mpNo" type="button">Continue without music</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Music toggle button -->
   <button id="musicFab" type="button" aria-label="Turn music on or off" title="Music">&#9835;</button>
 
@@ -311,33 +298,47 @@
       audio.loop = true;
       audio.volume = 0.35;
 
-      const pop = document.getElementById('musicPop');
       const fab = document.getElementById('musicFab');
+      let started = false;
 
       function setOn(on) { fab.classList.toggle('on', on); }
 
-      function play() {
-        audio.play()
-          .then(() => { setOn(true); pop.hidden = true; })
-          .catch(() => { pop.hidden = true; });
+      // Try to play right away. Returns true if the browser allowed it.
+      function start() {
+        return audio.play()
+          .then(() => { started = true; setOn(true); return true; })
+          .catch(() => false);
       }
 
-      // Show the popup shortly after the page opens
-      setTimeout(() => { if (!fab.hidden) pop.hidden = false; }, 1500);
+      // Browsers block sound until the visitor interacts with the page.
+      // So if autoplay is blocked, the song starts on the first tap, click, key or scroll.
+      const events = ['pointerdown', 'keydown', 'touchstart', 'wheel', 'scroll'];
+      function armFirstInteraction() {
+        const go = (e) => {
+          // Let the music button handle its own tap, so it is not started twice
+          if (e && e.target && e.target.closest && e.target.closest('#musicFab')) return;
+          if (started) return;
+          start().then(ok => {
+            if (ok) events.forEach(ev => removeEventListener(ev, go, true));
+          });
+        };
+        events.forEach(ev => addEventListener(ev, go, { capture: true, passive: true }));
+      }
 
-      document.getElementById('mpYes').onclick = play;
-      document.getElementById('mpNo').onclick = () => { pop.hidden = true; };
+      start().then(ok => { if (!ok) armFirstInteraction(); });
 
+      // Round button: play or pause at any time
       fab.onclick = () => {
-        if (audio.paused) play();
-        else { audio.pause(); setOn(false); }
+        if (audio.paused) {
+          start();
+        } else {
+          audio.pause();
+          setOn(false);
+        }
       };
 
-      // If the song file is missing, hide the popup and the button
-      audio.addEventListener('error', () => {
-        pop.hidden = true;
-        fab.hidden = true;
-      });
+      // If the song file is missing, hide the button
+      audio.addEventListener('error', () => { fab.hidden = true; });
     })();
   </script>
 </body>
