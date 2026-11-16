@@ -1,98 +1,345 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tania</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@400;500&family=Great+Vibes&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tania</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@400;500&family=Great+Vibes&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<canvas id="fx"></canvas><div id="bar"></div><div id="orb"></div>
-<svg width="0" height="0" style="position:absolute"><defs>
-<g id="lotus" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M32 36C24 30 22 20 32 6C42 20 40 30 32 36Z"/><path d="M32 36C20 34 12 26 12 14C22 16 29 24 32 36Z"/><path d="M32 36C44 34 52 26 52 14C42 16 35 24 32 36Z"/><path d="M4 26C12 36 24 38 32 36C40 38 52 36 60 26"/></g>
-<path id="pt" d="M20 68C4 52 4 22 20 2C36 22 36 52 20 68Z"/></defs></svg>
+  <canvas id="fx"></canvas>
+  <div id="bar"></div>
+  <div id="orb"></div>
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <g id="lotus" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M32 36C24 30 22 20 32 6C42 20 40 30 32 36Z" />
+        <path d="M32 36C20 34 12 26 12 14C22 16 29 24 32 36Z" />
+        <path d="M32 36C44 34 52 26 52 14C42 16 35 24 32 36Z" />
+        <path d="M4 26C12 36 24 38 32 36C40 38 52 36 60 26" />
+      </g>
+      <path id="pt" d="M20 68C4 52 4 22 20 2C36 22 36 52 20 68Z" />
+    </defs>
+  </svg>
 
-<header>
-  <div class="brand"><svg class="lotus" viewBox="0 0 64 40"><use href="#lotus"/></svg>Tania</div>
-  <nav id="nav"><a href="#home">Home</a><a href="#about">About</a><a href="#vibe">Vibe</a><a href="#says">Her Words</a><a href="#why">Why Her</a><a href="#time">Timeline</a><a href="#letter">Letter</a></nav>
-</header>
+  <header>
+    <div class="brand"><svg class="lotus" viewBox="0 0 64 40">
+        <use href="#lotus" />
+      </svg>Tania</div>
+    <nav id="nav"><a href="#home">Home</a><a href="#about">About</a><a href="#vibe">Vibe</a><a href="#says">Her
+        Words</a><a href="#why">Why Her</a><a href="#time">Timeline</a><a href="#letter">Letter</a></nav>
+  </header>
 
-<main>
-<div id="home" class="hero"><div class="stick" id="stick">
-  <div id="core"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.6"><use href="#lotus"/></svg><img src="images/main.jpg" alt="" onerror="this.remove()"></div>
-  <div class="cap cap1" id="c1">for someone who blooms quietly</div>
-  <div class="cap" id="c2"><p class="eyebrow">A small gift, made with care</p><h1>Tasnia Akter <em>Tania</em></h1><p class="sub">Some people are hard to describe in one line. So here is a whole place for her.</p></div>
-  <div class="cue" id="cue">Scroll slowly<br><span style="letter-spacing:2px;text-transform:none">tap anywhere to make flowers bloom</span></div>
-</div></div>
+  <main>
+    <div id="home" class="hero">
+      <div class="stick" id="stick">
+        <div id="core"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.6">
+            <use href="#lotus" />
+          </svg><img src="images/main.jpg" alt="" onerror="this.remove()"></div>
+        <div class="cap cap1" id="c1">for someone who blooms quietly</div>
+        <div class="cap" id="c2">
+          <p class="eyebrow">A small gift, made with care</p>
+          <h1>Tasnia Akter <em>Tania</em></h1>
+          <p class="sub">Some people are hard to describe in one line. So here is a whole place for her.</p>
+        </div>
+        <div class="cue" id="cue">Scroll slowly<br><span style="letter-spacing:2px;text-transform:none">tap anywhere to
+            make flowers bloom</span></div>
+      </div>
+    </div>
 
-<section id="about">
-  <h2 class="rv">About Tania</h2><div class="div rv">&#10022;</div>
-  <div class="grid">
-    <div class="card rv rs"><small>From</small><h3>Bogura</h3></div>
-    <div class="card rv rs" style="--d:.2s"><small>Studying</small><h3>Economics</h3></div>
-    <div class="card rv rs" style="--d:.4s"><small>College</small><h3>Govt. Azizul Haque College</h3></div>
+    <section id="about">
+      <h2 class="rv">About Tania</h2>
+      <div class="div rv">&#10022;</div>
+      <div class="grid">
+        <div class="card rv rs"><small>From</small>
+          <h3>Bogura</h3>
+        </div>
+        <div class="card rv rs" style="--d:.2s"><small>Studying</small>
+          <h3>Economics</h3>
+        </div>
+        <div class="card rv rs" style="--d:.4s"><small>College</small>
+          <h3>Govt. Azizul Haque College</h3>
+        </div>
+      </div>
+      <p class="words">Write a short, warm introduction here. Who she is, how you met, and what first made you think:
+        this person is different. Each word lights up slowly as you scroll.</p>
+    </section>
+
+    <section id="vibe">
+      <h2 class="rv">Her Vibe</h2>
+      <div class="div rv">&#10022;</div>
+      <div class="gallery">
+        <div class="flip" data-speed="50">
+          <div class="in2">
+            <div class="fr"><span class="ph">photo 1</span><img src="images/photo1.jpg" alt=""
+                onerror="this.remove()"><b>Lavender evenings</b></div>
+            <div class="bk">
+              <p>Write the memory behind this photo.</p>
+            </div>
+          </div>
+        </div>
+        <div class="flip" data-speed="-40">
+          <div class="in2">
+            <div class="fr"><span class="ph">photo 2</span><img src="images/photo2.jpg" alt=""
+                onerror="this.remove()"><b>Green and quiet</b></div>
+            <div class="bk">
+              <p>Write the memory behind this photo.</p>
+            </div>
+          </div>
+        </div>
+        <div class="flip" data-speed="60">
+          <div class="in2">
+            <div class="fr"><span class="ph">photo 3</span><img src="images/photo3.jpg" alt=""
+                onerror="this.remove()"><b>Henna and festivals</b></div>
+            <div class="bk">
+              <p>Write the memory behind this photo.</p>
+            </div>
+          </div>
+        </div>
+        <div class="flip" data-speed="-30">
+          <div class="in2">
+            <div class="fr"><span class="ph">photo 4</span><img src="images/photo4.jpg" alt=""
+                onerror="this.remove()"><b>Her kind of smile</b></div>
+            <div class="bk">
+              <p>Write the memory behind this photo.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="tap">Tap a photo to turn it over</p>
+    </section>
+
+    <section id="says">
+      <h2 class="rv">Things She Says</h2>
+      <div class="div rv">&#10022;</div>
+      <p class="tap" style="margin:0">Pick a petal</p>
+      <div class="pet" id="pet"></div>
+      <div id="qbox"><span>Each petal holds something she once said.</span></div>
+      <div class="meter card rv rs">
+        <h3>Tania&rsquo;s Stubborn Meter</h3>
+        <input type="range" id="rng" min="0" max="100" value="0">
+        <p id="mlabel"></p>
+        <p class="note">...but always good-hearted.</p>
+      </div>
+    </section>
+
+    <section id="why">
+      <h2 class="rv">Why She Is Special</h2>
+      <div class="div rv">&#10022;</div>
+      <div class="grid">
+        <div class="flip sq rv">
+          <div class="in2">
+            <div class="fr ic"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.6">
+                <use href="#lotus" />
+              </svg>
+              <h3>Kind without being asked</h3>
+            </div>
+            <div class="bk">
+              <p>Add a real moment when she helped someone.</p>
+            </div>
+          </div>
+        </div>
+        <div class="flip sq rv" style="--d:.25s">
+          <div class="in2">
+            <div class="fr ic"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.6">
+                <use href="#lotus" />
+              </svg>
+              <h3>Stands by people</h3>
+            </div>
+            <div class="bk">
+              <p>Add a time she stayed beside you in trouble.</p>
+            </div>
+          </div>
+        </div>
+        <div class="flip sq rv" style="--d:.5s">
+          <div class="in2">
+            <div class="fr ic"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.6">
+                <use href="#lotus" />
+              </svg>
+              <h3>Stubborn, but good-hearted</h3>
+            </div>
+            <div class="bk">
+              <p>Add a funny story about her stubborn side.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="tap">Tap a card to read why</p>
+    </section>
+
+    <section id="time">
+      <h2 class="rv">Our Timeline</h2>
+      <div class="div rv">&#10022;</div>
+      <ol class="tl" id="tl">
+        <li class="rv rl"><b>Year</b>
+          <p>The day we met. Write what you remember.</p>
+        </li>
+        <li class="rv rl"><b>Year</b>
+          <p>A moment that made us closer.</p>
+        </li>
+        <li class="rv rl"><b>Today</b>
+          <p>And here we are, with a website to prove it.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section id="letter">
+      <h2 class="rv">A Letter for Tania</h2>
+      <div class="div rv">&#10022;</div>
+      <div class="env rv rs" id="env">
+        <div class="flap"></div>
+        <div class="pk"></div>
+        <div class="seal"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="2">
+            <use href="#lotus" />
+          </svg></div>
+      </div>
+      <p class="tap" id="hint">Tap the seal to open</p>
+      <article class="paper" id="paper">
+        <p style="animation-delay:.6s">Dear Tania,</p>
+        <p style="animation-delay:1.6s">Write your personal letter here, in your own words. This is the heart of the
+          whole site.</p>
+        <p style="animation-delay:2.6s">Always,<br>Your friend</p>
+      </article>
+    </section>
+  </main>
+  <footer>
+    <p class="footer-note">A little gift for <span>Tania</span> &#10022;</p>
+    <div class="dev-trigger-wrap">
+      <button type="button" id="devInfoBtn" class="dev-pill-trigger" title="Developer Info" aria-label="Developer Info">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+        <span>Developer Info</span>
+      </button>
+    </div>
+
+    <!-- Developer Information Modal -->
+    <div id="devModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="devModalTitle">
+      <div class="modal-card dev-modal-card">
+        <div class="modal-head dev-modal-head">
+          <div>
+            <span class="eyebrow">ABOUT THE CREATOR</span>
+            <h2 id="devModalTitle">Developer Information <span>&#10022;</span></h2>
+          </div>
+          <button type="button" class="close-modal" data-close="devModal" aria-label="Close">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <p class="dev-purpose">
+          Not every gift comes wrapped in paper; some are woven with lines of code, late-night thoughts, and a wish to
+          see you smile!
+        </p>
+
+        <div class="dev-profile-box">
+          <img src="/media/developer-photo.png" alt="Alfat Rihan" class="dev-avatar-img"
+            onerror="this.style.display='none'">
+          <h3 class="dev-name">Alfat Rihan</h3>
+          <p class="dev-edu">B.Sc. in Computer Science &amp; Engineering (CSE), North South University</p>
+        </div>
+
+        <div class="dev-social-row">
+          <a href="https://github.com/alfatrihan" target="_blank" rel="noopener noreferrer" class="dev-social-btn"
+            aria-label="GitHub">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+              <path
+                d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+            </svg>
+            <span>GitHub</span>
+          </a>
+
+          <a href="https://www.facebook.com/thealfatrihan" target="_blank" rel="noopener noreferrer"
+            class="dev-social-btn" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+              <path
+                d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+            </svg>
+            <span>Facebook</span>
+          </a>
+
+          <a href="https://www.instagram.com/alfatrihan" target="_blank" rel="noopener noreferrer"
+            class="dev-social-btn" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+              <path
+                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+            </svg>
+            <span>Instagram</span>
+          </a>
+        </div>
+
+        <blockquote class="dev-quote">
+          “Logic builds the screen, but friendship gives it a soul.”
+        </blockquote>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Music popup -->
+  <div id="musicPop" hidden role="dialog" aria-modal="true" aria-labelledby="mpTitle">
+    <div class="mp-card">
+      <h3 id="mpTitle">A Gentle Invitation</h3>
+      <p>For the most immersive experience, we invite you to listen with music.
+        Please adjust your device volume to a comfortable level.</p>
+      <div class="mp-btns">
+        <button id="mpYes" type="button">Play with music</button>
+        <button id="mpNo" type="button">Continue without music</button>
+      </div>
+    </div>
   </div>
-  <p class="words">Write a short, warm introduction here. Who she is, how you met, and what first made you think: this person is different. Each word lights up slowly as you scroll.</p>
-</section>
 
-<section id="vibe">
-  <h2 class="rv">Her Vibe</h2><div class="div rv">&#10022;</div>
-  <div class="gallery">
-    <div class="flip" data-speed="50"><div class="in2"><div class="fr"><span class="ph">photo 1</span><img src="images/photo1.jpg" alt="" onerror="this.remove()"><b>Lavender evenings</b></div><div class="bk"><p>Write the memory behind this photo.</p></div></div></div>
-    <div class="flip" data-speed="-40"><div class="in2"><div class="fr"><span class="ph">photo 2</span><img src="images/photo2.jpg" alt="" onerror="this.remove()"><b>Green and quiet</b></div><div class="bk"><p>Write the memory behind this photo.</p></div></div></div>
-    <div class="flip" data-speed="60"><div class="in2"><div class="fr"><span class="ph">photo 3</span><img src="images/photo3.jpg" alt="" onerror="this.remove()"><b>Henna and festivals</b></div><div class="bk"><p>Write the memory behind this photo.</p></div></div></div>
-    <div class="flip" data-speed="-30"><div class="in2"><div class="fr"><span class="ph">photo 4</span><img src="images/photo4.jpg" alt="" onerror="this.remove()"><b>Her kind of smile</b></div><div class="bk"><p>Write the memory behind this photo.</p></div></div></div>
-  </div>
-  <p class="tap">Tap a photo to turn it over</p>
-</section>
+  <!-- Music toggle button -->
+  <button id="musicFab" type="button" aria-label="Turn music on or off" title="Music">&#9835;</button>
 
-<section id="says">
-  <h2 class="rv">Things She Says</h2><div class="div rv">&#10022;</div>
-  <p class="tap" style="margin:0">Pick a petal</p>
-  <div class="pet" id="pet"></div>
-  <div id="qbox"><span>Each petal holds something she once said.</span></div>
-  <div class="meter card rv rs">
-    <h3>Tania&rsquo;s Stubborn Meter</h3>
-    <input type="range" id="rng" min="0" max="100" value="0">
-    <p id="mlabel"></p><p class="note">...but always good-hearted.</p>
-  </div>
-</section>
+  <script src="script.js"></script>
+  <script>
+    (function () {
+      const audio = new Audio('audio/song.mp3');
+      audio.loop = true;
+      audio.volume = 0.35;
 
-<section id="why">
-  <h2 class="rv">Why She Is Special</h2><div class="div rv">&#10022;</div>
-  <div class="grid">
-    <div class="flip sq rv"><div class="in2"><div class="fr ic"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.6"><use href="#lotus"/></svg><h3>Kind without being asked</h3></div><div class="bk"><p>Add a real moment when she helped someone.</p></div></div></div>
-    <div class="flip sq rv" style="--d:.25s"><div class="in2"><div class="fr ic"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.6"><use href="#lotus"/></svg><h3>Stands by people</h3></div><div class="bk"><p>Add a time she stayed beside you in trouble.</p></div></div></div>
-    <div class="flip sq rv" style="--d:.5s"><div class="in2"><div class="fr ic"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.6"><use href="#lotus"/></svg><h3>Stubborn, but good-hearted</h3></div><div class="bk"><p>Add a funny story about her stubborn side.</p></div></div></div>
-  </div>
-  <p class="tap">Tap a card to read why</p>
-</section>
+      const pop = document.getElementById('musicPop');
+      const fab = document.getElementById('musicFab');
 
-<section id="time">
-  <h2 class="rv">Our Timeline</h2><div class="div rv">&#10022;</div>
-  <ol class="tl" id="tl">
-    <li class="rv rl"><b>Year</b><p>The day we met. Write what you remember.</p></li>
-    <li class="rv rl"><b>Year</b><p>A moment that made us closer.</p></li>
-    <li class="rv rl"><b>Today</b><p>And here we are, with a website to prove it.</p></li>
-  </ol>
-</section>
+      function setOn(on) { fab.classList.toggle('on', on); }
 
-<section id="letter">
-  <h2 class="rv">A Letter for Tania</h2><div class="div rv">&#10022;</div>
-  <div class="env rv rs" id="env"><div class="flap"></div><div class="pk"></div><div class="seal"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="2"><use href="#lotus"/></svg></div></div>
-  <p class="tap" id="hint">Tap the seal to open</p>
-  <article class="paper" id="paper">
-    <p style="animation-delay:.6s">Dear Tania,</p>
-    <p style="animation-delay:1.6s">Write your personal letter here, in your own words. This is the heart of the whole site.</p>
-    <p style="animation-delay:2.6s">Always,<br>Your friend</p>
-  </article>
-</section>
-</main>
-<footer>&#10022; Made with care, just for you &#10022;</footer>
+      function play() {
+        audio.play()
+          .then(() => { setOn(true); pop.hidden = true; })
+          .catch(() => { pop.hidden = true; });
+      }
 
-<script src="script.js"></script>
+      // Show the popup shortly after the page opens
+      setTimeout(() => { if (!fab.hidden) pop.hidden = false; }, 1500);
+
+      document.getElementById('mpYes').onclick = play;
+      document.getElementById('mpNo').onclick = () => { pop.hidden = true; };
+
+      fab.onclick = () => {
+        if (audio.paused) play();
+        else { audio.pause(); setOn(false); }
+      };
+
+      // If the song file is missing, hide the popup and the button
+      audio.addEventListener('error', () => {
+        pop.hidden = true;
+        fab.hidden = true;
+      });
+    })();
+  </script>
 </body>
+
 </html>
