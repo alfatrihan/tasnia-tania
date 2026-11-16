@@ -14,18 +14,20 @@
     const hiEl = document.getElementById('runner-hi');
     const sectionTitle = document.getElementById('game-title');
     const hintEl = document.getElementById('runner-hint');
-    const voiceBtn = document.getElementById('runner-voice');
-    const voiceTxt = document.getElementById('runner-voice-txt');
     const bubble = document.getElementById('runner-bubble');
 
     // ---------- settings you can change ----------
     
+    // ---- audio paths: put your files here ----
+    // greeting voice, played when PLAY is pressed (English or Bangla, by the site's language button)
     const VOICE_FILE = { en: 'audio/game-voice-en.mp3', bn: 'audio/game-voice-bn.mp3' };
+    // the game's background music, loops while the game is open
+    const GAME_MUSIC = 'audio/game-music.mp3';
     const THREE_MISSING = { en: 'The 3D game could not load. Check your internet connection.', bn: '3D গেমটি লোড হয়নি। ইন্টারনেট সংযোগ দেখুন।' };
 
     const TEXT = {
-        en: { title: "Tania's Run", hint: 'Tap, click or press Space to jump', start: 'Press PLAY to start', play: 'PLAY', over: 'Game over', again: 'tap or press Space to try again', best: 'BEST', listen: 'Listen', full: 'Full screen', exit: 'Exit full screen', rotate: 'Turn your phone sideways for the best view' },
-        bn: { title: 'তানিয়ার দৌড়', hint: 'লাফ দিতে ট্যাপ, ক্লিক বা স্পেস চাপুন', start: 'খেলা শুরু করতে প্লে চাপুন', play: 'প্লে করুন', over: 'খেলা শেষ', again: 'আবার খেলতে ট্যাপ করুন বা স্পেস চাপুন', best: 'সেরা', listen: 'শুনুন', full: 'ফুল স্ক্রিন', exit: 'ছোট করুন', rotate: 'ফোনটি পাশে ঘুরিয়ে খেলুন' }
+        en: { title: "Tania's Run", hint: 'Tap, click or press Space to jump', start: 'Press PLAY to start', play: 'PLAY', over: 'Game over', again: 'tap or press Space to try again', best: 'BEST', greet: 'Hi, I am Tania. Tap me to play!', full: 'Full screen', exit: 'Exit full screen', rotate: 'Turn your phone sideways for the best view' },
+        bn: { title: 'তানিয়ার দৌড়', hint: 'লাফ দিতে ট্যাপ, ক্লিক বা স্পেস চাপুন', start: 'খেলা শুরু করতে প্লে চাপুন', play: 'প্লে করুন', over: 'খেলা শেষ', again: 'আবার খেলতে ট্যাপ করুন বা স্পেস চাপুন', best: 'সেরা', greet: 'হ্যালো, আমি তানিয়া। খেলতে আমাকে ট্যাপ করো!', full: 'ফুল স্ক্রিন', exit: 'ছোট করুন', rotate: 'ফোনটি পাশে ঘুরিয়ে খেলুন' }
     };
     const lang = () => (document.documentElement.lang === 'bn' ? 'bn' : 'en');
 
@@ -469,6 +471,7 @@
     function startGame() {
         if (state !== 'ready' && state !== 'over') return;
         setFull(true);                       // open the game on the whole phone screen
+        enterGameAudio();
         state = 'intro';
         clearObstacles();
         hero.y = 0; hero.vy = 0; hero.onGround = true; hero.holding = false;
@@ -640,7 +643,6 @@
         const L = TEXT[lang()];
         if (sectionTitle) sectionTitle.textContent = L.title;
         if (hintEl) hintEl.textContent = L.hint;
-        if (voiceTxt) voiceTxt.textContent = L.listen;
         if (fullBtn) fullBtn.textContent = isFull() ? L.exit : L.full;
         if (playBtn) playBtn.textContent = L.play;
         if (rotateHint) rotateHint.textContent = L.rotate;
@@ -654,25 +656,53 @@
         }
     }
 
-    // ---------- voice ----------
-    function speakFallback(l) {
-        if (!('speechSynthesis' in window)) return;
-        const u = new SpeechSynthesisUtterance(TEXT[l].start);
+    // ---------- greeting voice and game music ----------
+    let greetAudio = null, gameMusic = null, greetDone = null;
+
+    function speakFallback(l, onEnd) {
+        if (!('speechSynthesis' in window)) { onEnd(); return; }
+        const u = new SpeechSynthesisUtterance(TEXT[l].greet);
         u.lang = l === 'bn' ? 'bn-BD' : 'en-US';
         u.rate = 0.9;
+        u.onend = u.onerror = onEnd;
         speechSynthesis.cancel();
         speechSynthesis.speak(u);
     }
-    function playVoice() {
+    // PLAY: the greeting in the site's language, then the game music starts
+    function playGreeting() {
         const l = lang();
-        const a = new Audio(VOICE_FILE[l]);
         let done = false;
-        const fallback = () => { if (!done) { done = true; speakFallback(l); } };
-        a.onerror = fallback;                  // file not added yet -> use the browser voice
-        a.play().catch(fallback);
+        const finish = () => { if (!done) { done = true; greetDone = null; startGameMusic(); } };
+        greetDone = finish;
+        const a = new Audio(VOICE_FILE[l]);
+        greetAudio = a;
+        a.onended = finish;
+        a.onerror = () => { greetAudio = null; speakFallback(l, finish); };   // file not added yet -> browser voice
+        a.play().catch(() => { greetAudio = null; speakFallback(l, finish); });
     }
-    voiceBtn.addEventListener('pointerdown', e => e.stopPropagation());
-    voiceBtn.addEventListener('click', e => { e.stopPropagation(); playVoice(); });
+    function startGameMusic() {
+        if (state !== 'intro' && state !== 'running' && state !== 'over') return;   // the game was closed meanwhile
+        if (!gameMusic) {
+            gameMusic = new Audio(GAME_MUSIC);
+            gameMusic.loop = true;
+            gameMusic.volume = 0.4;
+            gameMusic.onerror = () => { gameMusic = null; };   // file not added yet -> stay silent
+        }
+        gameMusic.play().catch(() => {});
+    }
+    // leaving the game (screen made small): stop the greeting and the game music, bring the site music back
+    function leaveGameAudio() {
+        if (greetAudio) { greetAudio.pause(); greetAudio = null; }
+        if ('speechSynthesis' in window) speechSynthesis.cancel();
+        greetDone = null;
+        if (gameMusic) { gameMusic.pause(); gameMusic.currentTime = 0; }
+        if (window.siteMusic) window.siteMusic.resume();
+    }
+    // entering the game: the site music stops, the greeting plays
+    function enterGameAudio() {
+        if (window.siteMusic) window.siteMusic.pause();
+        playGreeting();
+    }
 
     // ---------- full screen (phones: whole screen, sideways) ----------
     const fullBtn = document.getElementById('runner-full');
@@ -691,6 +721,7 @@
                 wrap.parentNode.insertBefore(holder, wrap);
                 document.body.appendChild(wrap);
             } else {
+                leaveGameAudio();
                 if (holder) { holder.parentNode.insertBefore(wrap, holder); holder.remove(); holder = null; }
                 if (state === 'running' || state === 'intro') {
                 state = 'ready'; clearObstacles();

@@ -1,6 +1,17 @@
-/* ===== About: scroll-driven map (world -> Bangladesh -> Bogura -> college -> department) ===== */
+/* ===== About: scroll-driven map (Bangladesh -> Bogura -> college -> economics department) ===== */
+/* full width of the screen, not inside the page's centred column */
+#about {
+    max-width: none;
+    padding-left: 0;
+    padding-right: 0;
+    overflow-x: clip;
+}
+
 #about .map-track {
     position: relative;
+    width: 100vw;
+    left: 50%;
+    transform: translateX(-50%);
     height: 520vh;
     height: 520svh;
 }
@@ -13,55 +24,49 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 70px 0 16px;
+    padding: 0;
     box-sizing: border-box;
 }
 
+/* fully transparent: no box, no border, no shadow */
 .map-frame {
     position: relative;
-    width: min(100%, 760px);
+    width: 100%;
     height: 100%;
     max-height: 100%;
-    border-radius: 18px;
-    overflow: hidden;
-    border: 1px solid var(--line);
-    background: radial-gradient(ellipse at 50% 40%, #241a36, #140e1f 70%);
-    box-shadow: 0 20px 50px #0008;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
 }
 
 #map-svg {
     width: 100%;
     height: 100%;
     display: block;
+    background: transparent;
 }
 
-#map-svg .land {
-    fill: #3b2d52;
-    stroke: #6d5a8e;
-    stroke-width: 1;
-    vector-effect: non-scaling-stroke;
-}
-
+/* Bangladesh: green, to match the site's sage accent */
 #map-svg .bd {
-    fill: #c2467f;
-    fill-opacity: .55;
-    stroke: #ffd6e4;
+    fill: #4f8f63;
+    fill-opacity: .32;
+    stroke: #9bd3a0;
     stroke-width: 1.2;
     vector-effect: non-scaling-stroke;
 }
 
+/* Bogura: rose, fades in as the zoom reaches the district */
 #map-svg .bogura {
     fill: #ee8fb5;
-    fill-opacity: var(--bf, .45);
+    fill-opacity: var(--bf, 0);
     stroke: #ffd6e4;
     stroke-width: 1.4;
     vector-effect: non-scaling-stroke;
 }
 
-#map-svg .dot {
+#map-svg .pin {
     fill: #ffd6e4;
-    stroke: #2b0f1e;
-    stroke-width: .25;
+    stroke: none;
 }
 
 #map-svg .ring {
@@ -71,45 +76,67 @@
     vector-effect: non-scaling-stroke;
 }
 
-.map-label {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 46px 20px 22px;
-    text-align: center;
-    background: linear-gradient(to top, #140e1fee 40%, #140e1f00);
+/* small dots for the districts (green) and Bogura (rose) */
+#map-svg .d.dist { fill: #9bd3a0; }
+#map-svg .d.bogura { fill: #ffd6e4; }
+
+/* names: light for districts; bold and larger for Bogura and the two places in it */
+#map-svg text {
+    font-family: 'Hind Siliguri', 'Cormorant Garamond', sans-serif;
+    paint-order: stroke;
+    stroke: #0e0a14;
+    stroke-linejoin: round;
     pointer-events: none;
-    opacity: 0;
 }
 
-.map-label b {
-    display: block;
-    color: var(--blush);
+#map-svg .nm.dist {
+    fill: #d9ecd2;
+    font-weight: 300;
 }
 
-.map-label .lang-en {
-    font: 600 1.6rem 'Cormorant Garamond', serif;
+#map-svg .nm.bogura {
+    fill: #ffd6e4;
+    font-weight: 700;
 }
 
-.map-label .lang-bn {
-    font: 600 1.25rem 'Hind Siliguri', sans-serif;
-    color: var(--ink);
+#map-svg .nm.poi {
+    fill: #ee8fb5;
+    font-weight: 700;
 }
 
-@media (max-width: 640px) {
-    .map-label .lang-en { font-size: 1.35rem; }
-    .map-label .lang-bn { font-size: 1.05rem; }
+#map-svg .nm.poi.lang-en {
+    font-family: 'Cormorant Garamond', serif;
 }
 
+#map-svg .ds {
+    fill: #cdb4f0;
+    font-weight: 400;
+}
 
 /* show only the language chosen with the EN / বাংলা button */
 html[lang="en"] .lang-bn { display: none !important; }
 html[lang="bn"] .lang-en { display: none !important; }
 
-#map-svg .grid {
-    stroke: #ee8fb5;
-    stroke-opacity: .18;
-    stroke-width: 1;
+/* illustrative city: buildings and roads (drawn and animated by map.js) */
+#map-svg #map-city { transition: opacity .3s; }
+
+#map-svg .b {
+    fill: #3a2d4d;
+    fill-opacity: .9;
+    stroke: #9bd3a0;
+    stroke-opacity: .25;
+    stroke-width: .5;
+    vector-effect: non-scaling-stroke;   /* stroke width in screen pixels, not map units */
+}
+
+#map-svg .b.c1 { fill: #4f8f63; }
+#map-svg .b.c2 { fill: #ee8fb5; fill-opacity: .6; }
+
+#map-svg .road {
+    fill: none;
+    stroke: #cdb4f0;
+    stroke-opacity: .55;
+    stroke-width: 1.2;
+    stroke-dasharray: 6 6;
     vector-effect: non-scaling-stroke;
 }

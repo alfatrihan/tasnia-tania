@@ -65,17 +65,14 @@
         <div class="map-sticky">
           <div class="map-frame">
             <svg id="map-svg" viewBox="-180 -85 360 150" preserveAspectRatio="xMidYMid meet" role="img"
-              aria-label="A map zooming from the world to Bangladesh, Bogura, the college and the economics department">
-              <g id="map-grid"></g>
+              aria-label="A map that zooms from Bangladesh into Bogura, the college and the economics department">
               <g id="map-land"></g>
               <g id="map-area"></g>
+              <g id="map-city"></g>
+              <g id="map-dots"></g>
+              <g id="map-names"></g>
               <g id="map-pins"></g>
             </svg>
-            <div class="map-label" data-stage="2"><b class="lang-en">Bogura</b><b class="lang-bn">বগুড়া</b></div>
-            <div class="map-label" data-stage="3"><b class="lang-en">Govt. Azizul Haque College</b><b
-                class="lang-bn">সরকারি আজিজুল হক কলেজ</b></div>
-            <div class="map-label" data-stage="4"><b class="lang-en">Economics Department</b><b
-                class="lang-bn">ইকোনমিক্স ডিপার্টমেন্ট</b></div>
           </div>
         </div>
       </div>
@@ -313,15 +310,6 @@
           <p id="runner-title">Tania's Run</p>
           <p id="runner-sub">Tap to start the game</p>
           <button type="button" class="runner-play" id="runner-play">PLAY</button>
-          <button type="button" class="runner-voice" id="runner-voice" aria-label="Listen to the instruction">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M11 5L6 9H2v6h4l5 4V5z" />
-              <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-              <path d="M19 5a10 10 0 0 1 0 14" />
-            </svg>
-            <span id="runner-voice-txt">Listen</span>
-          </button>
         </div>
       </div>
       <p class="tap" id="runner-hint">Tap, click or press Space to jump</p>
@@ -454,12 +442,27 @@
       start().then(ok => { if (!ok) armFirstInteraction(); });
 
       // Round button: play or pause at any time
+      let userPaused = false;     // the visitor paused it with the button, so do not bring it back by itself
+      let pausedByGame = false;   // the game paused it, so it comes back when the game is closed
       fab.onclick = () => {
         if (audio.paused) {
+          userPaused = false;
           start();
         } else {
+          userPaused = true;
           audio.pause();
           setOn(false);
+        }
+      };
+
+      // used by game.js: stop the site music while the game is open, bring it back afterwards
+      window.siteMusic = {
+        pause() {
+          if (!audio.paused) { pausedByGame = true; audio.pause(); setOn(false); }
+        },
+        resume() {
+          if (pausedByGame && !userPaused) start();
+          pausedByGame = false;
         }
       };
 

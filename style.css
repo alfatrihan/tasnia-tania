@@ -86,9 +86,9 @@ header {
     align-items: center;
     gap: 14px;
     padding: 12px 20px;
-    background: #0e0a14cc;
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid #2e233955
+    background: transparent;
+    backdrop-filter: none;
+    border-bottom: 0
 }
 
 .brand {
