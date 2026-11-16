@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tania</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@400;500&family=Great+Vibes&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="fx"></canvas><div id="bar"></div><div id="orb"></div>
+<svg width="0" height="0" style="position:absolute"><defs>
+<g id="lotus" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M32 36C24 30 22 20 32 6C42 20 40 30 32 36Z"/><path d="M32 36C20 34 12 26 12 14C22 16 29 24 32 36Z"/><path d="M32 36C44 34 52 26 52 14C42 16 35 24 32 36Z"/><path d="M4 26C12 36 24 38 32 36C40 38 52 36 60 26"/></g>
+<path id="pt" d="M20 68C4 52 4 22 20 2C36 22 36 52 20 68Z"/></defs></svg>
+
+<header>
+  <div class="brand"><svg class="lotus" viewBox="0 0 64 40"><use href="#lotus"/></svg>Tania</div>
+  <nav id="nav"><a href="#home">Home</a><a href="#about">About</a><a href="#vibe">Vibe</a><a href="#says">Her Words</a><a href="#why">Why Her</a><a href="#time">Timeline</a><a href="#letter">Letter</a></nav>
+</header>
+
+<main>
+<div id="home" class="hero"><div class="stick" id="stick">
+  <div id="core"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.6"><use href="#lotus"/></svg><img src="images/main.jpg" alt="" onerror="this.remove()"></div>
+  <div class="cap cap1" id="c1">for someone who blooms quietly</div>
+  <div class="cap" id="c2"><p class="eyebrow">A small gift, made with care</p><h1>Tasnia Akter <em>Tania</em></h1><p class="sub">Some people are hard to describe in one line. So here is a whole place for her.</p></div>
+  <div class="cue" id="cue">Scroll slowly<br><span style="letter-spacing:2px;text-transform:none">tap anywhere to make flowers bloom</span></div>
+</div></div>
+
+<section id="about">
+  <h2 class="rv">About Tania</h2><div class="div rv">&#10022;</div>
+  <div class="grid">
+    <div class="card rv rs"><small>From</small><h3>Bogura</h3></div>
+    <div class="card rv rs" style="--d:.2s"><small>Studying</small><h3>Economics</h3></div>
+    <div class="card rv rs" style="--d:.4s"><small>College</small><h3>Govt. Azizul Haque College</h3></div>
+  </div>
+  <p class="words">Write a short, warm introduction here. Who she is, how you met, and what first made you think: this person is different. Each word lights up slowly as you scroll.</p>
+</section>
+
+<section id="vibe">
+  <h2 class="rv">Her Vibe</h2><div class="div rv">&#10022;</div>
+  <div class="gallery">
+    <div class="flip" data-speed="50"><div class="in2"><div class="fr"><span class="ph">photo 1</span><img src="images/photo1.jpg" alt="" onerror="this.remove()"><b>Lavender evenings</b></div><div class="bk"><p>Write the memory behind this photo.</p></div></div></div>
+    <div class="flip" data-speed="-40"><div class="in2"><div class="fr"><span class="ph">photo 2</span><img src="images/photo2.jpg" alt="" onerror="this.remove()"><b>Green and quiet</b></div><div class="bk"><p>Write the memory behind this photo.</p></div></div></div>
+    <div class="flip" data-speed="60"><div class="in2"><div class="fr"><span class="ph">photo 3</span><img src="images/photo3.jpg" alt="" onerror="this.remove()"><b>Henna and festivals</b></div><div class="bk"><p>Write the memory behind this photo.</p></div></div></div>
+    <div class="flip" data-speed="-30"><div class="in2"><div class="fr"><span class="ph">photo 4</span><img src="images/photo4.jpg" alt="" onerror="this.remove()"><b>Her kind of smile</b></div><div class="bk"><p>Write the memory behind this photo.</p></div></div></div>
+  </div>
+  <p class="tap">Tap a photo to turn it over</p>
+</section>
+
+<section id="says">
+  <h2 class="rv">Things She Says</h2><div class="div rv">&#10022;</div>
+  <p class="tap" style="margin:0">Pick a petal</p>
+  <div class="pet" id="pet"></div>
+  <div id="qbox"><span>Each petal holds something she once said.</span></div>
+  <div class="meter card rv rs">
+    <h3>Tania&rsquo;s Stubborn Meter</h3>
+    <input type="range" id="rng" min="0" max="100" value="0">
+    <p id="mlabel"></p><p class="note">...but always good-hearted.</p>
+  </div>
+</section>
+
+<section id="why">
+  <h2 class="rv">Why She Is Special</h2><div class="div rv">&#10022;</div>
+  <div class="grid">
+    <div class="flip sq rv"><div class="in2"><div class="fr ic"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.6"><use href="#lotus"/></svg><h3>Kind without being asked</h3></div><div class="bk"><p>Add a real moment when she helped someone.</p></div></div></div>
+    <div class="flip sq rv" style="--d:.25s"><div class="in2"><div class="fr ic"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.6"><use href="#lotus"/></svg><h3>Stands by people</h3></div><div class="bk"><p>Add a time she stayed beside you in trouble.</p></div></div></div>
+    <div class="flip sq rv" style="--d:.5s"><div class="in2"><div class="fr ic"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.6"><use href="#lotus"/></svg><h3>Stubborn, but good-hearted</h3></div><div class="bk"><p>Add a funny story about her stubborn side.</p></div></div></div>
+  </div>
+  <p class="tap">Tap a card to read why</p>
+</section>
+
+<section id="time">
+  <h2 class="rv">Our Timeline</h2><div class="div rv">&#10022;</div>
+  <ol class="tl" id="tl">
+    <li class="rv rl"><b>Year</b><p>The day we met. Write what you remember.</p></li>
+    <li class="rv rl"><b>Year</b><p>A moment that made us closer.</p></li>
+    <li class="rv rl"><b>Today</b><p>And here we are, with a website to prove it.</p></li>
+  </ol>
+</section>
+
+<section id="letter">
+  <h2 class="rv">A Letter for Tania</h2><div class="div rv">&#10022;</div>
+  <div class="env rv rs" id="env"><div class="flap"></div><div class="pk"></div><div class="seal"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="2"><use href="#lotus"/></svg></div></div>
+  <p class="tap" id="hint">Tap the seal to open</p>
+  <article class="paper" id="paper">
+    <p style="animation-delay:.6s">Dear Tania,</p>
+    <p style="animation-delay:1.6s">Write your personal letter here, in your own words. This is the heart of the whole site.</p>
+    <p style="animation-delay:2.6s">Always,<br>Your friend</p>
+  </article>
+</section>
+</main>
+<footer>&#10022; Made with care, just for you &#10022;</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
