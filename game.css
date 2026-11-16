@@ -206,11 +206,14 @@ body.runner-lock {
 
 .runner-wrap.fake-full {
     touch-action: none;
-    z-index: 2147483000
+    z-index: 2147483000;
+    background: #140e1f;
+    overscroll-behavior: none
 }
 
+/* normal (not full screen): a finger on the game still scrolls the page up and down */
 #runner-canvas {
-    touch-action: inherit
+    touch-action: pan-y
 }
 
 body.runner-lock {
@@ -218,9 +221,9 @@ body.runner-lock {
     overscroll-behavior: none
 }
 
-/* while playing, hide the rest of the page (footer, buttons, music, language) */
+/* while playing, remove the rest of the page from view (footer, buttons, music, language) */
 body.runner-lock>*:not(#runner-wrap) {
-    visibility: hidden !important
+    display: none !important
 }
 
 .runner-wrap.fake-full .runner-hud {
@@ -229,4 +232,62 @@ body.runner-lock>*:not(#runner-wrap) {
 
 .runner-wrap.fake-full .runner-full {
     bottom: calc(16px + env(safe-area-inset-bottom, 0px))
+}
+
+/* ===== Intro bubble: shown above Tania after PLAY, before the run starts ===== */
+.runner-bubble {
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    transform: translate(-50%, -100%) scale(.9);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 3;
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    padding: 10px 16px 12px;
+    text-align: center;
+    white-space: nowrap;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 214, 228, .35);
+    background: rgba(23, 16, 32, .88);
+    color: var(--blush);
+    transition: opacity .4s, transform .4s
+}
+
+.runner-bubble.show {
+    opacity: 1;
+    transform: translate(-50%, -100%) scale(1)
+}
+
+.runner-bubble::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -8px;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-bottom: 0;
+    border-top-color: rgba(23, 16, 32, .88)
+}
+
+.runner-bubble b {
+    font: 600 1.05rem 'Cormorant Garamond', serif
+}
+
+.runner-bubble .lang-bn b {
+    font: 600 1.05rem 'Hind Siliguri', sans-serif
+}
+
+html[lang="en"] .runner-bubble .lang-bn { display: none }
+html[lang="bn"] .runner-bubble .lang-en { display: none }
+
+.runner-bubble span {
+    font: 500 .8rem 'DM Sans', sans-serif;
+    color: var(--mute)
+}
+
+.runner-bubble .lang-bn span {
+    font: 500 .85rem 'Hind Siliguri', sans-serif
 }

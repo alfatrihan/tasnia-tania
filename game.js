@@ -16,6 +16,7 @@
     const hintEl = document.getElementById('runner-hint');
     const voiceBtn = document.getElementById('runner-voice');
     const voiceTxt = document.getElementById('runner-voice-txt');
+    const bubble = document.getElementById('runner-bubble');
 
     // ---------- settings you can change ----------
     
@@ -32,11 +33,11 @@
     const SPEED0 = 0.15, SPEED_MAX = 0.32, RAMP = 0.00014;
     const GRAV = 0.011, JUMP = 0.23;
     const HERO_Z = 0;
-    const SPAWN_D = 42, KILL_D = 5, FIRST_D = 16;   // distance along the road where obstacles appear / disappear
+    const SPAWN_D = 42, KILL_D = 5, FIRST_D = 9;    // distance along the road where obstacles appear / disappear
     const WRAP = 112;                  // road lines repeat every WRAP units
 
     const clamp01 = (x, lo) => Math.min(1, Math.max(lo, x));
-    let state = 'ready';               // ready | running | over
+    let state = 'ready';               // ready | intro | running | over
     let v = SPEED0, distance = 0, score = 0, cooldown = 0, overAt = 0;
     let inView = false;
     let hi = 0;
@@ -104,19 +105,35 @@
         return t;
     }
 
+    // rough, uneven surface for rocks and stones
+    function roughen(geo, amt) {
+        const p = geo.attributes.position, seen = new Map();
+        for (let i = 0; i < p.count; i++) {
+            const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+            const key = Math.round(x * 1000) + ',' + Math.round(y * 1000) + ',' + Math.round(z * 1000);
+            let o = seen.get(key);
+            if (!o) { o = [(Math.random() - 0.5) * amt, (Math.random() - 0.5) * amt, (Math.random() - 0.5) * amt]; seen.set(key, o); }
+            p.setXYZ(i, x + o[0], y + o[1], z + o[2]);
+        }
+        geo.computeVertexNormals();
+        return geo;
+    }
+
 // ---------- materials ----------
     const std = (color, extra) => new THREE.MeshStandardMaterial(Object.assign({ color, roughness: 0.9, flatShading: true }, extra || {}));
     const smooth = (color) => new THREE.MeshStandardMaterial({ color, roughness: 0.55, metalness: 0, flatShading: false });
+    // soft (smooth-shaded) material for leaves, blossoms and clouds
+    const soft = (color, extra) => new THREE.MeshStandardMaterial(Object.assign({ color, roughness: 0.85, flatShading: false }, extra || {}));
     const M = {
-        road: std(0x3a2d45, { roughness: 1 }), grass: std(0x2f4a3a, { roughness: 1 }), grassA: std(0x4f7a4c), grassB: std(0x3e6a4a),
-        bushA: std(0x3e6a4a), bushB: std(0x557f57), rockM: std(0x5b4d6b), lilac: std(0xcdb4f0), cloud: std(0xf6d7e6, { emissive: 0x2a1530 }),
+        road: std(0x3a2d45, { roughness: 1 }), grass: std(0x2f4a3a, { roughness: 1 }), grassA: soft(0x4f7a4c), grassB: soft(0x3e6a4a),
+        bushA: soft(0x3e6a4a), bushB: soft(0x557f57), rockM: std(0x5b4d6b), lilac: soft(0xcdb4f0), cloud: soft(0xf6d7e6, { emissive: 0x2a1530 }),
         line: new THREE.MeshBasicMaterial({ color: 0xee8fb5, transparent: true, opacity: 0.55 }),
         skin: smooth(0xe2b38f), hair: smooth(0x1a1020), lip: smooth(0xb86a7a), coat: std(0x3a2146), coatDark: std(0x241833),
         rose: std(0xee8fb5, { emissive: 0x3a1024 }), pants: std(0x1c1226), boot: std(0x2e2339),
         cape: std(0x181221), scarf: std(0x2b1830), eye: std(0x0e0a14),
         stone: std(0x4a3360, { emissive: 0x1a1024 }), moss: std(0x9bb89a),
         bark: std(0x5a3d2b), barkTop: std(0xc9a27a), wood: std(0x7a5536), woodDark: std(0x4a3322),
-        pine1: std(0x4d7552), pine2: std(0x6f9a6c), blossom1: std(0xee8fb5), blossom2: std(0xffd6e4), blossom3: std(0xe57aa8),
+        pine1: soft(0x4d7552), pine2: soft(0x6f9a6c), blossom1: soft(0xee8fb5), blossom2: soft(0xffd6e4), blossom3: soft(0xe57aa8),
         mountain1: std(0x2a1d3d), mountain2: std(0x3d2a4f), hill: std(0x2b2040)
     };
 
@@ -178,6 +195,7 @@
     for (let i = 0; i < 24; i++) {
         const kind = i % 3 === 0 ? 'blossom' : 'pine';
         const g = makeTree(kind, 0.9 + Math.random() * 0.6);
+        g.scale.y = 0.85 + Math.random() * 0.35;
         g.position.x = i % 2 ? 5.2 + Math.random() * 4.5 : -(6 + Math.random() * 5);
         g.rotation.y = Math.random() * 6;
         scene.add(g);
@@ -239,7 +257,7 @@
         return g;
     }
     function makeRock(s) {
-        const r = new THREE.Mesh(new THREE.DodecahedronGeometry(0.4 * s, 0), M.rockM);
+        const r = new THREE.Mesh(roughen(new THREE.DodecahedronGeometry(0.4 * s, 0), 0.12 * s), M.rockM);
         r.scale.set(1, 0.6, 0.85); r.position.y = 0.12 * s; return r;
     }
     const flora = [];
@@ -365,7 +383,7 @@
 
     function makeStone(w, h, d) {
         const g = new THREE.Group();
-        const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), M.stone);
+        const body = new THREE.Mesh(roughen(new THREE.BoxGeometry(w, h, d, 2, 2, 2), 0.1), M.stone);
         body.position.y = h / 2; g.add(body);
         const moss = new THREE.Mesh(new THREE.BoxGeometry(w * 0.9, 0.1, d * 0.9), M.moss);
         moss.position.y = h + 0.02; g.add(moss);
@@ -439,20 +457,28 @@
         clearObstacles();
         hero.y = 0; hero.vy = 0; hero.onGround = true; hero.holding = false;
         overlay.classList.add('hidden');
-        spawn(FIRST_D);                  // first obstacle is already on the road: it reaches her in about 1.5 s
+        bubble.classList.remove('show');
+        spawn(FIRST_D);                  // first obstacle is already on the road: it reaches her in about 1 s
         cooldown = 0.001;                // the next one follows right behind it
     }
     function jump() {
         if (hero.onGround) { hero.vy = JUMP; hero.onGround = false; hero.holding = true; }
     }
     function release() { hero.holding = false; }
+    // PLAY: open the whole phone screen and show Tania's greeting. The run starts on the first tap.
     function startGame() {
         if (state !== 'ready' && state !== 'over') return;
         setFull(true);                       // open the game on the whole phone screen
-        reset();
+        state = 'intro';
+        clearObstacles();
+        hero.y = 0; hero.vy = 0; hero.onGround = true; hero.holding = false;
+        v = SPEED0; distance = 0; score = 0;
+        overlay.classList.add('hidden');
+        bubble.classList.add('show');
     }
     function startOrJump() {
         if (state === 'ready') return;       // the game starts from the PLAY button
+        if (state === 'intro') { reset(); return; }   // first tap starts the run
         if (state === 'running') { jump(); return; }
         if (state === 'over' && performance.now() - overAt > 500) { reset(); jump(); }
     }
@@ -493,7 +519,13 @@
             }
             cooldown -= mv;
             if (cooldown <= 0) spawn();
-            for (const o of obstacles) o.g.scale.setScalar(clamp01((SPAWN_D + 2 - Math.abs(o.g.position.z)) / 8, 0.15));
+            for (const o of obstacles) {
+                const dz = DIR * o.g.position.z;
+                const near = clamp01((SPAWN_D + 2 - Math.abs(o.g.position.z)) / 8, 0.15);
+                // after she has run past, the obstacle shrinks away near the camera instead of popping out
+                const gone = dz > 2 ? clamp01((KILL_D - dz) / 3, 0) : 1;
+                o.g.scale.setScalar(near * gone);
+            }
             grassTex.offset.y = pathTex.offset.y = (distance / 5) % 1;
 
             for (const l of roadLines) l.m.position.set(0, 0.01, roadZ(l.base, distance, WRAP, -100));
@@ -568,6 +600,7 @@
             tania.armL.rotation.x = idle; tania.armR.rotation.x = -idle;
         }
         tania.root.rotation.x = -(running ? 0.08 + sp * 0.35 : (hero.onGround ? 0 : 0.1));
+        tania.root.rotation.z = running ? Math.sin(hero.phase * 2) * 0.025 : 0;
         // braid and cape trail behind her and ripple
         const back = 0.12 + sp * 1.3 + (hero.onGround ? 0 : 0.3);
         tania.braid.forEach((b, i) => { b.rotation.x = back * (i ? 0.45 : 0.7) + Math.sin(t * 0.012 - i * 0.9) * 0.16 * (0.4 + sp * 3); });
@@ -584,6 +617,13 @@
         camera.lookAt(0, 1.0, -4);
 
         renderer.render(scene, camera);
+
+        // keep the greeting bubble above Tania's head while the intro is shown
+        if (state === 'intro') {
+            const head = new THREE.Vector3(0, hero.y + 2.7, HERO_Z).project(camera);
+            bubble.style.left = ((head.x + 1) / 2 * W) + 'px';
+            bubble.style.top = ((1 - head.y) / 2 * H - 16) + 'px';
+        }
     }
 
     // ---------- score display ----------
@@ -640,10 +680,11 @@
     playBtn.addEventListener('pointerdown', e => e.stopPropagation());
     playBtn.addEventListener('click', e => { e.stopPropagation(); startGame(); });
     const rotateHint = document.getElementById('runner-rotate');
-    let holder = null;
+    let holder = null, savedY = 0;
     function setFull(on) {
         if (on !== isFull()) {
             if (on) {
+                savedY = window.scrollY;
                 // move the game to <body>: inside <main> the footer is painted above it (same z-index)
                 holder = document.createElement('div');
                 holder.style.height = wrap.offsetHeight + 'px';
@@ -651,10 +692,15 @@
                 document.body.appendChild(wrap);
             } else {
                 if (holder) { holder.parentNode.insertBefore(wrap, holder); holder.remove(); holder = null; }
-                if (state === 'running') { state = 'ready'; clearObstacles(); overlay.classList.remove('hidden'); }
+                if (state === 'running' || state === 'intro') {
+                state = 'ready'; clearObstacles();
+                overlay.classList.remove('hidden');
+                bubble.classList.remove('show');
+            }
             }
             wrap.classList.toggle('fake-full', on);
             document.body.classList.toggle('runner-lock', on);
+            if (!on) window.scrollTo({ top: savedY, behavior: 'instant' });   // back to where the player was
             if (on) {
                 if (wrap.requestFullscreen) wrap.requestFullscreen({ navigationUI: 'hide' }).catch(() => {});
                 if (screen.orientation && screen.orientation.lock) screen.orientation.lock('portrait').catch(() => {});
@@ -676,11 +722,11 @@
     wrap.addEventListener('pointercancel', release);
     wrap.addEventListener('pointerleave', release);
     document.addEventListener('keydown', e => {
-        if (!inView) return;
-        if (e.code === 'Space' || e.code === 'ArrowUp') {
-            e.preventDefault();
-            if (!e.repeat) { if (state === 'ready') startGame(); else startOrJump(); }
-        }
+        if (e.code !== 'Space' && e.code !== 'ArrowUp') return;
+        if (!isFull() && !wrap.contains(document.activeElement)) return;   // page keeps normal scrolling
+        e.preventDefault();
+        if (e.repeat) return;
+        if (state === 'ready') startGame(); else startOrJump();
     });
     document.addEventListener('keyup', e => {
         if (e.code === 'Space' || e.code === 'ArrowUp') release();

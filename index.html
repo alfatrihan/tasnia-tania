@@ -3,7 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>Tania</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,6 +13,7 @@
     rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="game.css">
+  <link rel="stylesheet" href="map.css">
 </head>
 
 <body>
@@ -35,7 +37,8 @@
         <use href="#lotus" />
       </svg>Tania</div>
     <nav id="nav"><a href="#home">Home</a><a href="#about">About</a><a href="#vibe">Vibe</a><a href="#says">Her
-        Words</a><a href="#why">Why Her</a><a href="#time">Timeline</a><a href="#letter">Letter</a><a href="#game">Play</a></nav>
+        Words</a><a href="#why">Why Her</a><a href="#time">Timeline</a><a href="#letter">Letter</a><a
+        href="#game">Play</a></nav>
   </header>
 
   <main>
@@ -58,15 +61,22 @@
     <section id="about">
       <h2 class="rv">About Tania</h2>
       <div class="div rv">&#10022;</div>
-      <div class="grid">
-        <div class="card rv rs"><small>From</small>
-          <h3>Bogura</h3>
-        </div>
-        <div class="card rv rs" style="--d:.2s"><small>Studying</small>
-          <h3>Economics</h3>
-        </div>
-        <div class="card rv rs" style="--d:.4s"><small>College</small>
-          <h3>Govt. Azizul Haque College</h3>
+      <div class="map-track" id="map-track">
+        <div class="map-sticky">
+          <div class="map-frame">
+            <svg id="map-svg" viewBox="-180 -85 360 150" preserveAspectRatio="xMidYMid meet" role="img"
+              aria-label="A map zooming from the world to Bangladesh, Bogura, the college and the economics department">
+              <g id="map-grid"></g>
+              <g id="map-land"></g>
+              <g id="map-area"></g>
+              <g id="map-pins"></g>
+            </svg>
+            <div class="map-label" data-stage="2"><b class="lang-en">Bogura</b><b class="lang-bn">বগুড়া</b></div>
+            <div class="map-label" data-stage="3"><b class="lang-en">Govt. Azizul Haque College</b><b
+                class="lang-bn">সরকারি আজিজুল হক কলেজ</b></div>
+            <div class="map-label" data-stage="4"><b class="lang-en">Economics Department</b><b
+                class="lang-bn">ইকোনমিক্স ডিপার্টমেন্ট</b></div>
+          </div>
         </div>
       </div>
       <p class="words">Write a short, warm introduction here. Who she is, how you met, and what first made you think:
@@ -293,6 +303,10 @@
       <div class="runner-wrap" id="runner-wrap" tabindex="0">
         <div class="runner-hud"><span id="runner-hi">BEST 00000</span><span id="runner-score">00000</span></div>
         <canvas id="runner-canvas" aria-label="Tania's Run game"></canvas>
+        <div class="runner-bubble" id="runner-bubble" aria-live="polite">
+          <div class="lang-en"><b>Hello, I am Tania</b><span><br>Tap me to save!</span></div>
+          <div class="lang-bn"><b>হ্যালো, আমি তানিয়া</b><span><br>আমাকে বাঁচাতে ট্যাপ করো!</span></div>
+        </div>
         <button type="button" class="runner-full" id="runner-full">Full screen</button>
         <p class="runner-rotate" id="runner-rotate">Turn your phone sideways for the best view</p>
         <div class="runner-overlay" id="runner-overlay">
@@ -300,7 +314,12 @@
           <p id="runner-sub">Tap to start the game</p>
           <button type="button" class="runner-play" id="runner-play">PLAY</button>
           <button type="button" class="runner-voice" id="runner-voice" aria-label="Listen to the instruction">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 5L6 9H2v6h4l5 4V5z" />
+              <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+              <path d="M19 5a10 10 0 0 1 0 14" />
+            </svg>
             <span id="runner-voice-txt">Listen</span>
           </button>
         </div>
@@ -345,7 +364,7 @@
         </p>
 
         <div class="dev-profile-box">
-          <img src="/media/developer-photo.png" alt="Alfat Rihan" class="dev-avatar-img"
+          <img src="images/developer-photo.png" alt="Alfat Rihan" class="dev-avatar-img"
             onerror="this.style.display='none'">
           <h3 class="dev-name">Alfat Rihan</h3>
           <p class="dev-edu">B.Sc. in Computer Science &amp; Engineering (CSE), North South University</p>
@@ -393,6 +412,10 @@
   <button id="langBtn" type="button" aria-label="Change language">বাংলা</button>
 
   <script src="script.js"></script>
+  <script src="data/world.js"></script>
+  <script src="data/bangladesh.js"></script>
+  <script src="data/bogura.js"></script>
+  <script src="map.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="game.js"></script>
   <script>
