@@ -1027,3 +1027,20 @@ footer {
 #musicFab:hover { transform: scale(1.08); }
 #musicFab.on { background: #ee8fb5; color: #2b0f1e; }
 #musicFab[hidden] { display: none; }
+
+/* ===== Language toggle and Bangla font ===== */
+:root { --bn-font: 'Noto Serif Bengali', serif; }
+
+#langBtn {
+  position: fixed; left: 18px; bottom: 18px; z-index: 150; height: 46px; padding: 0 18px;
+  border-radius: 99px; border: 1px solid rgba(255, 255, 255, .2); background: rgba(23, 16, 32, .8);
+  color: #f7ecf3; font: 500 .95rem 'DM Sans', sans-serif; cursor: pointer; transition: transform .3s;
+}
+#langBtn:hover { transform: scale(1.05); }
+
+html[lang="bn"] *, html[lang="bn"] *::before, html[lang="bn"] *::after {
+  font-family: var(--bn-font) !important;
+}
+html[lang="bn"] body { line-height: 1.9; }
+html[lang="bn"] em { font-style: normal; }
+html[lang="bn"] h1, html[lang="bn"] h2, html[lang="bn"] h3 { letter-spacing: 0; line-height: 1.35; }
