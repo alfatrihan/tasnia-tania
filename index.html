@@ -356,6 +356,7 @@
     </section>
 
     <section id="game">
+      <div class="play-petals" id="play-petals" aria-hidden="true"></div>
       <div class="play-head rv">
         <h2 class="play-title"><span class="lang-en">Play</span><span class="lang-bn">প্লে</span></h2>
         <p class="play-tag"><span class="lang-en">Pick a game and let's play together</span><span class="lang-bn">একটা খেলা বেছে নাও, চলো একসাথে খেলি</span></p>
@@ -373,6 +374,7 @@
             <span class="hud-best" id="runner-hi">BEST 0</span>
           </div>
           <canvas id="runner-canvas" aria-label="Tania's Run game"></canvas>
+          <img class="runner-char" id="runner-char" alt="" aria-hidden="true">
           <div class="runner-bubble" id="runner-bubble" aria-live="polite">
             <div class="lang-en"><b>Hello, I am Tania</b><span><br>Tap me to save!</span></div>
             <div class="lang-bn"><b>হ্যালো, আমি তানিয়া</b><span><br>আমাকে বাঁচাতে ট্যাপ করো!</span></div>
@@ -394,10 +396,16 @@
           <div class="pz-fold rv">
             <div class="pz-card" id="pz-card">
               <div class="pz-hud">
-                <span class="pz-moves" id="pz-moves">Moves: 0</span>
-                <span class="pz-time" id="pz-time">0:00</span>
-                <span class="pz-score" id="pz-score">Score: 0</span>
-                <button type="button" class="pz-exit" id="pz-exit" aria-label="Exit full screen">&times;</button>
+                <span class="pz-chip pz-moves" id="pz-moves" title="Moves"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg><b id="pz-moves-n">0</b></span>
+                <span class="pz-chip pz-time" id="pz-time" title="Time"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg><b id="pz-time-n">0:00</b></span>
+                <span class="pz-chip pz-score" id="pz-score" title="Score"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.6 6.1 20.8l1.2-6.5-4.8-4.6 6.6-.9z"/></svg><b id="pz-score-n">0</b></span>
+                <button type="button" class="pz-peek" id="pz-peek" title="Preview picture" aria-label="Preview picture" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="pz-peek-slash" d="M4 4l16 16"/></svg></button>
+              </div>
+              <div class="pz-bar hidden" id="pz-sizes">
+                <div class="pz-sizes" role="group" aria-label="Puzzle size">
+                  <button type="button" class="pz-size on" data-n="3">3 &times; 3</button>
+                  <button type="button" class="pz-size" data-n="4">4 &times; 4</button>
+                </div>
               </div>
               <div class="pz-stage">
                 <div class="pz-board" id="pz-board" tabindex="0"></div>
@@ -413,17 +421,21 @@
                   <button type="button" class="runner-play pz-replay" id="pz-replay">Play again</button>
                 </div>
               </div>
-              <div class="pz-bar hidden" id="pz-sizes">
-                <div class="pz-sizes" role="group" aria-label="Puzzle size">
-                  <button type="button" class="pz-size on" data-n="3">3 &times; 3</button>
-                  <button type="button" class="pz-size" data-n="4">4 &times; 4</button>
+              <div class="pz-help" id="pz-help" aria-hidden="true">
+                <div class="pz-help-bubble">
+                  <div class="lang-en"><b>Hello, I am Tania</b><span><br>Let's see if you can straighten me!</span></div>
+                  <div class="lang-bn"><b>হ্যালো, আমি তানিয়া</b><span><br>দেখি আমাকে সোজা করতে পারো কিনা!</span></div>
                 </div>
+                <img class="pz-help-img" id="pz-help-img" src="media/puzzle/tania-helper.png" alt="">
               </div>
+              <button type="button" class="pz-fs" id="pz-fs" aria-label="Full screen" title="Full screen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+              
             </div>
           </div>
           <p class="tap play-hide" id="pz-hint">Click a piece next to the gap, or use the arrow keys</p>
         </div>
       </div>
+      <div class="g-dots play-dots" id="play-dots" aria-label="Swipe right to see the next game"></div>
     </section>
   </main>
   <footer id="footer">

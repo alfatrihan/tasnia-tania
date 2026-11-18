@@ -14,11 +14,10 @@
     const ovTitle = document.getElementById('pz-ov-title');
     const ovSub = document.getElementById('pz-ov-sub');
     const sizesWrap = document.getElementById('pz-sizes');
-    const exitBtn = document.getElementById('pz-exit');
     const sizeBtns = Array.from(document.querySelectorAll('.pz-size'));
-    const movesEl = document.getElementById('pz-moves');
-    const timeEl = document.getElementById('pz-time');
-    const scoreEl = document.getElementById('pz-score');
+    const movesEl = document.getElementById('pz-moves-n');
+    const timeEl = document.getElementById('pz-time-n');
+    const scoreEl = document.getElementById('pz-score-n');
     const resultEl = document.getElementById('pz-result');
     const resLabel = document.getElementById('pz-res-label');
     const resGrade = document.getElementById('pz-res-grade');
@@ -38,7 +37,7 @@
         en: {
             title: 'Straighten Tania',
             intro: 'Slide the pieces back into place to see the whole picture.',
-            hint: 'Click a piece next to the gap, or use the arrow keys',
+            hint: 'Tap or drag a piece into the gap, or use the arrow keys',
             ovSub: 'Press PLAY to start',
             play: 'PLAY',
             moves: 'Moves',
@@ -49,12 +48,13 @@
             gGood: 'Good job!',
             gTry: 'Keep trying',
             replay: 'Play again',
-            piece: 'Piece'
+            piece: 'Piece',
+            peek: 'Preview picture'
         },
         bn: {
             title: 'তানিয়াকে সোজা করো',
             intro: 'টুকরোগুলো আবার জায়গামতো সাজান, তাহলেই পুরো ছবিটা দেখা যাবে।',
-            hint: 'ফাঁকার পাশের টুকরোতে ক্লিক করুন, বা অ্যারো কী ব্যবহার করুন',
+            hint: 'টুকরোতে ট্যাপ করুন বা টেনে ফাঁকায় নিন, বা অ্যারো কী ব্যবহার করুন',
             ovSub: 'খেলা শুরু করতে প্লে চাপুন',
             play: 'প্লে করুন',
             moves: 'চাল',
@@ -65,7 +65,8 @@
             gGood: 'ভালো হয়েছে!',
             gTry: 'আরেকবার চেষ্টা করো',
             replay: 'আবার খেলো',
-            piece: 'টুকরো'
+            piece: 'টুকরো',
+            peek: 'ছবিটা একবার দেখো'
         }
     };
     const lang = () => (document.documentElement.lang === 'bn' ? 'bn' : 'en');
@@ -78,6 +79,57 @@
     let picIndex = -1;       // which picture of PICS this round uses
     let moves = 0, secs = 0, timer = 0, started = false, solved = false, playing = false;
     let revealTimer = 0;
+
+    // ---------- one-time picture reveal ----------
+    // The eye button shows the whole picture for a few seconds. It works once per round
+    // (a new round = new shuffle, Play again, or a size change), and only while the puzzle is being played.
+    const PEEK_MS = 2500;
+    const peekBtn = document.getElementById('pz-peek');
+    const peekImg = document.createElement('img');
+    peekImg.className = 'pz-peek-img';
+    peekImg.alt = '';
+    peekImg.draggable = false;
+    let peekUsed = false, peekTimer = 0;
+    peekImg.addEventListener('click', hidePeek);      // tap the picture to close it early
+    if (peekBtn) peekBtn.addEventListener('click', showPeek);
+
+    function refreshPeek() {
+        if (!peekBtn) return;
+        peekBtn.disabled = !(playing && !solved && !peekUsed);
+        peekBtn.classList.toggle('used', peekUsed);
+    }
+    function showPeek() {
+        if (!peekBtn || peekBtn.disabled) return;
+        peekUsed = true;
+        peekImg.classList.add('show');
+        peekBtn.classList.add('open');
+        clearTimeout(peekTimer);
+        peekTimer = setTimeout(hidePeek, PEEK_MS);
+        refreshPeek();
+    }
+    // ---------- Tania the helper: pops in on PLAY, leaves after the first move (or after HELP_MS) ----------
+    const HELP_MS = 8000;
+    const helpEl = document.getElementById('pz-help');
+    const helpImg = document.getElementById('pz-help-img');
+    let helpTimer = 0;
+    if (helpImg) helpImg.addEventListener('error', () => helpImg.classList.add('missing'));   // picture not added yet -> bubble only
+    function showHelp() {
+        if (!helpEl) return;
+        helpEl.classList.add('show');
+        clearTimeout(helpTimer);
+        helpTimer = setTimeout(hideHelp, HELP_MS);
+    }
+    function hideHelp() {
+        clearTimeout(helpTimer);
+        if (helpEl) helpEl.classList.remove('show');
+    }
+
+    function hidePeek() {
+        clearTimeout(peekTimer);
+        peekImg.classList.remove('show');
+        if (peekBtn) peekBtn.classList.remove('open');
+        refreshPeek();
+    }
 
     const rowOf = p => Math.floor(p / N);
     const colOf = p => p % N;
@@ -169,17 +221,21 @@
             img.style.top = (-sr * 100) + '%';
             b.appendChild(img);
 
-            b.addEventListener('click', () => slide(id));
+            b.addEventListener('click', e => { if (e.detail === 0) slideLine(id); });   // keyboard (Enter / Space)
+            attachDrag(b, id);
             board.appendChild(b);
             pieces[id] = b;
         }
+        peekImg.src = src;
+        board.appendChild(peekImg);
     }
 
     function updateHud() {
         const t = TEXT[lang()];
-        movesEl.textContent = t.moves + ': ' + moves;
+        movesEl.textContent = moves;
         timeEl.textContent = fmt(secs);
-        scoreEl.textContent = t.score + ': ' + (solved ? scoreNow() : scoreNow());
+        scoreEl.textContent = scoreNow();
+        refreshPeek();
     }
 
     function startTimer() {
@@ -207,7 +263,7 @@
         clearTimeout(revealTimer);
         revealTimer = setTimeout(() => {
             resultEl.classList.remove('hidden');
-        }, 1400);
+        }, 500);
     }
 
     function slide(id) {
@@ -218,9 +274,85 @@
         moves++;
         place(id);
         startTimer();
+        hideHelp();                      // the helper has said her line; she steps aside once the game starts
         if (isSolved()) onSolved();
         else updateHud();
     }
+
+
+    // ---------- touch / mouse: tap a piece, or drag it into the gap ----------
+    // A piece next to the gap follows the finger and snaps in when pulled far enough (or on a tap).
+    // Tapping a piece in the same row / column as the gap slides the whole line, like a real sliding puzzle.
+    function slideLine(id) {
+        if (!playing || solved) return;
+        const p = posOf(id), g = posOf(GAP);
+        if (isAdjacent(p, g)) { slide(id); return; }
+        if (rowOf(p) === rowOf(g)) {
+            const step = colOf(p) < colOf(g) ? 1 : -1;
+            for (let q = g - step; ; q -= step) { slide(grid[q]); if (q === p) break; }
+        } else if (colOf(p) === colOf(g)) {
+            const step = rowOf(p) < rowOf(g) ? N : -N;
+            for (let q = g - step; ; q -= step) { slide(grid[q]); if (q === p) break; }
+        }
+    }
+
+    function attachDrag(el, id) {
+        let sx = 0, sy = 0, dx = 0, dy = 0, active = false, moved = false, axis = null, dir = 0, cell = 1;
+        el.addEventListener('pointerdown', e => {
+            if (!playing || solved || (e.pointerType === 'mouse' && e.button !== 0)) return;
+            const p = posOf(id), g = posOf(GAP);
+            active = true; moved = false; dx = dy = 0; axis = null;
+            sx = e.clientX; sy = e.clientY;
+            cell = board.getBoundingClientRect().width / N;
+            if (isAdjacent(p, g)) {
+                axis = rowOf(p) === rowOf(g) ? 'x' : 'y';
+                dir = axis === 'x' ? (colOf(g) - colOf(p)) : (rowOf(g) - rowOf(p));   // +1 / -1
+            }
+            try { el.setPointerCapture(e.pointerId); } catch (_) {}
+        });
+        el.addEventListener('pointermove', e => {
+            if (!active) return;
+            const mx = e.clientX - sx, my = e.clientY - sy;
+            if (Math.abs(mx) + Math.abs(my) > 6) moved = true;
+            if (!axis) return;
+            let d = (axis === 'x' ? mx : my) * dir;      // only toward the gap counts
+            d = Math.max(0, Math.min(cell, d));
+            el.classList.add('pz-drag');
+            el.style.transition = 'none';
+            el.style.transform = axis === 'x' ? 'translateX(' + (d * dir) + 'px)' : 'translateY(' + (d * dir) + 'px)';
+            el._d = d;
+            e.preventDefault();
+        });
+        const end = e => {
+            if (!active) return;
+            active = false;
+            try { el.releasePointerCapture(e.pointerId); } catch (_) {}
+            const d = el._d || 0; el._d = 0;
+            el.classList.remove('pz-drag');
+            el.style.transition = '';
+            el.style.transform = '';
+            if (e.type === 'pointercancel') return;
+            if (!moved) { slideLine(id); return; }                 // a tap
+            if (axis && d > cell * 0.3) slide(id);                 // dragged far enough
+        };
+        el.addEventListener('pointerup', end);
+        el.addEventListener('pointercancel', end);
+    }
+
+    // a swipe anywhere on the board moves the piece that sits on the far side of the gap
+    (function swipeBoard() {
+        let sx = 0, sy = 0, on = false;
+        board.addEventListener('pointerdown', e => { if (e.target === board) { on = true; sx = e.clientX; sy = e.clientY; } });
+        board.addEventListener('pointerup', e => {
+            if (!on) return; on = false;
+            const mx = e.clientX - sx, my = e.clientY - sy;
+            if (Math.max(Math.abs(mx), Math.abs(my)) < 24 || !playing || solved) return;
+            const g = posOf(GAP); let src = -1;
+            if (Math.abs(mx) > Math.abs(my)) { if (mx < 0 && colOf(g) < N - 1) src = g + 1; else if (mx > 0 && colOf(g) > 0) src = g - 1; }
+            else { if (my < 0 && rowOf(g) < N - 1) src = g + N; else if (my > 0 && rowOf(g) > 0) src = g - N; }
+            if (src >= 0) slide(grid[src]);
+        });
+    })();
 
     // a new round: random picture, fresh pieces, random legal shuffle
     function newRound() {
@@ -233,6 +365,9 @@
         board.classList.remove('pz-done');
         resultEl.classList.add('hidden');
 
+        hidePeek();
+        hideHelp();
+        peekUsed = false;                // the reveal comes back for every new round
         picIndex = pickPicture();
         build();
 
@@ -275,36 +410,79 @@
         playBtn.textContent = t.play;
         resLabel.textContent = t.result;
         replayBtn.textContent = t.replay;
+        if (peekBtn) { peekBtn.title = t.peek; peekBtn.setAttribute('aria-label', t.peek); }
         board.setAttribute('aria-label', t.title);
         pieces.forEach((el, id) => el.setAttribute('aria-label', t.piece + ' ' + (id + 1)));
         updateHud();
     }
 
-    // ---------- full screen (like Tania's Run on the phone): the card covers the whole screen ----------
+    // ---------- full screen (same as Tania's Run) ----------
+    // PLAY, or the Full screen button, opens the whole phone screen. Exit full screen, Escape or the
+    // browser's back closes it: the page comes back where it was, and the game goes back to its start screen.
     const fsHolder = document.createElement('div');   // keeps the page the same height while the card is away
+    const fsBtn = document.getElementById('pz-fs');
+    const FS_TXT = { en: ['Full screen', 'Exit full screen'], bn: ['ফুল স্ক্রিন', 'ফুল স্ক্রিন থেকে বের হও'] };
+    const isFull = () => card.classList.contains('pz-full');
+    let savedY = 0;
+
+    function updateFsBtn() {
+        if (!fsBtn) return;
+        const t = FS_TXT[lang()] || FS_TXT.en;
+        const shrink = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+        const grow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+        fsBtn.innerHTML = (isFull() ? shrink : grow) + '<span class="pz-fs-txt"></span>';
+        fsBtn.querySelector('.pz-fs-txt').textContent = isFull() ? t[1] : t[0];
+        fsBtn.title = isFull() ? t[1] : t[0];
+        fsBtn.setAttribute('aria-label', fsBtn.title);
+    }
 
     function enterFull() {
-        if (card.classList.contains('pz-full')) return;
+        if (isFull()) return;
+        savedY = window.scrollY;
         fsHolder.style.height = card.offsetHeight + 'px';
         card.parentNode.insertBefore(fsHolder, card);
         document.body.appendChild(card);
         card.classList.add('pz-full');
         document.body.classList.add('pz-lock');
+        if (card.requestFullscreen) card.requestFullscreen({ navigationUI: 'hide' }).catch(() => {});
+        if (screen.orientation && screen.orientation.lock) screen.orientation.lock('portrait').catch(() => {});
+        updateFsBtn();
+    }
+
+    // back to the start screen: the game and its music stop, the board is shuffled and waits for PLAY
+    function resetToStart() {
+        clearInterval(timer);
+        clearTimeout(revealTimer);
+        playing = false; started = false; solved = false;
+        stopMusic();
+        overlay.classList.remove('hidden');
+        sizesWrap.classList.add('hidden');
+        sizesWrap.classList.remove('pz-appear');
+        resultEl.classList.add('hidden');
+        newRound();
+        applyText();
     }
 
     function exitFull() {
-        if (!card.classList.contains('pz-full')) return;
+        if (!isFull()) return;
         card.classList.remove('pz-full');
         document.body.classList.remove('pz-lock');
         fsHolder.parentNode.insertBefore(card, fsHolder);
         fsHolder.remove();
+        if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+        window.scrollTo({ top: savedY, behavior: 'instant' });
+        resetToStart();
+        updateFsBtn();
     }
 
     // PLAY: the screen goes full, then the game starts (the 3x3 / 4x4 choice appears, the music starts)
     playBtn.addEventListener('click', () => {
-        enterFull();
+        if (!isFull()) enterFull();   // PLAY goes full screen at once; the Exit full screen button appears at the bottom
         setTimeout(() => {
             playing = true;
+            refreshPeek();
+            showHelp();
             overlay.classList.add('hidden');
             sizesWrap.classList.remove('hidden');
             sizesWrap.classList.add('pz-appear');
@@ -312,8 +490,9 @@
         }, 380);
     });
 
-    exitBtn.addEventListener('click', exitFull);
+    if (fsBtn) fsBtn.addEventListener('click', () => (isFull() ? exitFull() : enterFull()));
     document.addEventListener('keydown', e => { if (e.key === 'Escape') exitFull(); });
+    document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && isFull()) exitFull(); });
 
     sizeBtns.forEach(btn => btn.addEventListener('click', () => {
         const n = Number(btn.dataset.n);
@@ -325,7 +504,7 @@
 
     replayBtn.addEventListener('click', newRound);
     board.addEventListener('keydown', onKey);
-    new MutationObserver(applyText).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    new MutationObserver(() => { applyText(); updateFsBtn(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 
     // leaving the puzzle (scrolled away to the other game or off the section): stop its music
     const slideEl = document.getElementById('play-slide-puzzle');
@@ -334,5 +513,6 @@
     }
 
     applyText();
+    updateFsBtn();
     newRound();
 })();

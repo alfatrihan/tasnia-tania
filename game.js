@@ -16,14 +16,17 @@
     const sectionTitle = document.getElementById('game-title');
     const hintEl = document.getElementById('runner-hint');
     const bubble = document.getElementById('runner-bubble');
+    const charEl = document.getElementById('runner-char');
 
     // ---------- settings you can change ----------
     
     // ---- audio paths: put your files here ----
     // greeting voice, played when PLAY is pressed (English or Bangla, by the site's language button)
     const VOICE_FILE = { en: 'audio/game-voice-en.mp3', bn: 'audio/game-voice-bn.mp3' };
-    // the game's background music, loops while the game is open
+    // the game's background music: starts after the greeting voice ends, loops while the game is open
     const GAME_MUSIC = 'audio/game-music.mp3';
+    // the character picture on the right side of the game (PNG, transparent background works best)
+    const CHARACTER_IMG = 'media/game/tania-character.png';
     const THREE_MISSING = { en: 'The 3D game could not load. Check your internet connection.', bn: '3D গেমটি লোড হয়নি। ইন্টারনেট সংযোগ দেখুন।' };
 
     const TEXT = {
@@ -478,7 +481,7 @@
     const isFull = () => wrap.classList.contains('fake-full');
     function layout() {
         if (isFull()) { W = Math.floor(wrap.clientWidth || window.innerWidth); H = Math.floor(wrap.clientHeight || window.innerHeight); }
-        else { W = Math.max(280, Math.floor(wrap.clientWidth)); H = Math.round(Math.max(230, W * 0.625)); /* 16:10, same ratio as the puzzle card */ }
+        else { W = Math.max(280, Math.floor(wrap.clientWidth)); const tall = window.matchMedia('(max-width: 700px)').matches; H = Math.round(Math.max(230, W * (tall ? 1.4 : 0.625))); /* phone: tall (portrait); desktop: 16:10 */ }
         if (!W || !H) return;
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.setSize(W, H, false);
@@ -518,6 +521,9 @@
         hero.y = 0; hero.vy = 0; hero.onGround = true; hero.holding = false;
         v = SPEED0; distance = 0; score = 0; bonus = 0; coins = 0; coinCool = 2;
         overlay.classList.add('hidden');
+        charEl.onerror = () => charEl.classList.add('missing');   // picture not added yet -> no picture
+        charEl.src = CHARACTER_IMG;
+        charEl.classList.add('show');        // the character comes on the right side with the greeting
         bubble.classList.add('show');
     }
     function startOrJump() {
@@ -684,11 +690,19 @@
 
         renderer.render(scene, camera);
 
-        // keep the greeting bubble above Tania's head while the intro is shown
+        // keep the greeting bubble above the character's head while the intro is shown
         if (state === 'intro') {
-            const head = new THREE.Vector3(0, hero.y + 2.7, HERO_Z).project(camera);
-            bubble.style.left = ((head.x + 1) / 2 * W) + 'px';
-            bubble.style.top = ((1 - head.y) / 2 * H - 16) + 'px';
+            const picShown = charEl.classList.contains('show') && !charEl.classList.contains('missing') && charEl.naturalWidth > 0;
+            if (picShown) {
+                const wr = wrap.getBoundingClientRect(), cr = charEl.getBoundingClientRect();
+                bubble.style.left = (cr.left - wr.left + cr.width / 2) + 'px';
+                bubble.style.top = (cr.top - wr.top + cr.height * 0.1 - 16) + 'px';
+            } else {
+                // no picture: the bubble stays above Tania (3D) as before
+                const head = new THREE.Vector3(0, hero.y + 2.7, HERO_Z).project(camera);
+                bubble.style.left = ((head.x + 1) / 2 * W) + 'px';
+                bubble.style.top = ((1 - head.y) / 2 * H - 16) + 'px';
+            }
         }
     }
 
@@ -818,6 +832,7 @@
                 document.body.appendChild(wrap);
             } else {
                 leaveGameAudio();
+                charEl.classList.remove('show');
                 if (holder) { holder.parentNode.insertBefore(wrap, holder); holder.remove(); holder = null; }
                 if (state === 'running' || state === 'intro') {
                 state = 'ready'; clearObstacles();
@@ -879,4 +894,74 @@
     layout();
     updateTexts();
     requestAnimationFrame(frame);
+})();
+
+/* ===== Swipe dots under the games: right / left swipe moves between games ===== */
+(() => {
+    const track = document.getElementById('play-track');
+    const dotsEl = document.getElementById('play-dots');
+    if (!track || !dotsEl) return;
+    const slides = Array.from(track.querySelectorAll('.play-slide'));
+    slides.forEach((s, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('aria-label', 'Game ' + (i + 1));
+        b.onclick = () => track.scrollTo({ left: s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2, behavior: 'smooth' });
+        dotsEl.appendChild(b);
+    });
+    const dots = Array.from(dotsEl.children);
+    function update() {
+        const mid = track.getBoundingClientRect();
+        const c = mid.left + mid.width / 2;
+        let best = 0, bd = Infinity;
+        slides.forEach((s, i) => {
+            const r = s.getBoundingClientRect();
+            const d = Math.abs((r.left + r.right) / 2 - c);
+            if (d < bd) { bd = d; best = i; }
+        });
+        dots.forEach((d, i) => d.classList.toggle('on', i === best));
+    }
+    track.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+})();
+
+/* ===== Theme petals behind the games (the same falling petals as the rest of the site) ===== */
+(() => {
+    const layer = document.getElementById('play-petals');
+    if (!layer) return;
+    const n = window.innerWidth < 700 ? 14 : 24;
+    for (let i = 0; i < n; i++) {
+        const p = document.createElement('span');
+        p.className = 'play-petal';
+        p.style.left = (Math.random() * 100) + '%';
+        p.style.width = (8 + Math.random() * 8) + 'px';
+        p.style.opacity = (0.3 + Math.random() * 0.5).toFixed(2);
+        p.style.setProperty('--dx', (Math.random() * 40 - 20) + 'vw');
+        p.style.animationDuration = (9 + Math.random() * 12).toFixed(1) + 's';
+        p.style.animationDelay = (-Math.random() * 20).toFixed(1) + 's';
+        layer.appendChild(p);
+    }
+})();
+
+/* ===== Petals inside the Straighten Tania card (the card background moves like the site) ===== */
+(() => {
+    const card = document.getElementById('pz-card');
+    if (!card) return;
+    const layer = document.createElement('div');
+    layer.className = 'card-petals';
+    layer.setAttribute('aria-hidden', 'true');
+    const n = window.innerWidth < 700 ? 8 : 12;
+    for (let i = 0; i < n; i++) {
+        const p = document.createElement('span');
+        p.className = 'card-petal';
+        p.style.left = (Math.random() * 100) + '%';
+        p.style.width = (7 + Math.random() * 6) + 'px';
+        p.style.opacity = (0.25 + Math.random() * 0.4).toFixed(2);
+        p.style.setProperty('--dx', (Math.random() * 30 - 15) + 'vw');
+        p.style.animationDuration = (10 + Math.random() * 10).toFixed(1) + 's';
+        p.style.animationDelay = (-Math.random() * 16).toFixed(1) + 's';
+        layer.appendChild(p);
+    }
+    card.insertBefore(layer, card.firstChild);
 })();

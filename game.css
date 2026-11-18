@@ -109,6 +109,12 @@
 }
 
 /* ===== Full screen (phones) ===== */
+/* before PLAY (the game is not full screen yet) only the PLAY button shows: no Full screen button */
+.runner-wrap:not(.fake-full) .runner-full,
+.pz-card:not(.pz-full) > .pz-fs {
+    display: none !important
+}
+
 .runner-full {
     position: absolute;
     right: 12px;
@@ -201,7 +207,7 @@ body.runner-lock {
 
 /* ===== Fixes: page scroll, true full screen, safe areas ===== */
 .runner-wrap {
-    touch-action: pan-y
+    touch-action: pan-x pan-y
 }
 
 .runner-wrap.fake-full {
@@ -213,7 +219,7 @@ body.runner-lock {
 
 /* normal (not full screen): a finger on the game still scrolls the page up and down */
 #runner-canvas {
-    touch-action: pan-y
+    touch-action: pan-x pan-y
 }
 
 body.runner-lock {
@@ -232,6 +238,198 @@ body.runner-lock>*:not(#runner-wrap) {
 
 .runner-wrap.fake-full .runner-full {
     bottom: calc(16px + env(safe-area-inset-bottom, 0px))
+}
+
+/* ===== Character picture on the right side of the game (shown from PLAY until the game is closed) ===== */
+.runner-char {
+    position: absolute;
+    right: 3%;
+    bottom: 4%;
+    height: 56%;
+    width: auto;
+    max-width: 36%;
+    object-fit: contain;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateX(18px);
+    transition: opacity .5s ease, transform .5s ease;
+}
+
+.runner-char.show {
+    opacity: 1;
+    transform: none
+}
+
+/* the picture file is not added yet: stay hidden */
+.runner-char.missing {
+    display: none
+}
+
+/* ===== Puzzle: the PLAY overlay covers the whole card (like Tania's Run), so both PLAY buttons and titles sit at the same height ===== */
+.pz-card .pz-stage {
+    position: static !important
+}
+
+/* ===== Puzzle: Tania the helper (PNG pops in on PLAY, speaks in the site's language, leaves after the first move) ===== */
+.pz-help {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding: 2% 3% 3%;
+    gap: 6px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .35s ease, transform .35s ease
+}
+
+.pz-help.show {
+    opacity: 1;
+    transform: none
+}
+
+.pz-help-img {
+    height: 56%;
+    width: auto;
+    max-width: 60%;
+    object-fit: contain;
+    flex: 0 0 auto
+}
+
+.pz-help.show .pz-help-img {
+    animation: pzHelpPop .6s cubic-bezier(.2, 1.4, .4, 1) both, pzHelpBob 2.6s ease-in-out .6s infinite
+}
+
+.pz-help-img.missing {
+    display: none
+}
+
+.pz-help-bubble {
+    position: relative;
+    max-width: min(70%, 320px);
+    padding: 9px 13px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 214, 228, .35);
+    background: rgba(23, 16, 32, .9);
+    color: var(--blush);
+    text-align: center;
+    font: 500 .85rem 'DM Sans', sans-serif;
+    line-height: 1.4;
+    margin-right: 10%
+}
+
+/* the speech tail: points down from the bubble to Tania's head */
+.pz-help-bubble::after {
+    content: '';
+    position: absolute;
+    right: 18%;
+    bottom: -8px;
+    width: 14px;
+    height: 14px;
+    transform: rotate(45deg);
+    background: rgba(23, 16, 32, .9);
+    border-right: 1px solid rgba(255, 214, 228, .35);
+    border-bottom: 1px solid rgba(255, 214, 228, .35)
+}
+
+.pz-help-bubble b {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-weight: 600
+}
+
+html[lang="en"] .pz-help-bubble .lang-bn { display: none }
+html[lang="bn"] .pz-help-bubble .lang-en { display: none }
+
+@keyframes pzHelpPop {
+    from { transform: scale(.2); opacity: 0 }
+    to { transform: scale(1); opacity: 1 }
+}
+
+@keyframes pzHelpBob {
+    0%, 100% { transform: translateY(0) }
+    50% { transform: translateY(-6px) }
+}
+
+@media (max-width: 700px) {
+    .pz-help {
+        flex-direction: column;
+        align-items: flex-end
+    }
+    .pz-help-bubble {
+        max-width: 70%;
+        margin-bottom: 0
+    }
+    .pz-help-img {
+        height: 50%;
+        max-width: 80%
+    }
+    .pz-help-bubble {
+        max-width: 78%;
+        margin-right: 6%
+    }
+}
+
+/* ===== Puzzle: one-time picture reveal (eye icon in the top bar; the slash shows it is hidden) ===== */
+.pz-peek {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 26px;
+    padding: 0;
+    border-radius: 99px;
+    border: 1px solid rgba(255, 214, 228, .35);
+    background: rgba(23, 16, 32, .8);
+    color: var(--blush);
+    cursor: pointer
+}
+
+.pz-peek svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round
+}
+
+.pz-peek.open .pz-peek-slash {
+    display: none
+}
+
+.pz-peek:disabled {
+    opacity: .4;
+    cursor: default
+}
+
+.pz-peek.used {
+    opacity: .3
+}
+
+.pz-peek-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease;
+    z-index: 5
+}
+
+.pz-peek-img.show {
+    opacity: 1;
+    pointer-events: auto;
+    cursor: pointer
 }
 
 /* ===== Intro bubble: shown above Tania after PLAY, before the run starts ===== */
@@ -575,9 +773,15 @@ html[lang="bn"] .play-tag .lang-en { display: none }
     text-align: center
 }
 
-/* phones: a reel, one game per full screen, scrolled up and down */
+/* phones: each game is shown vertically (portrait) and you swipe right / left to the next game.
+   The small dots under the game show which game you are on. */
+.play-track {
+    position: relative
+}
+
 @media (max-width: 700px) {
     #game {
+        max-width: none;
         height: 100vh;
         height: 100dvh;
         display: flex;
@@ -587,7 +791,7 @@ html[lang="bn"] .play-tag .lang-en { display: none }
 
     .play-head {
         flex: 0 0 auto;
-        margin-bottom: 4px
+        margin-bottom: 6px
     }
 
     .play-title {
@@ -597,12 +801,15 @@ html[lang="bn"] .play-tag .lang-en { display: none }
     .play-track {
         flex: 1 1 0;
         min-height: 0;
-        flex-direction: column;
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
         gap: 0;
         padding: 0;
-        overflow-x: hidden;
-        overflow-y: auto;
-        scroll-snap-type: y mandatory
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        overscroll-behavior-x: contain
     }
 
     .play-slide {
@@ -612,15 +819,44 @@ html[lang="bn"] .play-tag .lang-en { display: none }
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding: 0 10px 14px;
+        padding: 0 12px 6px;
         overflow-y: auto;
         scroll-snap-align: start
     }
+
+    /* the game is shown tall (portrait), like a phone screen */
+    /* same tall size as Tania's Run on the phone (width : height = 1 : 1.4) */
+    .pz-card {
+        aspect-ratio: 5 / 7
+    }
+
+    /* on the phone the picture board fills the full width of the card, so it is not small */
+    .pz-stage {
+        align-items: center
+    }
+
+    .pz-board {
+        height: auto;
+        width: 100%;
+        max-width: 100%
+    }
+
+    .play-dots {
+        flex: 0 0 auto;
+        margin: 8px 0 14px;
+        padding-bottom: env(safe-area-inset-bottom, 0px)
+    }
+}
+
+/* dots under the games (desktop and phone) */
+.play-dots {
+    margin-top: 18px
 }
 
 /* ===== Straighten Tania (sliding picture puzzle) ===== */
 .pz-fold {
     position: relative;
+    width: 100%;
     max-width: 760px;
     margin: 0 auto
 }
@@ -764,19 +1000,19 @@ html[lang="bn"] .play-tag .lang-en { display: none }
 }
 
 .pz-result:not(.hidden) .pz-res-label {
-    animation: pzReveal .6s ease .1s both
+    animation: pzReveal .4s ease 0s both
 }
 
 .pz-result:not(.hidden) .pz-res-grade {
-    animation: pzReveal .7s ease .5s both
+    animation: pzReveal .5s ease .15s both
 }
 
 .pz-result:not(.hidden) .pz-res-detail {
-    animation: pzReveal .7s ease .9s both
+    animation: pzReveal .5s ease .25s both
 }
 
 .pz-result:not(.hidden) .pz-replay {
-    animation: pzReveal .7s ease 1.3s both
+    animation: pzReveal .5s ease .35s both
 }
 
 @keyframes pzReveal {
@@ -893,4 +1129,1200 @@ body.pz-lock {
     .pz-result:not(.hidden) * {
         animation: none !important
     }
+}
+
+/* ===== Play section: site theme background (soft glow + falling petals, like the rest of the site) ===== */
+#game {
+    position: relative
+}
+
+#game::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 25%, rgba(238, 143, 181, .16), transparent 62%);
+    pointer-events: none;
+    z-index: 0
+}
+
+.play-petals {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0
+}
+
+.play-petal {
+    position: absolute;
+    top: -40px;
+    height: 16px;
+    border-radius: 0 100% 0 100%;
+    background: linear-gradient(135deg, #ffd6e4, #ee8fb5 60%, #c2467f);
+    animation-name: playPetalFall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite
+}
+
+@keyframes playPetalFall {
+    from { transform: translate3d(0, 0, 0) rotate(0deg) }
+    to { transform: translate3d(var(--dx, 0vw), 120vh, 0) rotate(540deg) }
+}
+
+.play-head,
+.play-track,
+.play-dots {
+    position: relative;
+    z-index: 1
+}
+
+/* score and coin pills: rose border glow, like the site's accents */
+.hud-pill {
+    border-color: rgba(238, 143, 181, .45);
+    box-shadow: 0 0 14px rgba(238, 143, 181, .25)
+}
+
+.pz-card {
+    box-shadow: 0 20px 50px #0008, 0 0 0 1px rgba(238, 143, 181, .18)
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .play-petal { animation: none; display: none }
+}
+
+/* ===== Phone: the next game peeks in from the right edge, with a swipe arrow, so it is clear you can swipe ===== */
+@media (max-width: 700px) {
+    .play-track {
+        padding: 0 20px;
+        scroll-padding: 0 20px;
+        gap: 10px
+    }
+
+    /* a clear gap between the games; the next game shows a little in that gap */
+    .play-slide {
+        flex: 0 0 calc(100% - 40px);
+        width: calc(100% - 40px);
+        padding: 0;
+        scroll-snap-align: center
+    }
+}
+
+
+/* ===== Phone: both games have the same tall frame before PLAY (width : height = 5 : 7) ===== */
+@media (max-width: 700px) {
+    .runner-wrap:not(.fake-full),
+    .pz-card:not(.pz-full) {
+        aspect-ratio: 5 / 7;
+        height: auto
+    }
+
+    .pz-fold,
+    .runner-wrap {
+        width: 100%;
+        max-width: none
+    }
+}
+
+/* =====================================================================
+   Game design (site theme): animated backgrounds, nicer HUD and scoreboards
+   ===================================================================== */
+
+/* section title: rose gradient text with ornament lines on both sides */
+.play-title {
+    background: linear-gradient(90deg, #ffd6e4, #ee8fb5 50%, #ffd9e6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 30px rgba(238, 143, 181, .25)
+}
+
+.play-head {
+    display: grid;
+    justify-items: center;
+    gap: 8px
+}
+
+.play-head::before,
+.play-head::after {
+    content: "";
+    display: block;
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rose), transparent)
+}
+
+.play-tag {
+    font-size: .95rem;
+    letter-spacing: .5px
+}
+
+/* the game background: the site's dusk colours, slowly moving */
+.pz-card {
+    background:
+        radial-gradient(ellipse at 30% 20%, rgba(238, 143, 181, .22), transparent 55%),
+        radial-gradient(ellipse at 80% 90%, rgba(217, 184, 242, .16), transparent 60%),
+        linear-gradient(135deg, var(--bg), var(--bg2) 50%, var(--bg));
+    background-size: 100% 100%, 100% 100%, 240% 240%;
+    animation: pzBgShift 14s ease-in-out infinite
+}
+
+@keyframes pzBgShift {
+    0%, 100% { background-position: 0 0, 0 0, 0% 50% }
+    50% { background-position: 0 0, 0 0, 100% 50% }
+}
+
+.pz-card > .card-petals {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0
+}
+
+.pz-card .card-petal {
+    position: absolute;
+    top: -30px;
+    height: 12px;
+    border-radius: 0 100% 0 100%;
+    background: linear-gradient(135deg, #ffd6e4, #ee8fb5 60%, #c2467f);
+    animation: playPetalFall linear infinite
+}
+
+.pz-hud,
+.pz-stage,
+.pz-bar {
+    position: relative;
+    z-index: 1
+}
+
+.pz-board {
+    background: transparent
+}
+
+/* HUD chips: moves, time, score */
+.pz-hud {
+    gap: 8px;
+    background: linear-gradient(180deg, rgba(20, 14, 28, .92), rgba(20, 14, 28, .6));
+    border-bottom: 1px solid rgba(238, 143, 181, .2)
+}
+
+.pz-moves,
+.pz-time,
+.pz-score {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 99px;
+    background: rgba(255, 214, 228, .06);
+    border: 1px solid rgba(255, 214, 228, .18);
+    font: 600 .8rem 'DM Sans', sans-serif;
+    letter-spacing: 1px;
+    color: var(--mute);
+    font-variant-numeric: tabular-nums
+}
+
+.pz-score {
+    color: var(--blush);
+    border-color: rgba(238, 143, 181, .45);
+    box-shadow: 0 0 12px rgba(238, 143, 181, .25)
+}
+
+/* scoreboard for the puzzle result: framed like a theme card, with a soft glow */
+.pz-result {
+    background: radial-gradient(ellipse at center, rgba(40, 20, 50, .88), rgba(14, 10, 20, .94))
+}
+
+.pz-result::before {
+    content: "";
+    position: absolute;
+    inset: 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(238, 143, 181, .3);
+    box-shadow: inset 0 0 40px rgba(238, 143, 181, .12);
+    pointer-events: none
+}
+
+.pz-res-grade {
+    background: linear-gradient(90deg, #ffd6e4, #ee8fb5, #ffd36b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 2.6rem
+}
+
+.pz-res-detail {
+    padding: 6px 14px;
+    border-radius: 99px;
+    border: 1px solid rgba(255, 214, 228, .2);
+    background: rgba(23, 16, 32, .6)
+}
+
+/* Tania's Run scoreboard in the same style */
+.sb {
+    border: 1px solid rgba(238, 143, 181, .4);
+    background: radial-gradient(ellipse at top, rgba(60, 30, 70, .85), rgba(18, 12, 26, .92));
+    box-shadow: 0 16px 40px #0009, 0 0 30px rgba(238, 143, 181, .18)
+}
+
+.sb-cell {
+    padding: 8px 14px;
+    border-radius: 12px;
+    background: rgba(255, 214, 228, .05);
+    border: 1px solid rgba(255, 214, 228, .12)
+}
+
+/* Tania's Run HUD: glowing pills */
+.hud-pill {
+    height: 36px;
+    box-shadow: 0 0 14px rgba(238, 143, 181, .25)
+}
+
+.hud-coins {
+    border-color: rgba(255, 211, 107, .45)
+}
+
+.hud-best {
+    border: 1px solid rgba(238, 143, 181, .25);
+    color: var(--blush)
+}
+
+/* Full screen button of the puzzle (same look as Tania's Run's button) */
+.pz-fs {
+    margin-left: auto;
+    padding: 6px 12px;
+    border-radius: 99px;
+    border: 1px solid rgba(255, 214, 228, .35);
+    background: rgba(23, 16, 32, .8);
+    color: var(--blush);
+    font: 500 .75rem 'DM Sans', sans-serif;
+    letter-spacing: .5px;
+    cursor: pointer;
+    white-space: nowrap
+}
+
+/* =====================================================================
+   Puzzle upgrade: touch dragging, bottom exit bar, richer background
+   ===================================================================== */
+
+/* on a phone, a swipe that starts on the puzzle moves to the next game (taps still move pieces) */
+.pz-board,
+.pz-tile {
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none
+}
+
+.pz-tile.pz-drag {
+    z-index: 5;
+    cursor: grabbing;
+    filter: brightness(1.08);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, .55), 0 0 22px rgba(238, 143, 181, .45)
+}
+
+.pz-tile {
+    cursor: grab;
+    border-radius: 6px
+}
+
+.pz-tile::after {
+    border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgba(255, 214, 228, .22), inset 0 -10px 18px rgba(14, 10, 20, .25)
+}
+
+/* the board: a glowing frame with the empty slot showing a soft pattern */
+.pz-board {
+    border-radius: 16px;
+    border: 1px solid rgba(238, 143, 181, .45);
+    background:
+        repeating-linear-gradient(45deg, rgba(255, 214, 228, .05) 0 8px, transparent 8px 16px),
+        rgba(20, 14, 28, .6);
+    box-shadow: 0 0 0 4px rgba(238, 143, 181, .08), 0 18px 44px rgba(0, 0, 0, .55), 0 0 46px rgba(238, 143, 181, .25)
+}
+
+.pz-board.pz-done {
+    animation: pzWin 1.2s ease-in-out infinite alternate
+}
+
+@keyframes pzWin {
+    from { box-shadow: 0 0 0 4px rgba(255, 211, 107, .2), 0 0 30px rgba(255, 211, 107, .35) }
+    to { box-shadow: 0 0 0 6px rgba(238, 143, 181, .3), 0 0 70px rgba(238, 143, 181, .65) }
+}
+
+/* animated dusk sky behind the card: aurora glows + twinkling stars (pure CSS, light on phones) */
+.pz-card::before,
+.pz-card::after {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    pointer-events: none;
+    z-index: 0
+}
+
+.pz-card::before {
+    background:
+        radial-gradient(circle at 20% 30%, rgba(205, 180, 240, .30), transparent 40%),
+        radial-gradient(circle at 80% 20%, rgba(238, 143, 181, .28), transparent 38%),
+        radial-gradient(circle at 60% 85%, rgba(155, 184, 154, .18), transparent 42%);
+    animation: pzAurora 16s ease-in-out infinite alternate
+}
+
+.pz-card::after {
+    inset: 0;
+    background-image:
+        radial-gradient(1.5px 1.5px at 12% 18%, #fff, transparent 60%),
+        radial-gradient(1.2px 1.2px at 28% 72%, #ffd6e4, transparent 60%),
+        radial-gradient(1.8px 1.8px at 46% 12%, #fff, transparent 60%),
+        radial-gradient(1.2px 1.2px at 63% 58%, #cdb4f0, transparent 60%),
+        radial-gradient(1.6px 1.6px at 78% 84%, #fff, transparent 60%),
+        radial-gradient(1.3px 1.3px at 90% 36%, #ffd6e4, transparent 60%),
+        radial-gradient(1.2px 1.2px at 6% 88%, #fff, transparent 60%),
+        radial-gradient(1.5px 1.5px at 54% 40%, #ffd36b, transparent 60%);
+    animation: pzTwinkle 3.4s ease-in-out infinite alternate
+}
+
+@keyframes pzAurora {
+    from { transform: translate3d(-4%, -3%, 0) rotate(0deg) scale(1) }
+    to { transform: translate3d(5%, 4%, 0) rotate(8deg) scale(1.12) }
+}
+
+@keyframes pzTwinkle {
+    from { opacity: .35 }
+    to { opacity: 1 }
+}
+
+/* ===== Full screen toggle: when full, the label is small and quiet (like Tania's Run) ===== */
+.pz-card.pz-full .pz-fs {
+    font-size: .62rem;
+    letter-spacing: .3px;
+    padding: 4px 10px;
+    opacity: .8
+}
+
+/* ===== Tania's Run: the Full screen / exit button sits bottom-centre, small when full ===== */
+.runner-full,
+.runner-wrap.fake-full .runner-full {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    padding: 8px 20px;
+    font-size: .8rem;
+    background: linear-gradient(135deg, rgba(238, 143, 181, .3), rgba(194, 70, 127, .3));
+    border-color: rgba(238, 143, 181, .55);
+    box-shadow: 0 8px 24px rgba(238, 143, 181, .25)
+}
+
+.runner-wrap.fake-full .runner-full {
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    font-size: .62rem;
+    padding: 4px 12px;
+    opacity: .8;
+    background: rgba(23, 16, 32, .8);
+    box-shadow: none
+}
+
+/* ===== Scoreboards (game over / puzzle result): fixed layout so they stay neat in the card ===== */
+.runner-overlay #runner-sub,
+#runner-sub {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 0
+}
+
+.sb {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: auto;
+    max-width: 92%;
+    margin: 0 auto
+}
+
+.sb > * {
+    display: block
+}
+
+.sb-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-items: center
+}
+
+.sb-num {
+    display: block;
+    line-height: 1.1;
+    text-align: center
+}
+
+.pz-result .pz-res-grade,
+.pz-result .pz-res-detail,
+.pz-result .pz-res-label {
+    display: block;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto
+}
+
+/* =====================================================================
+   HUD redesign: small glass chips with icons only (no words), fits phones
+   ===================================================================== */
+.pz-hud {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    min-width: 0;
+    background: linear-gradient(180deg, rgba(20, 14, 28, .9), rgba(20, 14, 28, .45));
+    border-bottom: 1px solid rgba(238, 143, 181, .18)
+}
+
+.pz-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 26px;
+    padding: 0 9px 0 7px;
+    border-radius: 99px;
+    background: rgba(255, 214, 228, .07);
+    border: 1px solid rgba(255, 214, 228, .16);
+    font: 600 .72rem 'DM Sans', sans-serif;
+    color: var(--blush);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    letter-spacing: .3px
+}
+
+.pz-chip svg {
+    width: 13px;
+    height: 13px;
+    flex: 0 0 auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round
+}
+
+.pz-moves svg { color: var(--rose) }
+.pz-time svg { color: #ffd36b }
+.pz-score {
+    color: #ffd6e4;
+    background: linear-gradient(135deg, rgba(238, 143, 181, .22), rgba(255, 211, 107, .14));
+    border-color: rgba(238, 143, 181, .45);
+    box-shadow: 0 0 12px rgba(238, 143, 181, .22)
+}
+.pz-score svg { color: #ffd36b; fill: #ffd36b; stroke: #ffd36b }
+
+.pz-chip b {
+    font-weight: 700
+}
+
+/* the full-screen toggle: a round icon button, pushed to the right */
+.pz-fs {
+    margin-left: auto;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 214, 228, .3);
+    background: rgba(23, 16, 32, .8);
+    color: var(--blush);
+    cursor: pointer;
+    flex: 0 0 auto
+}
+
+.pz-fs svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round
+}
+
+.pz-card.pz-full .pz-fs {
+    font-size: 0;
+    padding: 0;
+    opacity: .85
+}
+
+/* phones: even smaller chips so nothing spills out of the card */
+@media (max-width: 700px) {
+    .pz-hud { padding: 6px 8px; gap: 5px }
+    .pz-chip { height: 24px; padding: 0 7px 0 6px; font-size: .68rem; gap: 4px }
+    .pz-chip svg { width: 11px; height: 11px }
+    .pz-fs { width: 26px; height: 26px }
+}
+
+/* ===== Fix: no duplicate icons (the old text glyphs are gone; the SVG icons are the only ones) ===== */
+.pz-chip::before,
+.pz-chip::after,
+.hud-pill::before,
+.hud-pill::after {
+    content: none !important;
+    display: none !important
+}
+
+/* full-screen toggle keeps its words: "Full screen" / "Exit full screen", small and quiet */
+.pz-fs {
+    width: auto;
+    height: auto;
+    padding: 6px 12px;
+    gap: 6px;
+    border-radius: 99px;
+    font: 500 .75rem 'DM Sans', sans-serif;
+    letter-spacing: .5px;
+    white-space: nowrap
+}
+
+.pz-fs svg {
+    width: 12px;
+    height: 12px
+}
+
+.pz-card.pz-full .pz-fs {
+    font-size: .62rem;
+    padding: 4px 10px;
+    opacity: .8
+}
+
+html[lang="bn"] .pz-fs {
+    font-family: 'Hind Siliguri', sans-serif;
+    letter-spacing: 0
+}
+
+@media (max-width: 700px) {
+    .pz-fs { padding: 5px 10px; font-size: .68rem }
+}
+
+
+/* ===== Puzzle: same look as Tania's Run (glass pills, gradient score, bottom-centre Full screen) ===== */
+.pz-hud {
+    padding: 12px 14px;
+    gap: 10px;
+    background: none;
+    border-bottom: 0
+}
+
+.pz-chip,
+.pz-score {
+    height: 36px;
+    padding: 0 14px;
+    gap: 7px;
+    border-radius: 99px;
+    background: rgba(23, 16, 32, .6);
+    border: 1px solid rgba(255, 214, 228, .2);
+    box-shadow: 0 0 14px rgba(238, 143, 181, .25);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    font: 600 .95rem 'DM Sans', sans-serif;
+    letter-spacing: 0
+}
+
+.pz-chip svg {
+    width: 15px;
+    height: 15px
+}
+
+.pz-score {
+    margin-left: auto;
+    min-width: 96px;
+    justify-content: flex-end;
+    border-color: rgba(255, 211, 107, .45);
+    box-shadow: 0 0 14px rgba(255, 211, 107, .2)
+}
+
+.pz-score b {
+    font: 700 1.2rem 'DM Sans', sans-serif;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(90deg, #ffd6e4, #ee8fb5 55%, #ffd36b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent
+}
+
+/* Full screen button: bottom centre of the card, exactly like Tania's Run */
+.pz-card > .pz-fs {
+    position: absolute;
+    left: 50%;
+    bottom: 12px;
+    transform: translateX(-50%);
+    z-index: 4;
+    margin: 0;
+    width: auto;
+    height: auto;
+    padding: 8px 20px;
+    gap: 6px;
+    border-radius: 99px;
+    border: 1px solid rgba(238, 143, 181, .55);
+    background: linear-gradient(135deg, rgba(238, 143, 181, .3), rgba(194, 70, 127, .3));
+    box-shadow: 0 8px 24px rgba(238, 143, 181, .25);
+    color: var(--blush);
+    font: 500 .8rem 'DM Sans', sans-serif;
+    letter-spacing: .5px;
+    white-space: nowrap
+}
+
+.pz-card:not(.pz-full) {
+    padding-bottom: 56px
+}
+
+.pz-card.pz-full > .pz-fs {
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    font-size: .62rem;
+    padding: 4px 12px;
+    opacity: .8;
+    background: rgba(23, 16, 32, .8);
+    box-shadow: none
+}
+
+@media (max-width: 700px) {
+    .pz-chip,
+    .pz-score {
+        height: 30px;
+        padding: 0 10px;
+        font-size: .8rem
+    }
+    .pz-chip svg {
+        width: 13px;
+        height: 13px
+    }
+    .pz-score b {
+        font-size: 1rem
+    }
+}
+
+
+/* ===== Puzzle: glass look like the runner overlay, size bar at the top, full-screen button fixed ===== */
+.pz-hud {
+    background: linear-gradient(180deg, rgba(14, 10, 20, .6), rgba(14, 10, 20, .25));
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px)
+}
+
+.pz-bar {
+    background: transparent;
+    border-top: 0;
+    padding: 6px 14px 0
+}
+
+.pz-result {
+    background: radial-gradient(ellipse at center, rgba(14, 10, 20, .62), rgba(14, 10, 20, .78))
+}
+
+.pz-card > .pz-fs {
+    width: auto !important;
+    height: auto !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    line-height: 1.2;
+    box-sizing: border-box;
+    white-space: nowrap
+}
+
+.pz-card > .pz-fs .pz-fs-txt {
+    display: inline-block;
+    white-space: nowrap
+}
+
+.pz-card.pz-full > .pz-fs {
+    font-size: .72rem;
+    padding: 6px 14px
+}
+
+/* ===== Puzzle, before PLAY: everything around the start text is dark, blurred and faded (like Tania's Run).
+   Only the title, the text and the PLAY button stay bright. ===== */
+#pz-overlay:not(.hidden) {
+    background: rgba(14, 10, 20, .82);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    transition: opacity .35s
+}
+
+.pz-card:has(#pz-overlay:not(.hidden)) .pz-hud,
+.pz-card:has(#pz-overlay:not(.hidden)) > .pz-fs {
+    opacity: .3;
+    filter: blur(2px);
+    transition: opacity .4s, filter .4s
+}
+
+.pz-card:has(#pz-overlay:not(.hidden)) .pz-hud {
+    pointer-events: none
+}
+
+.pz-card:has(#pz-overlay:not(.hidden)) .pz-board {
+    filter: blur(3px) brightness(.5);
+    transition: filter .4s
+}
+
+/* =====================================================================
+   Straighten Tania: final match with Tania's Run's buttons and HUD
+   (floating glass pills, no coloured band, bottom-centre Full screen pill
+   that shrinks to a small quiet pill when full screen, same dark PLAY overlay)
+   ===================================================================== */
+.pz-card:not(.pz-full) {
+    padding-bottom: 0
+}
+
+.pz-card:not(.pz-full) .pz-stage {
+    padding-bottom: 52px;
+    box-sizing: border-box
+}
+
+.pz-hud {
+    background: transparent;
+    border-bottom: 0;
+    padding: 12px 14px
+}
+
+.pz-moves,
+.pz-time,
+.pz-score {
+    height: 34px;
+    padding: 0 14px;
+    background: rgba(23, 16, 32, .6);
+    border: 1px solid rgba(255, 214, 228, .2);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow: none
+}
+
+.pz-score {
+    border-color: rgba(238, 143, 181, .3)
+}
+
+@media (max-width: 700px) {
+    .pz-hud { padding: 8px 10px }
+    .pz-moves,
+    .pz-time,
+    .pz-score { height: 30px; padding: 0 10px }
+}
+
+/* PLAY overlay: the same dark radial veil as Tania's Run (no blur band) */
+#pz-overlay:not(.hidden) {
+    background: radial-gradient(ellipse at center, #0e0a14b8, #0e0a14e6);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none
+}
+
+/* Full screen button: same pill as Tania's Run, text only, floating over the bottom */
+.pz-card > .pz-fs {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    bottom: 12px;
+    padding: 8px 20px;
+    gap: 0;
+    font: 500 .8rem 'DM Sans', sans-serif;
+    letter-spacing: .5px;
+    background: linear-gradient(135deg, rgba(238, 143, 181, .3), rgba(194, 70, 127, .3));
+    border: 1px solid rgba(238, 143, 181, .55);
+    box-shadow: 0 8px 24px rgba(238, 143, 181, .25);
+    opacity: 1
+}
+
+.pz-card > .pz-fs svg {
+    display: none
+}
+
+/* in full screen it shrinks to a small, quiet pill (same as Tania's Run) */
+.pz-card.pz-full > .pz-fs {
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    font-size: .62rem;
+    padding: 4px 12px;
+    opacity: .8;
+    background: rgba(23, 16, 32, .8);
+    box-shadow: none
+}
+
+/* 3 x 3 / 4 x 4 choice: the same glass pill as the Full screen button */
+.pz-size {
+    padding: 6px 16px;
+    background: rgba(23, 16, 32, .8);
+    border: 1px solid rgba(255, 214, 228, .35)
+}
+
+.pz-size:hover,
+.pz-size.on {
+    background: linear-gradient(135deg, rgba(238, 143, 181, .3), rgba(194, 70, 127, .3));
+    border-color: rgba(238, 143, 181, .55)
+}
+
+/* no blur anywhere on the puzzle before / during play: HUD, board and Full screen button stay sharp */
+.pz-card:has(#pz-overlay:not(.hidden)) .pz-hud {
+    opacity: .35;
+    filter: none;
+    transition: opacity .4s
+}
+
+.pz-card:has(#pz-overlay:not(.hidden)) > .pz-fs {
+    opacity: .6;
+    filter: none
+}
+
+.pz-card:has(#pz-overlay:not(.hidden)) .pz-board {
+    filter: none
+}
+
+/* =====================================================================
+   Straighten Tania: theme redesign (dusk rose, blush and lilac, like the site)
+   Only looks change; layout, tile positions and game logic stay the same.
+   ===================================================================== */
+
+/* the card: a deep plum night with a soft rose and lilac glow and a fine rose edge */
+.pz-card {
+    border: 1px solid rgba(238, 143, 181, .22);
+    box-shadow:
+        0 24px 60px #000a,
+        0 0 0 1px rgba(255, 214, 228, .04) inset,
+        0 0 40px rgba(238, 143, 181, .08)
+}
+
+/* top bar: a quiet glass strip, thin rose line underneath */
+.pz-hud {
+    background: linear-gradient(180deg, rgba(24, 18, 33, .75), rgba(24, 18, 33, 0));
+    border-bottom: 1px solid rgba(238, 143, 181, .12);
+    padding: 12px 16px
+}
+
+.pz-moves,
+.pz-time {
+    background: linear-gradient(145deg, rgba(255, 214, 228, .09), rgba(205, 180, 240, .05));
+    border: 1px solid rgba(255, 214, 228, .18);
+    color: var(--blush)
+}
+
+.pz-score {
+    background: linear-gradient(135deg, rgba(238, 143, 181, .28), rgba(255, 211, 107, .16));
+    border-color: rgba(255, 214, 228, .35);
+    box-shadow: 0 0 18px rgba(238, 143, 181, .28), inset 0 1px 0 rgba(255, 255, 255, .08)
+}
+
+/* the picture board: a framed window with a soft lilac glow and rounded corners */
+.pz-board {
+    border-radius: 14px;
+    background: linear-gradient(145deg, #1a1226, #120c1b);
+    box-shadow:
+        0 0 0 1px rgba(205, 180, 240, .18),
+        0 14px 40px rgba(0, 0, 0, .55),
+        0 0 60px rgba(238, 143, 181, .12)
+}
+
+.pz-tile {
+    border-radius: 6px
+}
+
+.pz-tile::after {
+    box-shadow: inset 0 0 0 1px rgba(255, 214, 228, .12), inset 0 -18px 30px rgba(14, 10, 20, .25)
+}
+
+/* the solved picture gets a soft rose halo */
+.pz-board.pz-done {
+    box-shadow:
+        0 0 0 1px rgba(238, 143, 181, .45),
+        0 14px 40px rgba(0, 0, 0, .55),
+        0 0 80px rgba(238, 143, 181, .3)
+}
+
+/* size choice: lilac-edged glass pills, the picked one glows */
+.pz-size {
+    font: 600 .78rem 'DM Sans', sans-serif;
+    letter-spacing: 1px;
+    padding: 6px 16px;
+    color: var(--mute);
+    background: rgba(24, 18, 33, .75);
+    border: 1px solid rgba(205, 180, 240, .25)
+}
+
+.pz-size:hover,
+.pz-size.on {
+    color: var(--blush);
+    background: linear-gradient(135deg, rgba(238, 143, 181, .32), rgba(205, 180, 240, .22));
+    border-color: rgba(238, 143, 181, .6);
+    box-shadow: 0 0 16px rgba(238, 143, 181, .25)
+}
+
+/* result scoreboard: a framed panel with a rose gradient title */
+.pz-result {
+    background: radial-gradient(ellipse at center, rgba(24, 18, 33, .7), rgba(14, 10, 20, .9))
+}
+
+.pz-res-grade {
+    background: linear-gradient(90deg, #ffd6e4, #ee8fb5 55%, #cdb4f0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent
+}
+
+/* =====================================================================
+   Fixes: (1) the Exit full screen button no longer sits on the board frame,
+   (2) score and title numbers use the solid site colours instead of gradient text
+   ===================================================================== */
+
+/* full screen: leave room under the board so the Exit full screen pill sits below the frame */
+.pz-card.pz-full .pz-stage {
+    padding-bottom: 60px;
+    box-sizing: border-box
+}
+
+.pz-card.pz-full .pz-hud {
+    padding-top: calc(12px + env(safe-area-inset-top, 0px))
+}
+
+/* solid site colour (blush) for every number and title in the two games */
+#runner-score,
+.sb-num,
+.play-title,
+.pz-score b,
+.pz-res-grade {
+    background: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    -webkit-text-fill-color: var(--blush);
+    color: var(--blush);
+    text-shadow: 0 0 14px rgba(238, 143, 181, .35)
+}
+
+/* =====================================================================
+   Straighten Tania: animated background in the site's theme
+   (plum night, rose, lilac and a little sage; slow drifting light, never static)
+   ===================================================================== */
+.pz-card {
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(255, 214, 228, .10), transparent 60%),
+        linear-gradient(160deg, var(--bg) 0%, var(--bg2) 45%, var(--bg) 100%);
+    background-size: 100% 100%, 260% 260%;
+    animation: pzThemeFlow 20s ease-in-out infinite
+}
+
+@keyframes pzThemeFlow {
+    0%, 100% { background-position: 0 0, 0% 0% }
+    50% { background-position: 0 0, 100% 100% }
+}
+
+/* drifting rose, lilac and sage glows, much more visible than before */
+.pz-card::before {
+    background:
+        radial-gradient(circle at 18% 28%, rgba(205, 180, 240, .34), transparent 42%),
+        radial-gradient(circle at 82% 22%, rgba(238, 143, 181, .30), transparent 40%),
+        radial-gradient(circle at 62% 88%, rgba(238, 143, 181, .22), transparent 44%),
+        radial-gradient(circle at 14% 84%, rgba(155, 184, 154, .16), transparent 40%);
+    animation: pzAurora 12s ease-in-out infinite alternate
+}
+
+/* a slow shimmer band crossing the card */
+.pz-card > .card-petals::after {
+    content: "";
+    position: absolute;
+    inset: -50% -20%;
+    background: linear-gradient(115deg, transparent 40%, rgba(255, 214, 228, .07) 50%, transparent 60%);
+    animation: pzShimmer 9s linear infinite;
+    pointer-events: none
+}
+
+@keyframes pzShimmer {
+    from { transform: translateX(-35%) }
+    to { transform: translateX(35%) }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pz-card, .pz-card::before, .pz-card > .card-petals::after { animation: none }
+}
+
+/* =====================================================================
+   Round 3 fixes for Straighten Tania
+   (1) background is clearly animated, also in full screen
+   (2) no horizontal line across the top bar
+   (3) numbers use the site's heading font (Cormorant Garamond), not DM Sans
+   ===================================================================== */
+
+/* (1) the glows travel across the whole card, the base colour drifts too */
+.pz-card,
+.pz-card.pz-full {
+    animation: pzThemeFlow 14s ease-in-out infinite
+}
+
+.pz-card::before {
+    inset: -35%;
+    animation: pzDrift 11s ease-in-out infinite alternate
+}
+
+@keyframes pzDrift {
+    0% { transform: translate3d(-12%, -8%, 0) scale(1) rotate(0deg) }
+    50% { transform: translate3d(10%, 6%, 0) scale(1.18) rotate(6deg) }
+    100% { transform: translate3d(-6%, 10%, 0) scale(1.05) rotate(-4deg) }
+}
+
+/* (2) the top bar has no line of its own */
+.pz-hud,
+.pz-card.pz-full .pz-hud {
+    border: 0;
+    box-shadow: none
+}
+
+.pz-hud::before,
+.pz-hud::after {
+    content: none !important;
+    display: none !important
+}
+
+/* (3) numbers in the site's heading font */
+#runner-score,
+#runner-coin-n,
+#runner-hi,
+.pz-chip b,
+.pz-score b,
+#pz-moves-n,
+#pz-time-n,
+#pz-score-n,
+.sb-num,
+.pz-res-grade {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-variant-numeric: lining-nums;
+    letter-spacing: .5px
+}
+
+#runner-score,
+.pz-score b {
+    font-size: 1.45rem
+}
+
+.pz-chip b {
+    font-size: .95rem
+}
+
+/* =====================================================================
+   Animated background, made clearly visible (site theme colours)
+   ===================================================================== */
+.pz-card,
+.pz-card.pz-full {
+    background:
+        radial-gradient(ellipse 55% 45% at var(--gx, 30%) var(--gy, 30%), rgba(205, 180, 240, .14), transparent 70%),
+        radial-gradient(ellipse 45% 40% at var(--gx2, 75%) var(--gy2, 70%), rgba(238, 143, 181, .13), transparent 70%),
+        radial-gradient(ellipse at 50% 100%, rgba(238, 143, 181, .07), transparent 60%),
+        linear-gradient(160deg, var(--bg) 0%, var(--bg2) 55%, var(--bg) 100%);
+    background-size: 100% 100%, 100% 100%, 100% 100%;
+    animation: pzGlowMove 9s ease-in-out infinite alternate
+}
+
+@property --gx { syntax: '<percentage>'; inherits: false; initial-value: 30% }
+@property --gy { syntax: '<percentage>'; inherits: false; initial-value: 30% }
+@property --gx2 { syntax: '<percentage>'; inherits: false; initial-value: 75% }
+@property --gy2 { syntax: '<percentage>'; inherits: false; initial-value: 70% }
+
+@keyframes pzGlowMove {
+    0% { --gx: 10%; --gy: 20%; --gx2: 90%; --gy2: 80% }
+    50% { --gx: 60%; --gy: 70%; --gx2: 20%; --gy2: 25% }
+    100% { --gx: 35%; --gy: 45%; --gx2: 70%; --gy2: 90% }
+}
+
+.pz-card::before {
+    animation: none;
+    opacity: 0
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pz-card, .pz-card.pz-full { animation: none }
+}
+
+/* =====================================================================
+   Animation that works in every browser: moving glows with transform
+   (no @property, which older browsers ignore and then the glows just sit still)
+   ===================================================================== */
+.pz-card,
+.pz-card.pz-full {
+    background:
+        linear-gradient(160deg, var(--bg) 0%, var(--bg2) 50%, var(--bg) 100%);
+    background-size: 100% 100%;
+    animation: none
+}
+
+/* two big glows that drift across the card, lilac and rose, from the site's palette */
+.pz-card::before {
+    opacity: 1;
+    inset: -30%;
+    background:
+        radial-gradient(circle at 30% 35%, rgba(205, 180, 240, .24), transparent 34%),
+        radial-gradient(circle at 72% 62%, rgba(238, 143, 181, .20), transparent 36%);
+    animation: pzDrift 9s ease-in-out infinite alternate
+}
+
+/* the stars keep twinkling; a soft rose wave rises from the bottom */
+.pz-card > .card-petals::after {
+    background: linear-gradient(0deg, rgba(238, 143, 181, .10), transparent 45%);
+    animation: pzRise 7s ease-in-out infinite alternate
+}
+
+@keyframes pzRise {
+    from { transform: translateY(12%); opacity: .5 }
+    to { transform: translateY(-6%); opacity: 1 }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pz-card::before, .pz-card > .card-petals::after { animation: none }
+}
+
+/* =====================================================================
+   Top bar: same colour as the rest of the card (no lighter band),
+   and the three icons are one fixed rose line-symbol set, not yellow/emoji-like
+   ===================================================================== */
+.pz-hud,
+.pz-card .pz-hud {
+    background: none;
+    background-color: transparent;
+    border: 0;
+    box-shadow: none
+}
+
+.pz-card::after,
+.pz-card > .card-petals {
+    background-clip: border-box
+}
+
+.pz-chip svg,
+.pz-moves svg,
+.pz-time svg,
+.pz-score svg {
+    color: var(--rose);
+    fill: none;
+    stroke: var(--rose);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round
+}
+
+.pz-score {
+    color: var(--blush)
+}
+
+.pz-score svg {
+    color: var(--rose);
+    fill: none;
+    stroke: var(--rose)
+}
+
+/* the top bar no longer blurs the card behind it, so it is the same colour as the rest */
+.pz-hud,
+.pz-card .pz-hud {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none
+}
+
+/* the glows fade out before the top bar, so the top of the card is the same colour as the rest */
+.pz-card::before {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 36%, #000 58%);
+    mask-image: linear-gradient(to bottom, transparent 0%, transparent 36%, #000 58%)
 }
