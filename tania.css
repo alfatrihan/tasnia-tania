@@ -1,0 +1,127 @@
+/* =====================================================================================
+   Tania — the Economics Department guide
+   ---------------------------------------------------------------------------------------
+   Styles only the character layer that tania.js draws inside #map-interior (see map.css /
+   map.js). Positions and sizes are set by tania.js, so these rules are cosmetic.
+   No mask, border, box-shadow or glow is applied to her. The frames are cleaned of their
+   faint haze (see media/frames), so her edge is only her own silhouette.
+   ===================================================================================== */
+
+#tania-guide {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    /* never steals a tap/click from the room behind it */
+    pointer-events: none;
+    opacity: 0;
+    will-change: opacity;
+}
+
+/* butterflies: a full-size layer, drawn behind Tania */
+#tania-fly {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+}
+
+#tania-canvas {
+    position: absolute;
+    display: block;
+    max-width: none;
+}
+
+#tania-bubble {
+    position: absolute;
+    transform: translate(-50%, -100%);
+    max-width: min(46vw, 340px);
+    padding: .6rem .95rem;
+    border-radius: 20px;
+    background: #fff0f8;
+    color: #51254e;
+    border: 2px solid var(--rose, #ee8fb5);
+    font-family: var(--bn-font, 'Hind Siliguri', sans-serif);
+    font-size: clamp(13px, 1.5vw, 17px);
+    font-weight: 600;
+    line-height: 1.45;
+    text-align: center;
+    box-shadow: 0 10px 28px rgba(16, 8, 24, .45);
+    opacity: 0;
+    transition: opacity .35s ease, transform .35s ease;
+    will-change: opacity, transform;
+}
+
+#tania-bubble::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -9px;
+    width: 16px;
+    height: 16px;
+    transform: translateX(-50%) rotate(45deg);
+    background: #fff0f8;
+    border-right: 2px solid var(--rose, #ee8fb5);
+    border-bottom: 2px solid var(--rose, #ee8fb5);
+}
+
+#tania-bubble.show {
+    opacity: 1;
+    transform: translate(-50%, calc(-100% - 10px));
+}
+
+/* wide screens: the bubble sits beside her face, tail pointing back at it */
+#tania-bubble.side {
+    transform: translate(0, -50%);
+}
+
+#tania-bubble.side.show {
+    transform: translate(14px, -50%);
+}
+
+#tania-bubble.side::after {
+    left: -9px;
+    bottom: auto;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    border-right: 0;
+    border-top: 0;
+    border-left: 2px solid var(--rose, #ee8fb5);
+    border-bottom: 2px solid var(--rose, #ee8fb5);
+}
+
+@media (max-width: 700px) {
+    #tania-bubble {
+        font-size: 13px;
+        padding: .5rem .8rem;
+        max-width: 58vw;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #tania-guide,
+    #tania-bubble {
+        transition: opacity .2s linear;
+    }
+}
+
+/* soft shadow behind Tania (placed by tania.js, faded in once she is shown): a dark rose ground shadow */
+#tania-glow {
+    position: absolute;
+    pointer-events: none;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(70, 22, 66, .5), rgba(150, 70, 130, .2) 60%, rgba(150, 70, 130, 0) 100%);
+    opacity: 0;
+}
+
+/* the butterflies are slightly out of focus, like the room */
+#tania-fly {
+    /* no CSS blur here: filters on a layer that redraws every frame make scrolling hang */
+}
+
+/* a real shadow behind Tania: follows her silhouette (not a round patch) */
+#tania-canvas {
+    /* no CSS filter: the shadow is the soft #tania-glow behind her */
+}

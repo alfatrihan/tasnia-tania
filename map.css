@@ -13,8 +13,12 @@
     width: 100vw;
     left: 50%;
     transform: translateX(-50%);
-    height: 650vh;
-    height: 650svh;
+    /* 737.5vh = the old 650vh stretched by 7/6, so everything up through the door opening
+       (t 0-6 below) still happens at exactly the same scroll position as before; the extra
+       length is new, dedicated room for Tania's butterfly/zoom/reveal/scrub sequence (t 6-7),
+       which no longer has to share scroll distance with the door-opening animation. */
+    height: 737.5vh;
+    height: 737.5svh;
 }
 
 #about .map-sticky {
@@ -175,9 +179,15 @@ html[lang="bn"] .lang-en { display: none !important; }
     visibility: hidden;
     will-change: opacity;
 }
-.map-interior-art { position: absolute; inset: 0; }
+/* the room sits a little out of focus so Tania (a sibling layer, not blurred) stands out.
+   inset -12px keeps the blur from fading out at the screen edges */
+.map-interior-art {
+    position: absolute;
+    inset: -12px;   /* tania.js blurs this layer gradually during the zoom */
+}
 .map-interior-art svg { width: 100%; height: 100%; display: block; }
 .map-inside-cap {
+    display: none;   /* the 'Inside the Economics Department' caption is removed */
     position: absolute;
     left: 0; right: 0;
     bottom: 9%;
