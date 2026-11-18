@@ -72,6 +72,10 @@
               <g id="map-pins"></g>
             </svg>
           </div>
+          <div class="map-interior" id="map-interior" aria-hidden="true">
+            <div class="map-interior-art" id="map-interior-art"></div>
+            <p class="map-inside-cap"><span class="lang-en">Inside the Economics Department</span><span class="lang-bn">অর্থনীতি বিভাগের ভেতরে</span></p>
+          </div>
         </div>
       </div>
       <p class="words">Write a short, warm introduction here. Who she is, how you met, and what first made you think:
@@ -377,25 +381,26 @@
       <p class="tap" id="runner-hint">Tap, click or press Space to jump</p>
     </section>
   </main>
-  <footer>
-    <p class="footer-note">A little gift for <span>Tania</span> &#10022;</p>
-    <div class="dev-trigger-wrap">
-      <button type="button" id="devInfoBtn" class="dev-pill-trigger" title="Developer Info" aria-label="Developer Info">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="16" x2="12" y2="12" />
-          <line x1="12" y1="8" x2="12.01" y2="8" />
-        </svg>
-        <span>Developer Info</span>
-      </button>
+  <footer id="footer">
+    <!-- tall scroll track: the panel inside stays pinned while the visitor keeps scrolling,
+         the thank-you words appear one by one, and only then the developer button arrives -->
+    <div class="footer-track" id="footer-track">
+      <div class="footer-stick">
+        <p class="fw" id="footerWords">Thanks so much for taking the time to scroll all the way down here!</p>
+        <div class="dev-trigger-wrap" id="devTriggerWrap">
+          <button type="button" id="devInfoBtn" class="dev-pill-trigger" title="Developer Info" aria-label="Developer Info">
+            <svg class="dev-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline><line x1="14" y1="4" x2="10" y2="20"></line></svg>
+            <span>Developer Info</span>
+          </button>
+        </div>
+      </div>
     </div>
-
   </footer>
 
     <!-- Developer Information Modal -->
     <div id="devModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="devModalTitle">
-      <div class="modal-card dev-modal-card">
+      <div class="paper-wrap">
+      <div class="modal-card dev-modal-card dev-paper">
         <div class="modal-head dev-modal-head">
           <div>
             <span class="eyebrow">ABOUT THE CREATOR</span>
@@ -416,8 +421,10 @@
         </p>
 
         <div class="dev-profile-box">
-          <img src="images/developer-photo.png" alt="Alfat Rihan" class="dev-avatar-img"
-            onerror="this.style.display='none'">
+          <span class="dev-avatar" aria-hidden="true">
+            <span class="dev-avatar-initials">AR</span>
+            <img src="images/developer-photo.png" alt="Alfat Rihan" onerror="this.remove()">
+          </span>
           <h3 class="dev-name">Alfat Rihan</h3>
           <p class="dev-edu">B.Sc. in Computer Science &amp; Engineering (CSE), North South University</p>
         </div>
@@ -455,6 +462,7 @@
           “Logic builds the screen, but friendship gives it a soul.”
         </blockquote>
       </div>
+      </div>
     </div>
   <!-- Music toggle button -->
   <button id="musicFab" type="button" aria-label="Turn music on or off" title="Music">&#9835;</button>
@@ -462,6 +470,7 @@
   <button id="langBtn" type="button" aria-label="Change language">বাংলা</button>
 
   <script src="script.js"></script>
+  <script src="footer.js"></script>
   <script src="data/world.js"></script>
   <script src="data/bangladesh.js"></script>
   <script src="data/bogura.js"></script>

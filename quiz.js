@@ -21,12 +21,12 @@
     const T = {
         en: { title: 'How well do you know her?', intro: 'Answer 15 random questions and find out how well you know Tania.',
               start: 'Start', submit: 'Submit', replay: 'Play again', right: 'correct answers',
-              hi: 'You really know me! Thank you for paying attention.',
+              hi: 'You really know me!',
               mid: 'You know me quite well, but there is still more to learn about me.',
               low: 'No, you do not know me that well yet!' },
         bn: { title: 'তাকে তুমি কতটা চেনো?', intro: 'এলোমেলো ১৫টি প্রশ্নের উত্তর দাও, দেখো তানিয়াকে তুমি কতটা চেনো।',
               start: 'শুরু করো', submit: 'সাবমিট', replay: 'আবার খেলো', right: 'সঠিক উত্তর',
-              hi: 'তুমি সত্যিই আমাকে চেনো! মনোযোগ দিয়ে দেখার জন্য ধন্যবাদ।',
+              hi: 'তুমি সত্যিই আমাকে চেনো!',
               mid: 'তুমি আমাকে বেশ ভালো চেনো, তবে আমার সম্পর্কে আরও কিছু জানার বাকি আছে।',
               low: 'না, তুমি আমাকে এখনো ততটা চেনো না!' }
     };

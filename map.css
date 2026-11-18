@@ -13,8 +13,8 @@
     width: 100vw;
     left: 50%;
     transform: translateX(-50%);
-    height: 200vh;
-    height: 200svh;
+    height: 650vh;
+    height: 650svh;
 }
 
 #about .map-sticky {
@@ -117,12 +117,20 @@
     font-weight: 400;
 }
 
+/* readability pass, kept cheap: an SVG filter here was re-computed on every scroll frame for every
+   label (including all 64 district names) and was itself causing the hang, so it has been removed.
+   The dark outline (paint-order: stroke, set above) already gives the contrast; map.js now makes
+   that outline thicker specifically on the named places, which is a plain stroke, not a filter. */
+
 /* show only the language chosen with the EN / বাংলা button */
 html[lang="en"] .lang-bn { display: none !important; }
 html[lang="bn"] .lang-en { display: none !important; }
 
 /* illustrative city: buildings and roads (drawn and animated by map.js) */
-#map-svg #map-city { transition: opacity .3s; }
+#map-svg #map-city {
+    pointer-events: none;      /* thousands of shapes: skip hit-testing on all of them */
+    shape-rendering: optimizeSpeed;   /* cheaper anti-aliasing for this very busy group */
+}
 
 #map-svg .b {
     fill: #3f2f56;
@@ -144,4 +152,89 @@ html[lang="bn"] .lang-en { display: none !important; }
     stroke-width: 1.4;
     stroke-dasharray: 6 6;
     vector-effect: non-scaling-stroke;
+}
+
+/* 3D look for the buildings: shaded right side, lighter roof, warm windows on the detailed blocks */
+#map-svg .bs { fill: #24192f; fill-opacity: .95; stroke: none; }
+#map-svg .bs.c1 { fill: #9b82c0; }
+#map-svg .bs.c2 { fill: #b8497a; }
+#map-svg .br { fill: #5b4679; fill-opacity: .95; stroke: #ffd6e4; stroke-opacity: .25; stroke-width: .6; vector-effect: non-scaling-stroke; }
+#map-svg .br.c1 { fill: #eadcf5; }
+#map-svg .br.c2 { fill: #ffc2d6; }
+#map-svg .wn { fill: url(#win); fill-opacity: .8; pointer-events: none; }
+
+/* inside the department building: the view fades in as the camera goes through the door */
+.map-interior {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform-origin: 50% 50%;
+    background: #0e0a14;
+    visibility: hidden;
+    will-change: opacity;
+}
+.map-interior-art { position: absolute; inset: 0; }
+.map-interior-art svg { width: 100%; height: 100%; display: block; }
+.map-inside-cap {
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 9%;
+    margin: 0;
+    text-align: center;
+    z-index: 2;
+    color: #ffd6e4;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', serif;
+    font-size: clamp(18px, 2.6vw, 28px);
+    letter-spacing: .04em;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, .7);
+}
+
+/* v2: building fronts use a soft gradient; detailed blocks get a ground shadow; roads slowly flow */
+#map-svg .b { fill: url(#bg0); fill-opacity: .82; }
+#map-svg .b.c1 { fill: url(#bg1); fill-opacity: .72; }
+#map-svg .b.c2 { fill: url(#bg2); fill-opacity: .8; }
+#map-svg .sh { fill: #05030a; fill-opacity: .45; stroke: none; }
+
+/* v3: more realistic buildings, trees, asphalt roads; vignette inside the room */
+#map-svg .b { stroke: #ffd6e4; stroke-opacity: .22; }
+#map-svg .bs { fill: #1a1226; }
+#map-svg .br { fill: #7a63a3; fill-opacity: .85; }
+#map-svg .br.c1 { fill: #f6ebf2; fill-opacity: .75; }
+#map-svg .br.c2 { fill: #ffd6e4; fill-opacity: .8; }
+#map-svg .ru { fill: #3b2d52; stroke: #ffd6e4; stroke-opacity: .35; stroke-width: .5; vector-effect: non-scaling-stroke; }
+#map-svg .tr { pointer-events: none; }
+#map-svg .road-base { fill: none; stroke: #120c1c; stroke-opacity: .85; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+#map-svg .road { stroke: #ffd6e4; stroke-opacity: .55; stroke-width: 1.2; }
+#map-svg .hero { pointer-events: none; }
+.map-interior::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 46%, transparent 45%, rgba(8, 4, 14, .55) 100%);
+}
+
+/* v5: the department and the city around it are one real 3D scene, drawn by map.js on a canvas
+   (a single perspective camera, depth-sorted far to near, with haze). The flat SVG map sits underneath and
+   cross-fades into it while the view is still top-down, so the hand-over is invisible. */
+.map-frame { contain: layout paint; }
+#map-3d {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: none;          /* map.js shows it only for the last stretch of the scroll */
+    opacity: 0;
+    pointer-events: none;
+    will-change: opacity;   /* the only compositor hint: opacity is all that changes on the element itself */
+}
+/* a static vignette (painted once, never re-rendered) pulls the eye to the building and darkens the screen edge */
+.map-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 55%, transparent 55%, rgba(8, 4, 14, .38) 100%);
 }

@@ -218,38 +218,52 @@ const meter = () => { const v = +rng.value; ml.textContent = L[v < 25 ? 0 : v < 
 let ran = 0; new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting && !ran) { ran = 1; const t0 = performance.now(); (function f(t) { const k = clamp((t - t0) / 2200); rng.value = Math.round(72 * ease(k)); meter(); if (k < 1) requestAnimationFrame(f) })(t0) } }), { threshold: .6 }).observe(rng);
 G('env').onclick = () => { const e = G('env'); e.classList.add('open'); G('hint').style.display = 'none'; setTimeout(() => { G('paper').classList.add('show'); for (let i = 0; i < 30; i++)spawn(Math.random() * W, H * .3, 1, 0) }, 900) };
 
-// ---------- Developer Info Modal Logic ----------
-const devInfoBtn = G('devInfoBtn');
-const devModal = G('devModal');
+// ---------- Developer Info modal: opens straight away ----------
+(() => {
+    const button = document.getElementById('devInfoBtn');
+    const modal = document.getElementById('devModal');
+    if (!button || !modal) return;
 
-if (devInfoBtn && devModal) {
-    const closeBtn = devModal.querySelector('.close-modal');
+    const closeButton = modal.querySelector('.close-modal');
+    let open = false;
+    let lastFocus = null;
+    let closeTimer = 0;
 
-    devInfoBtn.onclick = (e) => {
-        e.stopPropagation();
-        devModal.classList.remove('hidden');
-    };
-
-    if (closeBtn) {
-        closeBtn.onclick = (e) => {
-            e.stopPropagation();
-            devModal.classList.add('hidden');
-        };
+    function openInfo() {
+        if (open) return;
+        open = true;
+        lastFocus = document.activeElement;
+        clearTimeout(closeTimer);
+        modal.classList.remove('hidden', 'closing');
+        modal.setAttribute('aria-hidden', 'false');
+        button.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('dev-modal-open');
+        if (closeButton) closeButton.focus({ preventScroll: true });
     }
 
-    devModal.onclick = (e) => {
-        if (e.target === devModal) {
-            devModal.classList.add('hidden');
-        }
-    };
+    function closeInfo() {
+        if (!open) return;
+        open = false;
+        modal.classList.remove('unfold');
+        modal.classList.add('closing');
+        modal.setAttribute('aria-hidden', 'true');
+        button.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('dev-modal-open');
+        closeTimer = setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('closing');
+            if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+        }, 380);
+    }
 
-    addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !devModal.classList.contains('hidden')) {
-            devModal.classList.add('hidden');
-        }
-    });
-}
-
+    button.setAttribute('aria-haspopup', 'dialog');
+    button.setAttribute('aria-expanded', 'false');
+    modal.setAttribute('aria-hidden', 'true');
+    button.addEventListener('click', openInfo);
+    if (closeButton) closeButton.addEventListener('click', closeInfo);
+    modal.addEventListener('click', e => { if (e.target === modal) closeInfo(); });
+    document.addEventListener('keydown', e => { if (open && e.key === 'Escape') closeInfo(); });
+})();
 // ---------- One photo at a time (gallery carousel with dots) ----------
 $('.gallery').forEach(g => {
     const cards = [...g.querySelectorAll('.flip')];

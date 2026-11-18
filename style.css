@@ -751,10 +751,7 @@ input[type=range] {
 footer {
     position: relative;
     z-index: 2;
-    text-align: center;
     color: var(--mute);
-    padding: 40px 20px 50px;
-    border-top: 1px solid var(--line);
     font-size: .85rem
 }
 
@@ -799,27 +796,74 @@ footer {
     }
 }
 
-/* ---------- Footer & Developer Info Trigger ---------- */
-.footer-note {
+/* ---------- Footer: pinned panel, words light up on scroll, then the Developer button ---------- */
+.footer-track {
+    position: relative;
+    height: 230vh;
+    --fp: 0;
+}
+
+.footer-stick {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 26px;
+    overflow: hidden;
+}
+
+.footer-stick > * { position: relative; }
+
+/* the thank-you message: every word starts blurred and dim, then clears as you scroll */
+.fw {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.15rem;
-    font-style: italic;
-    color: var(--mute);
-    margin-bottom: 14px;
+    font-size: clamp(1.2rem, 4.8vw, 2rem);
+    font-weight: 500;
+    line-height: 1.42;
+    letter-spacing: .2px;
+    max-width: 20em;
+    margin: 0 auto;
+    text-wrap: balance;
+    color: var(--blush);
 }
 
-.footer-note span {
-    color: var(--rose);
-    font-weight: 600;
+.fw .w {
+    color: var(--blush);
+    opacity: .12;
+    filter: blur(5px);
+    transition: opacity .8s ease, filter .8s ease;
 }
 
+.fw .w.lit {
+    color: var(--blush);
+    opacity: 1;
+    filter: none;
+}
+
+html[lang="bn"] .fw {
+    font-family: var(--bn-font);
+    font-size: clamp(1.05rem, 4.4vw, 1.7rem);
+    line-height: 1.75;
+    letter-spacing: 0;
+}
+
+/* the button arrives after the words (footer.js sets its opacity and position) */
 .dev-trigger-wrap {
     display: flex;
     justify-content: center;
-    margin-top: 6px;
+    margin-top: 44px;
+    opacity: 0;
+    will-change: opacity, transform;
 }
 
+/* Developer button: the original pill; only a ring keeps rippling outward around it */
 .dev-pill-trigger {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -833,14 +877,28 @@ footer {
     background: linear-gradient(145deg, #1f162b, #140e1c);
     border: 1px solid var(--line);
     cursor: pointer;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35), 0 0 15px rgba(238, 143, 181, 0.08);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
     transition: all 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+    -webkit-tap-highlight-color: transparent;
 }
 
-.dev-pill-trigger svg {
-    color: var(--rose);
-    transition: transform 0.3s ease;
+.dev-pill-trigger::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    border: 1px solid var(--rose);
+    pointer-events: none;
+    animation: devRing 1.6s ease-out infinite;
 }
+
+.dev-pill-trigger .dev-icon {
+    flex-shrink: 0;
+    color: var(--rose);
+    transition: color .3s ease;
+}
+
+.dev-pill-trigger:hover .dev-icon { color: var(--blush); }
 
 .dev-pill-trigger:hover {
     color: var(--ink);
@@ -850,11 +908,19 @@ footer {
     transform: translateY(-2px);
 }
 
-.dev-pill-trigger:hover svg {
-    transform: rotate(15deg) scale(1.1);
+.dev-pill-trigger:active { transform: translateY(0) scale(.96); }
+
+.dev-pill-trigger:focus-visible {
+    outline: 2px solid var(--blush);
+    outline-offset: 5px;
 }
 
-/* ---------- Developer Modal Overlay & Card ---------- */
+@keyframes devRing {
+    0% { transform: scale(1); opacity: .55; }
+    100% { transform: scale(1.18, 1.5); opacity: 0; }
+}
+
+/* ---------- Developer info: the card unfolds into a floating paper ---------- */
 .modal {
     position: fixed;
     inset: 0;
@@ -862,12 +928,12 @@ footer {
     display: grid;
     place-items: center;
     padding: 20px;
-    background: rgba(10, 6, 15, 0.78);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(10, 6, 15, .72);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     opacity: 1;
     visibility: visible;
-    transition: opacity 0.35s ease, visibility 0.35s ease;
+    transition: opacity .4s ease, visibility .4s ease;
 }
 
 .modal.hidden {
@@ -876,21 +942,132 @@ footer {
     pointer-events: none;
 }
 
-.dev-modal-card {
-    width: min(100%, 420px);
-    padding: 24px 22px 20px;
-    text-align: center;
-    background: linear-gradient(165deg, #1f162b 0%, var(--bg2) 60%, var(--bg) 100%);
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.75), 0 0 40px rgba(238, 143, 181, 0.14);
-    transform: translateY(0) scale(1);
-    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+.ph {
+    position: absolute;
+    left: 0;
+    width: 150px;
+    height: 50px;
+    overflow: hidden;
 }
 
-.modal.hidden .dev-modal-card {
-    transform: translateY(20px) scale(0.95);
+.ph svg {
+    position: absolute;
+    left: 0;
+    width: 150px;
+    height: 100px;
+    display: block;
 }
+
+
+/* the paper: starts folded shut, then opens upward and keeps floating */
+.paper-wrap {
+    position: relative;
+    width: min(100%, 420px);
+    opacity: 0;
+    will-change: transform, opacity;
+}
+
+/* the paper unfolds slowly: it opens from its centre crease outward, tilting toward the viewer */
+.modal.unfold .paper-wrap {
+    animation: paperUnfold 2s cubic-bezier(.3, .1, .2, 1) 0s forwards;
+}
+
+/* fold lines across the paper, fading away as it flattens */
+.paper-wrap::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    border-radius: 6px 6px 14px 14px;
+    pointer-events: none;
+    opacity: 0;
+    background:
+        linear-gradient(to bottom, transparent calc(33.3% - 8px), rgba(0, 0, 0, .35) 33.3%, rgba(255, 255, 255, .08) calc(33.3% + 2px), transparent calc(33.3% + 10px)),
+        linear-gradient(to bottom, transparent calc(66.6% - 8px), rgba(0, 0, 0, .35) 66.6%, rgba(255, 255, 255, .08) calc(66.6% + 2px), transparent calc(66.6% + 10px));
+}
+
+.modal.unfold .paper-wrap::before {
+    animation: creaseFade 2.4s ease 0s forwards;
+}
+
+@keyframes creaseFade {
+    0% { opacity: 1; }
+    55% { opacity: .85; }
+    100% { opacity: 0; }
+}
+
+@keyframes paperUnfold {
+    0% { opacity: 0; transform: perspective(1400px) rotateX(-62deg) scale(.82); clip-path: inset(47% -100px 47% -100px); }
+    18% { opacity: 1; }
+    100% { opacity: 1; transform: perspective(1400px) rotateX(0deg) scale(1); clip-path: inset(-100px -100px -100px -100px); }
+}
+
+.modal.unfold .paper-wrap .dev-paper {
+    animation: paperFloat 6.5s ease-in-out 3.7s infinite;
+}
+
+.modal.unfold .dev-paper > * {
+    animation: contentIn 1s ease both;
+}
+
+.modal.unfold .dev-paper > :nth-child(1) { animation-delay: .3s; }
+.modal.unfold .dev-paper > :nth-child(2) { animation-delay: .4s; }
+.modal.unfold .dev-paper > :nth-child(3) { animation-delay: .5s; }
+.modal.unfold .dev-paper > :nth-child(4) { animation-delay: .6s; }
+.modal.unfold .dev-paper > :nth-child(5) { animation-delay: .7s; }
+
+@keyframes cardOpen {
+    from { opacity: 0; transform: scale(.7); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes contentIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+}
+
+/* a soft, uneven drift once the paper is unfolded - more "floating", less metronome */
+@keyframes paperFloat {
+    0% { transform: translateY(0) translateX(0) rotate(-.4deg); }
+    22% { transform: translateY(-8px) translateX(3px) rotate(.3deg); }
+    48% { transform: translateY(-14px) translateX(-3px) rotate(.7deg); }
+    74% { transform: translateY(-5px) translateX(2px) rotate(-.3deg); }
+    100% { transform: translateY(0) translateX(0) rotate(-.4deg); }
+}
+
+/* a light sweep passes over the paper right as the fold opens, like catching the light */
+.modal.unfold .dev-paper {
+    overflow: hidden;
+    position: relative;
+}
+
+.modal.unfold .dev-paper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 25%, rgba(255, 255, 255, .3) 46%, rgba(255, 255, 255, .5) 50%, rgba(255, 255, 255, .3) 54%, transparent 75%);
+    transform: translateX(-130%);
+    animation: paperSweep 1.4s ease 2.6s both;
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
+
+@keyframes paperSweep {
+    to { transform: translateX(130%); }
+}
+
+/* dark paper in the site's theme colours */
+.dev-paper {
+    position: relative;
+    width: 100%;
+    padding: 26px 24px 22px;
+    text-align: center;
+    background: linear-gradient(165deg, #1d1528 0%, #140e1d 100%);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .7);
+}
+
 
 .dev-modal-head {
     display: flex;
@@ -963,20 +1140,38 @@ footer {
     box-shadow: inset 0 0 24px rgba(238, 143, 181, 0.05);
 }
 
-.dev-avatar-img {
-    width: 82px;
-    height: 82px;
+.dev-avatar {
+    position: relative;
+    width: 84px;
+    height: 84px;
+    margin-bottom: 8px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--rose);
+    background: linear-gradient(145deg, #2b1d3a, #140e1d);
+    box-shadow: 0 0 24px rgba(238, 143, 181, 0.28);
+}
+
+.dev-avatar-initials {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    color: var(--blush);
+}
+
+.dev-avatar img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    display: block;
-    margin-bottom: 6px;
-    border: 2px solid var(--rose);
-    box-shadow: 0 0 24px rgba(238, 143, 181, 0.3);
 }
 
 .dev-name {
-    font-size: 1.35rem;
-    font-weight: 600;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 500;
     color: var(--blush);
 }
 
@@ -1031,6 +1226,11 @@ footer {
     padding-top: 12px;
     border-top: 1px solid var(--line);
 }
+
+@media (prefers-reduced-motion: reduce) {
+    .paper-wrap { opacity: 1; }
+}
+
 /* ===== Music button ===== */
 #musicFab {
   position: fixed; right: 18px; bottom: 18px; z-index: 150; width: 46px; height: 46px;
@@ -1745,3 +1945,103 @@ html[lang="bn"] .qz-q {
 
 /* Instagram like hearts stay white in every language */
 .soc-heart-ico, .soc-heart svg, html[lang="bn"] .soc-heart-ico { fill: #fff !important; color: #fff !important }
+
+
+/* ---------- Developer Info modal: viewport-safe layout and accessible states ---------- */
+body.dev-modal-open {
+    overflow: hidden;
+}
+
+#devModal {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+#devModal .paper-wrap {
+    width: min(100%, 440px);
+    max-height: calc(100svh - 40px);
+    margin: auto;
+}
+
+#devModal .dev-paper {
+    max-height: calc(100svh - 40px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+#devModal[aria-hidden="true"] {
+    pointer-events: none;
+}
+
+#devModal.closing {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .36s ease, visibility .36s ease;
+}
+
+#devModal .close-modal:focus-visible,
+#devModal .dev-social-btn:focus-visible {
+    outline: 2px solid var(--blush);
+    outline-offset: 3px;
+}
+
+@media (max-width: 520px) {
+    #devModal {
+        place-items: center;
+        padding: max(12px, env(safe-area-inset-top))
+                 max(12px, env(safe-area-inset-right))
+                 max(12px, env(safe-area-inset-bottom))
+                 max(12px, env(safe-area-inset-left));
+    }
+
+    #devModal .paper-wrap {
+        width: 100%;
+        max-height: calc(100svh - 24px);
+    }
+
+    #devModal .dev-paper {
+        max-height: calc(100svh - 24px);
+        padding: 22px 17px 18px;
+    }
+
+    #devModal .dev-modal-head h2 {
+        font-size: clamp(1.2rem, 6vw, 1.5rem);
+    }
+
+    #devModal .dev-social-row {
+        gap: 7px;
+    }
+
+    #devModal .dev-social-btn {
+        padding: 10px 5px;
+        gap: 4px;
+        font-size: .72rem;
+    }
+
+}
+
+@media (max-height: 620px) {
+    #devModal {
+        place-items: start center;
+    }
+
+    #devModal .paper-wrap,
+    #devModal .dev-paper {
+        max-height: calc(100svh - 24px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #devModal *,
+    #devModal *::before,
+    #devModal *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+    }
+}
+
+/* the developer card appears straight away when the button is pressed */
+#devModal:not(.hidden) .paper-wrap { opacity: 1; }
