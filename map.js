@@ -19,7 +19,8 @@
         [89.33, 89.38, 24.82, 24.87],   // 3 Govt. Azizul Haque College
         [89.35, 89.37, 24.835, 24.855],  // 4 economics department
         [89.35996, 89.36004, 24.844872, 24.844878],  // 5 at the department door (the 3D camera ends here)
-        [89.35996, 89.36004, 24.844872, 24.844878]   // 6 inside the building (held)
+        [89.35996, 89.36004, 24.844872, 24.844878],  // 6 inside the building (held)
+        [89.35996, 89.36004, 24.844872, 24.844878]   // 7 held again: extra scroll room for Tania (tania.js), t 6-7
     ];
 
     // from = scroll position (0-4) where the pin starts to appear
@@ -302,13 +303,6 @@
     const heroG = mk('g', { transform: 'translate(89.36 -24.8445) scale(0.00003)' }, 'hero');
     heroG.style.opacity = 0;
     const hz = (tag, attrs) => heroG.appendChild(mk(tag, Object.assign({ 'vector-effect': 'non-scaling-stroke' }, attrs)));
-    hz('rect', { x: -95, y: -75, width: 190, height: 150, rx: 14, fill: '#2f4a38', 'fill-opacity': '.6' });   // lawn
-    hz('path', { d: 'M-12 75L12 75L8 42L-8 42Z', fill: '#cdb4f0', 'fill-opacity': '.4' });                // path to the door
-    hz('rect', { x: -36, y: -24, width: 72, height: 46, rx: 2, fill: '#efe3fa', stroke: '#ee8fb5', 'stroke-width': 2 }); // roof
-    hz('rect', { x: -26, y: -16, width: 52, height: 30, fill: 'none', stroke: '#9f86c4', 'stroke-width': 1 });
-    hz('rect', { x: -12, y: 22, width: 24, height: 12, fill: '#ffd6e4', stroke: '#ee8fb5', 'stroke-width': 1.5 }); // portico
-    [-9, -3, 3, 9].forEach(cx => hz('circle', { cx, cy: 28, r: 1.8, fill: '#7a63a3' }));
-    hz('ellipse', { cx: 2, cy: 52, rx: 40, ry: 7, fill: '#05030a', 'fill-opacity': '.4' });
 
     cityG.after(heroG);
 
@@ -357,13 +351,11 @@
 
     // the college and the department grow in steadily as the zoom reaches them (bold, with a short description)
     addLabel({ en: 'Govt. Azizul Haque College', bn: 'গভর্নমেন্ট আজিজুল হক কলেজ',
-        dEn: 'College of Bogura', dBn: 'গভর্নমেন্ট কলেজ অফ বগুড়া',
         lon: 89.3566, lat: 24.8464, pos: 't', cls: 'poi', withDot: false,
         op: t => clamp((t - 1.8) / 0.4) * (1 - clamp((t - 3.3) / 0.4)),
         px: t => lerp(6, 40, clamp((t - 1.8) / 1.5)),
         dpx: t => lerp(4, 12, clamp((t - 1.8) / 1.5)) });
     addLabel({ en: 'Economics Department', bn: 'অর্থনীতি বিভাগ',
-        dEn: 'Social Science', dBn: 'সমাজবিজ্ঞান',
         lon: 89.36, lat: 24.845, pos: 'b', cls: 'poi', withDot: false,
         op: t => clamp((t - 3.0) / 0.4) * (1 - clamp((t - 3.9) / 0.35)),
         px: t => lerp(6, 34, clamp((t - 3.0) / 1.0)),
@@ -379,7 +371,21 @@
 
     let ratio = 0.6;   // height / width of the map box
     let pxW = 760;     // width of the map box in pixels
+    // scroll budget: the zoom from Bangladesh to the department (t 0-4) gets PRE_FAST times less scroll;
+    // the rest (t 4-7, the building, the room and Tania) keeps exactly the same scroll distance and speed
+    const PRE_FAST = 2;
+    let PRE_PX = 1, POST_PX = 1, EXTRA_PX = 1;
+    // extra scroll length after the room is fully shown (t stays 7): Tania's 12 frames are played one by one over it
+    const FRAME_SCROLL_VH = 1.6;
     function measure() {
+        // remember the original scroll length once (from the CSS height), then size the track to the new budget
+        if (!track.dataset.origSpan) track.dataset.origSpan = String(track.offsetHeight - innerHeight);
+        const orig = +track.dataset.origSpan, lead0 = innerHeight * 0.25;
+        const span = Math.max(1, orig - lead0);
+        POST_PX = span * 3 / 7;
+        PRE_PX = span * 4 / 7 / PRE_FAST;
+        EXTRA_PX = innerHeight * FRAME_SCROLL_VH;
+        track.style.height = (innerHeight + lead0 + PRE_PX + POST_PX + EXTRA_PX) + 'px';
         const r = svg.getBoundingClientRect();
         if (r.width) {
             ratio = r.height / r.width; pxW = r.width;
@@ -400,6 +406,14 @@
             cy: -(y1 + y2) / 2,
             w: Math.max(x2 - x1, (y2 - y1) / ratio) * (ratio > 1.2 ? 1.25 : 1.1)   // tall phone screens get extra side room for the names
         };
+    }
+
+    // a name must fit inside the visible map: its font size is capped so the text width stays within 90% of
+    // the view (measured once per element, the width scales linearly with the font size)
+    function fitName(el, want, viewW) {
+        const cur = parseFloat(el.getAttribute('font-size'));
+        if (el._k === undefined && cur > 0) { const L = el.getComputedTextLength(); if (L > 0) el._k = L / cur; }
+        return el._k ? Math.min(want, 0.9 * viewW / el._k) : want;
     }
 
     const POS_SET = (el, x, y, anchor) => {
@@ -444,7 +458,7 @@
         return Array.from({ length: LV }, (_, L) => faces.map(f => mixc(f, FOGC, L / (LV - 1) * 0.94)));
     });
     // lot, road, lawn, path, canopy light, canopy dark, trunk, lamp post
-    const GROUND = [[44, 34, 66], [24, 18, 36], [46, 78, 58], [150, 128, 178], [112, 160, 118], [60, 104, 76], [74, 52, 40], [42, 29, 64]];
+    const GROUND = [[44, 34, 66], [24, 18, 36], [18, 13, 22], [150, 128, 178], [112, 160, 118], [60, 104, 76], [74, 52, 40], [42, 29, 64]];
     const GC = GROUND.map(c => Array.from({ length: LV }, (_, L) => mixc(c, FOGC, L / (LV - 1) * 0.94)));
     const FOG_RGBA = Array.from({ length: LV }, (_, L) => 'rgba(' + FOGC + ',' + (L / (LV - 1) * 0.94).toFixed(3) + ')');
 
@@ -494,7 +508,13 @@
         const img = new Image();
         img.onload = () => {
             facade.width = 1024; facade.height = 928;
-            facade.getContext('2d').drawImage(img, 0, 0, 1024, 928);
+            const fc = facade.getContext('2d');
+            fc.drawImage(img, 0, 0, 1024, 928);
+            // tint the painted front to the site's plum-rose palette (multiply keeps the windows, lamps and trim)
+            fc.globalCompositeOperation = 'multiply';
+            fc.fillStyle = '#d7a6c6';
+            fc.fillRect(0, 0, facade.width, facade.height);
+            fc.globalCompositeOperation = 'source-over';
             facadeReady = true; lastCamKey = '';
             wake();
         };
@@ -672,6 +692,39 @@
         if (pr > 4) { ctx.fillStyle = GC[4][L]; ctx.beginPath(); ctx.arc(px - pr * 0.28, py - pr * 0.3, pr * 0.58, 0, 6.2832); ctx.fill(); }
     }
 
+    // a realistic tree for the avenue: a tapered trunk, a canopy made of several overlapping leafy masses,
+    // darker underneath and lit from the upper left, with a soft shadow on the ground. Each tree gets its own shape.
+    function drawAvenueTree(x, z, r) {
+        const dx = x - kx, dz = z - kz;
+        const cb = -(0 - ky) * ksn + dz * kcs;                      // trunk base depth
+        if (cb < NEAR) return;
+        const sb = kf / cb, bx = khw + dx * sb, by = khh - ((0 - ky) * kcs + dz * ksn) * sb;
+        const cy = r * 2.6;                                         // canopy centre height
+        const czc = -(cy - ky) * ksn + dz * kcs;
+        if (czc < NEAR) return;
+        const s = kf / czc, px = khw + dx * s, py = khh - ((cy - ky) * kcs + dz * ksn) * s, pr = r * s;
+        if (px < -pr * 3 || px > cW + pr * 3 || py < -pr * 3 || by < -pr * 3) return;
+        const L = lvl(Math.sqrt(dx * dx + (cy - ky) * (cy - ky) + dz * dz));
+        if (pr < 2.2) { ctx.fillStyle = GC[5][L]; ctx.fillRect(px - pr, py - pr, pr * 2, pr * 2); return; }
+        // ground shadow, cast away from the sun (south-west light)
+        ctx.globalAlpha = 0.32 * (1 - L / (LV - 1));
+        ctx.fillStyle = '#05030a'; ctx.beginPath(); ctx.ellipse(bx + pr * 0.35, by, pr * 0.95, pr * 0.28, 0, 0, 6.2832); ctx.fill();
+        ctx.globalAlpha = 1;
+        // trunk: narrows toward the crown
+        const tw0 = Math.max(0.8, 0.22 * s * r), tw1 = tw0 * 0.55;
+        ctx.fillStyle = GC[6][L];
+        ctx.beginPath(); ctx.moveTo(bx - tw0, by); ctx.lineTo(px - tw1, py); ctx.lineTo(px + tw1, py); ctx.lineTo(bx + tw0, by); ctx.closePath(); ctx.fill();
+        // canopy: a few leafy masses around the centre, each a little different in size and position
+        const masses = [[0, 0, 1], [-0.52, 0.12, 0.72], [0.5, 0.18, 0.7], [-0.15, -0.5, 0.66], [0.22, -0.32, 0.6]];
+        masses.forEach(([ox, oy, k], m) => {
+            const jx = (hash(Math.round(x * 10), Math.round(z * 10), 70 + m) - 0.5) * 0.14;
+            const jy = (hash(Math.round(x * 10), Math.round(z * 10), 80 + m) - 0.5) * 0.14;
+            const cx = px + (ox + jx) * pr, cyy = py + (oy + jy) * pr, rad = pr * k * 0.78;
+            ctx.fillStyle = GC[5][L]; ctx.beginPath(); ctx.arc(cx, cyy, rad, 0, 6.2832); ctx.fill();
+            ctx.fillStyle = GC[4][L]; ctx.beginPath(); ctx.arc(cx - rad * 0.3, cyy - rad * 0.32, rad * 0.55, 0, 6.2832); ctx.fill();
+        });
+    }
+
     function drawLamp(x, z) {
         const dx = x - kx, dz = z - kz, ch = 4.6, czt = -(ch - ky) * ksn + dz * kcs;
         if (czt < NEAR) return;
@@ -710,10 +763,12 @@
             if (pj(x1, y, 0) < NEAR) { ok = false; break; } bXR[b] = sx;
         }
         if (ok && facadeReady) {
-            const sh = facade.height / N;
+            // the painted front starts above the main block (sky + pediment); skip that empty band so the
+            // block's top edge is exactly the roof's front edge (no gap, roof and walls on the same line)
+            const top0 = facade.height * (152 - 112) / 232, sh = (facade.height - top0) / N;
             for (let s = 0; s < N; s++) {
                 const xl = (bXL[s] + bXL[s + 1]) / 2, xr = (bXR[s] + bXR[s + 1]) / 2;
-                ctx.drawImage(facade, 0, s * sh, facade.width, sh, xl, bY[s], xr - xl, bY[s + 1] - bY[s] + 0.8);
+                ctx.drawImage(facade, 0, top0 + s * sh, facade.width, sh, xl, bY[s], xr - xl, bY[s + 1] - bY[s] + 0.8);
             }
             if (L > 0) P4(FOG_RGBA[L], x0, 0, 0, x1, 0, 0, x1, h, 0, x0, h, 0);
         } else {
@@ -848,7 +903,7 @@
                 const sA = Math.ceil((zc - CELL_Z / 2) / 12), sB = Math.ceil((zc + CELL_Z / 2) / 12) - 1;
                 for (let s = sB; s >= sA; s--) if (s * 12 <= -8) {
                     const r = 2.6 + hash(s, 5, 3) * 0.8;
-                    drawTree(-16, s * 12, r); drawTree(16, s * 12, r);
+                    drawAvenueTree(-16, s * 12, r); drawAvenueTree(16, s * 12, r);
                 }
                 continue;
             }
@@ -888,10 +943,13 @@
 
     function frame(now) {
         raf = 0;
-        if (!visible) { sp = null; return; }   // off screen: skip all the work
-        const total = Math.max(1, track.offsetHeight - innerHeight);
+        if (!visible) { sp = null; if (window.TaniaRoom) window.TaniaRoom.update(-1); return; }   // off screen: skip all the work
         const lead = innerHeight * 0.25;   // the map waits a moment before it starts to zoom
-        const target = clamp((-track.getBoundingClientRect().top - lead) / (total - lead));
+        const px = -track.getBoundingClientRect().top - lead;     // scroll distance since the zoom started
+        // piecewise: stages 0-4 over PRE_PX, then 4-7 over POST_PX; target is the position on the 0..7 timeline, as 0..1
+        const tT = px <= 0 ? 0 : px <= PRE_PX ? 4 * (px / PRE_PX) : 4 + 3 * clamp((px - PRE_PX) / POST_PX);
+        const target = clamp(tT / (STAGES.length - 1));
+        const frameEx = clamp((px - PRE_PX - POST_PX) / EXTRA_PX);   // 0..1 through the frame-by-frame tail
         // ease toward the scroll position (frame-rate independent lerp), so zooming in AND out is gradual
         const dt = Math.min(64, now - lastNow || 16); lastNow = now;
         if (sp === null || reduceMotion) sp = target;
@@ -899,7 +957,9 @@
         const p = sp;
         const N = STAGES.length, t = p * (N - 1);
         const i = Math.min(N - 2, Math.floor(t)), f = t - i;
-        const e = f * f * (3 - 2 * f);            // smooth start and stop between stops
+        // smooth start and stop between stops. The approach to the department uses a softer curve (smootherstep),
+        // so the camera leaves the wider view gently and glides up to the gate instead of rushing at it
+        const e = i >= 3 ? f * f * f * (f * (f * 6 - 15) + 10) : f * f * (3 - 2 * f);
 
         const a = view(i), b = view(i + 1);
         const w = Math.exp(lerp(Math.log(a.w), Math.log(b.w), e));   // zoom in logarithmic steps
@@ -908,7 +968,7 @@
         lastT = t;
 
         // cross-fade: the flat map hands over to the 3D city while the zoom is still in the top-down view
-        const ca = clamp((t - 4.05) / 0.3) * (1 - clamp((t - 5.12) / 0.08));
+        const ca = clamp((t - 4.05) / 0.3) * (1 - clamp((t - 5.0) / 0.35));
         const svgOn = ca < 0.999;
 
         // ----- 3D city (canvas) -----
@@ -983,13 +1043,18 @@
                     const px = l.px(t);
                     const pl = POS[l.pos];
                     const x0 = l.lon, y0 = -l.lat;
-                    const x = x0 + pl.dx * u, y = y0 + pl.dy * u;
-                    const fs = (px * u).toFixed(4);
+                    const sizes = l.names.map(el => fitName(el, px * u, w));
+                    let x = x0 + pl.dx * u;
+                    const y = y0 + pl.dy * u;
+                    if (pl.anchor === 'middle') {          // centred names are pulled in from the screen edges
+                        const hw = Math.max(0, ...l.names.map((el, i) => (el._k || 0) * sizes[i] / 2));
+                        x = Math.min(Math.max(x, cx - w / 2 + hw + 2 * u), cx + w / 2 - hw - 2 * u);
+                    }
                     // thicker outline on bigger text so it keeps separating from busy buildings as it grows
                     const halo = ((2.4 + px * 0.16) * u).toFixed(4);
-                    l.names.forEach(el => {
+                    l.names.forEach((el, i) => {
                         POS_SET(el, x, y, pl.anchor);
-                        el.setAttribute('font-size', fs);
+                        el.setAttribute('font-size', sizes[i].toFixed(4));
                         el.setAttribute('stroke-width', halo);
                         el.style.opacity = o;
                     });
@@ -1043,21 +1108,29 @@
         // ----- inside the gate: the view fades in, the doors open, then the camera walks through into the room.
         // This runs on every frame (not only past the gate), so scrolling back up fades everything out again. -----
         if (camG) {
-            const gIn = smooth((t - 5.0) / 0.15);
-            const dOpen = smooth((t - 5.15) / 0.4);
+            // the room is fully opaque before the doors start to open (t 5.35), so the map behind never shows through the opening
+            const gIn = smooth((t - 5.1) / 0.2);
+            const dP = Math.min(1, Math.max(0, (t - 5.35) / 0.45));   // raw door progress, eased inside paintDoors()
             const walk = smooth((t - 5.3) / 0.7);
-            const key = Math.round(gIn * 200) + '|' + Math.round(dOpen * 400) + '|' + Math.round(walk * 1000);
+            const key = Math.round(gIn * 200) + '|' + Math.round(dP * 400) + '|' + Math.round(walk * 1000);
             if (key !== lastInside) {
                 lastInside = key;
                 interior.style.opacity = gIn.toFixed(3);
+                // the flat 2D map under the room is the green campus lawn: it must give way to the room
+                // as the gate opens, otherwise its green shows through the arch as a glitch
+                svg.style.opacity = (1 - smooth((t - 5.0) / 0.3)).toFixed(3);
                 interior.style.visibility = gIn <= 0 ? 'hidden' : 'visible';
                 camG.setAttribute('transform', `translate(500 ${(300 - 80 * walk).toFixed(2)}) scale(${(1 + 0.65 * walk).toFixed(4)}) translate(-500 -300)`);
                 gateG.style.opacity = (1 - smooth((t - 5.55) / 0.35)).toFixed(3);
-                doorL.setAttribute('transform', `translate(${(-dOpen * 200).toFixed(2)} 0)`);
-                doorR.setAttribute('transform', `translate(${(dOpen * 200).toFixed(2)} 0)`);
+                paintDoors(dP);
                 capEl.style.opacity = smooth((t - 5.6) / 0.35).toFixed(3);
             }
         }
+
+        // Tania (tania.js): she lives inside #map-interior and reads the same timeline `t` the camera
+        // walk-through already uses, so she is always perfectly in sync with the room, forwards and backwards.
+        // This is the only touch point - if tania.js is not loaded, window.TaniaRoom is undefined and this is a no-op.
+        if (window.TaniaRoom) window.TaniaRoom.update(t, frameEx);
 
         // keep going only while something is still moving (or the pins are pulsing)
         if (sp !== target || (svgOn && t > 0.5 && t < 4.4)) raf = requestAnimationFrame(frame);
@@ -1246,16 +1319,8 @@
 
         // ---- gate: plum stone arch with an opening, and two wooden doors that swing out ----
         const hole = 'M300 800V300A200 200 0 0 1 700 300V800Z';
-        const leaf = (x0, side) => {
-            let g2 = `<rect x="${x0}" y="100" width="200" height="720" fill="url(#rm-door)"/>`;
-            for (let k = 1; k < 4; k++) g2 += `<line x1="${x0 + k * 50}" y1="100" x2="${x0 + k * 50}" y2="820" stroke="#24141f" stroke-opacity=".7" stroke-width="3"/>`;
-            g2 += `<rect x="${x0 + 22}" y="150" width="156" height="210" fill="none" stroke="#24141f" stroke-opacity=".5" stroke-width="3"/>`;
-            [260, 420, 580].forEach(y => { g2 += `<circle cx="${x0 + (side < 0 ? 30 : 170)}" cy="${y}" r="6" fill="#ee8fb5"/>`; });
-            g2 += `<rect x="${x0 + (side < 0 ? 180 : 10)}" y="430" width="10" height="40" rx="4" fill="#ffd6e4"/>`;
-            return g2;
-        };
         const gate = '<g id="mi-gate"><g clip-path="url(#mi-hole)">' +
-            '<g id="mi-doorL">' + leaf(300, -1) + '</g><g id="mi-doorR">' + leaf(500, 1) + '</g></g>' +
+            '<g id="mi-doorL"></g><g id="mi-doorR"></g></g>' +
             `<path d="M-300 -300H1300V1100H-300Z ${hole}" fill="url(#stone)" fill-rule="evenodd"/>` +
             `<path d="${hole}" fill="none" stroke="#ee8fb5" stroke-opacity=".75" stroke-width="7"/>` +
             '<polygon points="480,122 520,122 512,80 488,80" fill="#cdb4f0"/></g>';
@@ -1297,7 +1362,47 @@
         doorR = interiorArt.querySelector('#mi-doorR');
         capEl = interior.querySelector('.map-inside-cap');
     }
+
+    // ---- the doors: each leaf swings open on its own hinge (left hinge at x 300, right at x 700),
+    // projected with one-point perspective toward the vanishing point (500,300). A leaf that swings
+    // into the room recedes, shrinks toward the centre and darkens a little, like a real door. ----
+    const DOOR_EYE = 520;                          // perspective strength (scene units): larger = flatter
+    const DOOR_MAX = 95 * Math.PI / 180;           // a real door stops at roughly 95 degrees
+    const DOOR_W = 200, DOOR_TOP = 100, DOOR_BOT = 820;
+    function paintDoors(p) {
+        if (!doorL || !doorR) return;
+        // ease in-out: the handle is pulled gently, the door gathers speed and settles without bouncing
+        const e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+        const a = DOOR_MAX * e, c = Math.cos(a), sn = Math.sin(a);
+        const f1 = v => v.toFixed(1);
+        const pathOf = pts => 'M' + pts.map(q => f1(q[0]) + ' ' + f1(q[1])).join('L') + 'Z';
+        const linePath = pts => 'M' + pts.map(q => f1(q[0]) + ' ' + f1(q[1])).join('L');
+        const leaf = (hx, dir) => {
+            // u = 0 at the hinge, u = 1 at the free edge; y = height in scene units
+            const P = (u, y) => {
+                const x = hx + dir * DOOR_W * u * c;
+                const z = DOOR_W * u * sn;                  // how far the point has moved into the room
+                const k = DOOR_EYE / (DOOR_EYE + z);
+                return [500 + (x - 500) * k, 300 + (y - 300) * k];
+            };
+            const shade = Math.min(0.6, 0.6 * sn);          // the swung leaf turns a little darker
+            let h = `<path d="${pathOf([P(0, DOOR_TOP), P(1, DOOR_TOP), P(1, DOOR_BOT), P(0, DOOR_BOT)])}" fill="url(#rm-door)"/>`;
+            for (let k = 1; k < 4; k++) h += `<path d="${linePath([P(k / 4, DOOR_TOP), P(k / 4, DOOR_BOT)])}" stroke="#24141f" stroke-opacity=".7" stroke-width="2.4" fill="none"/>`;
+            h += `<path d="${pathOf([P(0.11, 150), P(0.89, 150), P(0.89, 360), P(0.11, 360)])}" fill="none" stroke="#24141f" stroke-opacity=".5" stroke-width="2.4"/>`;
+            // handle on the free edge
+            const hd = P(0.92, 450);
+            h += `<circle cx="${f1(hd[0])}" cy="${f1(hd[1])}" r="${f1(4 * (1 - 0.4 * sn))}" fill="#ffd6e4"/>`;
+            // light catching the free edge while it moves
+            h += `<path d="${linePath([P(1, DOOR_TOP), P(1, DOOR_BOT)])}" stroke="#ffd6e4" stroke-opacity="${(0.4 * sn).toFixed(3)}" stroke-width="2" fill="none"/>`;
+            // shadow that grows as the leaf turns away from the light
+            h += `<path d="${pathOf([P(0, DOOR_TOP), P(1, DOOR_TOP), P(1, DOOR_BOT), P(0, DOOR_BOT)])}" fill="#05030a" fill-opacity="${shade.toFixed(3)}"/>`;
+            return h;
+        };
+        doorL.innerHTML = leaf(300, 1);
+        doorR.innerHTML = leaf(700, -1);
+    }
     buildInteriorArt();
+    paintDoors(0);   // closed doors, ready before the gate opens
 
     measure();
     addEventListener('resize', () => { measure(); wake(); });
