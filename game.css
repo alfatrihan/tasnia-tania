@@ -240,32 +240,6 @@ body.runner-lock>*:not(#runner-wrap) {
     bottom: calc(16px + env(safe-area-inset-bottom, 0px))
 }
 
-/* ===== Character picture on the right side of the game (shown from PLAY until the game is closed) ===== */
-.runner-char {
-    position: absolute;
-    right: 3%;
-    bottom: 4%;
-    height: 56%;
-    width: auto;
-    max-width: 36%;
-    object-fit: contain;
-    z-index: 2;
-    pointer-events: none;
-    opacity: 0;
-    transform: translateX(18px);
-    transition: opacity .5s ease, transform .5s ease;
-}
-
-.runner-char.show {
-    opacity: 1;
-    transform: none
-}
-
-/* the picture file is not added yet: stay hidden */
-.runner-char.missing {
-    display: none
-}
-
 /* ===== Puzzle: the PLAY overlay covers the whole card (like Tania's Run), so both PLAY buttons and titles sit at the same height ===== */
 .pz-card .pz-stage {
     position: static !important
@@ -280,7 +254,7 @@ body.runner-lock>*:not(#runner-wrap) {
     flex-direction: column;
     justify-content: flex-end;
     align-items: flex-end;
-    padding: 2% 3% 3%;
+    padding: 0;          /* flush with the screen's bottom-right corner */
     gap: 6px;
     pointer-events: none;
     opacity: 0;
@@ -298,11 +272,14 @@ body.runner-lock>*:not(#runner-wrap) {
     width: auto;
     max-width: 60%;
     object-fit: contain;
-    flex: 0 0 auto
+    flex: 0 0 auto;
+    /* shadow behind her, following her outline, so she looks like a real figure in the scene */
+    filter: drop-shadow(0 22px 18px rgba(6, 2, 10, .6)) drop-shadow(0 6px 6px rgba(6, 2, 10, .45)) drop-shadow(0 0 26px rgba(70, 20, 60, .45))
 }
 
+/* pops in once and then stays still on the bottom edge (no bobbing, so it stays flush) */
 .pz-help.show .pz-help-img {
-    animation: pzHelpPop .6s cubic-bezier(.2, 1.4, .4, 1) both, pzHelpBob 2.6s ease-in-out .6s infinite
+    animation: pzHelpPop .6s cubic-bezier(.2, 1.4, .4, 1) both
 }
 
 .pz-help-img.missing {
@@ -365,9 +342,13 @@ html[lang="bn"] .pz-help-bubble .lang-en { display: none }
         max-width: 70%;
         margin-bottom: 0
     }
+    /* phone: the picture box is sized by width, so it keeps the picture's own shape and sits
+       exactly on the bottom-right corner (no letterbox gap, nothing pushed past the card's edge) */
     .pz-help-img {
-        height: 50%;
-        max-width: 80%
+        width: 78%;
+        height: auto;
+        max-width: none;
+        max-height: none
     }
     .pz-help-bubble {
         max-width: 78%;

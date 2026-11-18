@@ -16,7 +16,6 @@
     const sectionTitle = document.getElementById('game-title');
     const hintEl = document.getElementById('runner-hint');
     const bubble = document.getElementById('runner-bubble');
-    const charEl = document.getElementById('runner-char');
 
     // ---------- settings you can change ----------
     
@@ -25,8 +24,6 @@
     const VOICE_FILE = { en: 'audio/game-voice-en.mp3', bn: 'audio/game-voice-bn.mp3' };
     // the game's background music: starts after the greeting voice ends, loops while the game is open
     const GAME_MUSIC = 'audio/game-music.mp3';
-    // the character picture on the right side of the game (PNG, transparent background works best)
-    const CHARACTER_IMG = 'media/game/tania-character.png';
     const THREE_MISSING = { en: 'The 3D game could not load. Check your internet connection.', bn: '3D গেমটি লোড হয়নি। ইন্টারনেট সংযোগ দেখুন।' };
 
     const TEXT = {
@@ -504,6 +501,8 @@
         hero.y = 0; hero.vy = 0; hero.onGround = true; hero.holding = false;
         overlay.classList.add('hidden');
         bubble.classList.remove('show');
+        stopGreeting();                      // first tap: the greeting voice stops ...
+        startGameMusic();                    // ... and the game music starts straight away
         spawn(FIRST_D);                  // first obstacle is already on the road: it reaches her in about 1 s
         cooldown = 0.001;                // the next one follows right behind it
     }
@@ -521,9 +520,6 @@
         hero.y = 0; hero.vy = 0; hero.onGround = true; hero.holding = false;
         v = SPEED0; distance = 0; score = 0; bonus = 0; coins = 0; coinCool = 2;
         overlay.classList.add('hidden');
-        charEl.onerror = () => charEl.classList.add('missing');   // picture not added yet -> no picture
-        charEl.src = CHARACTER_IMG;
-        charEl.classList.add('show');        // the character comes on the right side with the greeting
         bubble.classList.add('show');
     }
     function startOrJump() {
@@ -690,19 +686,11 @@
 
         renderer.render(scene, camera);
 
-        // keep the greeting bubble above the character's head while the intro is shown
+        // keep the greeting bubble above Tania's head while the intro is shown
         if (state === 'intro') {
-            const picShown = charEl.classList.contains('show') && !charEl.classList.contains('missing') && charEl.naturalWidth > 0;
-            if (picShown) {
-                const wr = wrap.getBoundingClientRect(), cr = charEl.getBoundingClientRect();
-                bubble.style.left = (cr.left - wr.left + cr.width / 2) + 'px';
-                bubble.style.top = (cr.top - wr.top + cr.height * 0.1 - 16) + 'px';
-            } else {
-                // no picture: the bubble stays above Tania (3D) as before
-                const head = new THREE.Vector3(0, hero.y + 2.7, HERO_Z).project(camera);
-                bubble.style.left = ((head.x + 1) / 2 * W) + 'px';
-                bubble.style.top = ((1 - head.y) / 2 * H - 16) + 'px';
-            }
+            const head = new THREE.Vector3(0, hero.y + 2.7, HERO_Z).project(camera);
+            bubble.style.left = ((head.x + 1) / 2 * W) + 'px';
+            bubble.style.top = ((1 - head.y) / 2 * H - 16) + 'px';
         }
     }
 
@@ -780,7 +768,7 @@
     }
     // PLAY: the greeting in the site's language, then the game music starts
     function playGreeting() {
-        const l = lang();
+        const l = lang();      // the greeting follows the site's language: Bangla when Bangla is on, English otherwise
         let done = false;
         const finish = () => { if (!done) { done = true; greetDone = null; startGameMusic(); } };
         greetDone = finish;
@@ -799,6 +787,12 @@
             gameMusic.onerror = () => { gameMusic = null; };   // file not added yet -> stay silent
         }
         gameMusic.play().catch(() => {});
+    }
+    // stop only the greeting voice (used when the first tap starts the run)
+    function stopGreeting() {
+        if (greetAudio) { greetAudio.pause(); greetAudio = null; }
+        if ('speechSynthesis' in window) speechSynthesis.cancel();
+        greetDone = null;
     }
     // leaving the game (screen made small): stop the greeting and the game music, bring the site music back
     function leaveGameAudio() {
@@ -832,7 +826,6 @@
                 document.body.appendChild(wrap);
             } else {
                 leaveGameAudio();
-                charEl.classList.remove('show');
                 if (holder) { holder.parentNode.insertBefore(wrap, holder); holder.remove(); holder = null; }
                 if (state === 'running' || state === 'intro') {
                 state = 'ready'; clearObstacles();
