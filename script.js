@@ -160,41 +160,26 @@ function draw(t) {
     }
     c1.style.opacity = seg(p, .02, .12) * (1 - seg(p, .36, .46)); c1.style.transform = 'translateY(' + (1 - seg(p, .02, .12)) * 24 + 'px)';
     const o2 = seg(p, .62, .8); c2.style.opacity = o2; c2.style.transform = 'translateY(' + (1 - o2) * 30 + 'px)'; cue.style.opacity = 1 - seg(p, 0, .04);
-    // Butterflies: several passes spread over the whole page, so a longer site gets more of them.
-    // Each pass gradually reveals, then flies: left->right, right->left, or rises up from the bottom.
+    // ONE butterfly for the whole page. It crosses the screen (left->right, then right->left on the next pass)
+    // and drifts down as it goes; it fades in, flies across, fades out, and comes back on a later scroll.
     {
-        const base = document.getElementById('about').offsetTop, docH = document.documentElement.scrollHeight;
-        const N = Math.max(4, Math.min(8, Math.round((docH - base) / (H * 1.6))));
-        const span = (docH - base - H) / N, bs = Math.min(W, H) * .07, flap = t * .0075;
-        const BF = window.__bfState || (window.__bfState = {});   // per-butterfly eased position: smooth, not jumpy
-        const COPIES = 4;                                        // the bottom-to-top butterfly comes several times per pass
-        for (let i = 0; i < N; i++) {
-            const s0 = base + H * .15 + i * span, dur = Math.min(span * .85, H * 2.2);
-            const mode = i % 3, copies = mode === 2 ? COPIES : 1;
-            for (let j = 0; j < copies; j++) {
-                const key = i + '_' + j, off = j * dur * .2;   // copies staggered along the same pass
-                const u = (scrollY - s0 - off) / dur;
-                if (u < 0 || u > 1) { delete BF[key]; continue; }
-                const a = ease(seg(u, 0, .2)) * (1 - seg(u, .8, 1));
-                const ph = u * Math.PI * 2 * 1.5 + i, ww = W + 100;
-                let x, y, hd;
-                if (mode === 0) {              // left -> right, a wave across the screen
-                    x = -50 + u * ww; y = H * (.25 + .12 * (i % 2)) + Math.sin(ph) * H * .07;
-                    hd = Math.atan2(Math.cos(ph) * Math.PI * 3 * H * .07, ww);
-                } else if (mode === 1) {       // right -> left
-                    x = W + 50 - u * ww; y = H * (.4 + .12 * (i % 2)) + Math.sin(ph) * H * .07;
-                    hd = Math.atan2(Math.cos(ph) * Math.PI * 3 * H * .07, -ww);
-                } else {                       // bottom -> top, several copies spread across the width
-                    const lane = W * (.2 + .6 * (j / (COPIES - 1)));
-                    x = lane + Math.sin(u * Math.PI * 2 * 1.2 + i + j * 1.7) * W * .06;
-                    y = H * 1.1 - u * H * 1.3;
-                    hd = Math.atan2(-H * 1.3, Math.cos(u * Math.PI * 2 * 1.2 + i + j * 1.7) * Math.PI * 2.4 * W * .06);
-                }
-                let st = BF[key];                      // ease toward the scroll-driven spot so motion stays smooth
-                if (!st) st = BF[key] = { x, y };
-                st.x += (x - st.x) * .16; st.y += (y - st.y) * .16;
-                butterfly(st.x, st.y, bs * (.5 + .5 * a), hd, flap + i + j, .95 * a);
-            }
+        const bs = Math.min(W, H) * .07, flap = t * .0075;
+        const BF = window.__bfState || (window.__bfState = {});   // eased position: smooth, not jumpy
+        const sy = Math.max(0, scrollY), period = H * 2.6;        // one crossing every ~2.6 screens of scrolling
+        const k = Math.floor(sy / period), u = (sy - k * period) / period;
+        const fromLeft = k % 2 === 0, ww = W + 100;
+        const a = ease(seg(u, 0, .2)) * (1 - seg(u, .8, 1));
+        const ph = u * Math.PI * 2 * 1.5;
+        const x = fromLeft ? -50 + u * ww : W + 50 - u * ww;
+        const y = H * (.12 + .5 * u) + Math.sin(ph) * H * .06;   // drifts down as it crosses
+        const hd = Math.atan2(Math.cos(ph) * Math.PI * 3 * H * .06, fromLeft ? ww : -ww);
+        if (a > .01) {
+            let st = BF.one;
+            if (!st || a < .05) st = BF.one = { x, y };          // (re)start from the spot, no slide across the screen
+            st.x += (x - st.x) * .16; st.y += (y - st.y) * .16;
+            butterfly(st.x, st.y, bs * (.5 + .5 * a), hd, flap, .95 * a);
+        } else {
+            delete BF.one;
         }
     }
     for (let i = P.length - 1; i >= 0; i--) {

@@ -16,9 +16,9 @@
     splitWords();
     const spans = words.children;           // live list: still correct after the language switch
 
-    const WORDS_END = 0.7;                   // the words light up over the first 70% of the scroll
-    const BTN_START = 0.3;                   // the button starts rising while the words are still lighting
-    const BTN_END = 0.6;                     // and is fully in place by then
+    const WORDS_END = 0.55;                  // the words light up over the first 55% of the scroll
+    const BTN_START = 0.2;                   // the button starts rising while the words are still lighting
+    const BTN_END = 0.45;                    // and is fully in place by then
     let last = -1;
 
     function frame() {

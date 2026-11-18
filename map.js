@@ -134,6 +134,7 @@
     addRings(countryG, SHAPES.bangladesh, 'bd');
     const boguraG = document.createElementNS(NS, 'g');
     bdG.appendChild(boguraG);
+    addRings(boguraG, SHAPES.boguraFill, 'bogura gapfill');   // the gap (no outline of its own), under the upazila rings
     addRings(boguraG, SHAPES.bogura, 'bogura');
 
 
@@ -347,7 +348,7 @@
     // Bogura: one name that grows steadily as the zoom comes in, then fades as the zoom reaches the college
     const boguraOp = t => clamp((t - 0.25) / 0.35) * (1 - clamp((t - 1.5) / 0.5));
     const boguraPx = t => lerp(7, 40, clamp((t - 0.25) / 1.4));
-    addLabel({ ...boguraLabel, pos: 'a', cls: 'bogura', withDot: true, op: boguraOp, px: boguraPx });
+    addLabel({ ...boguraLabel, pos: 'a', cls: 'poi', withDot: false, op: boguraOp, px: boguraPx });   // written like the college and economics labels
 
     // the college and the department grow in steadily as the zoom reaches them (bold, with a short description)
     addLabel({ en: 'Govt. Azizul Haque College', bn: 'গভর্নমেন্ট আজিজুল হক কলেজ',
@@ -376,16 +377,23 @@
     const PRE_FAST = 2;
     let PRE_PX = 1, POST_PX = 1, EXTRA_PX = 1;
     // extra scroll length after the room is fully shown (t stays 7): Tania's 12 frames are played one by one over it
-    const FRAME_SCROLL_VH = 1.6;
-    function measure() {
-        // remember the original scroll length once (from the CSS height), then size the track to the new budget
-        if (!track.dataset.origSpan) track.dataset.origSpan = String(track.offsetHeight - innerHeight);
-        const orig = +track.dataset.origSpan, lead0 = innerHeight * 0.25;
-        const span = Math.max(1, orig - lead0);
-        POST_PX = span * 3 / 7;
-        PRE_PX = span * 4 / 7 / PRE_FAST;
-        EXTRA_PX = innerHeight * FRAME_SCROLL_VH;
-        track.style.height = (innerHeight + lead0 + PRE_PX + POST_PX + EXTRA_PX) + 'px';
+    const FRAME_SCROLL_VH = 0.5;   // was 1.6: the 12 frames play in about a third of the old scroll
+    function measure(keepBudget) {
+        // keepBudget: a resize that only changed the height (phone address bar showing/hiding). The scroll
+        // track is left alone so the zoom does not jump; only the canvas and the map box are re-sized.
+        if (!keepBudget) {
+            // remember the original scroll length once (from the CSS height), then size the track to the new budget
+            if (!track.dataset.origSpan) track.dataset.origSpan = String(track.offsetHeight - innerHeight);
+            const orig = +track.dataset.origSpan, lead0 = innerHeight * 0.25;
+            const span = Math.max(1, orig - lead0);
+            // per stage interval: Bangladesh->...->department (t 0-4) uses the same scroll step everywhere,
+            // and the college->department step (t 4-5) now matches it; the room and Tania (t 5-7) keep their step
+            const STEP = span / 14;
+            PRE_PX = STEP * 4;
+            POST_PX = STEP * 5;   // weights: 4->5 = 1 step, 5->6 = 2 steps, 6->7 = 2 steps
+            EXTRA_PX = innerHeight * FRAME_SCROLL_VH;
+            track.style.height = (innerHeight + lead0 + PRE_PX + POST_PX + EXTRA_PX) + 'px';
+        }
         const r = svg.getBoundingClientRect();
         if (r.width) {
             ratio = r.height / r.width; pxW = r.width;
@@ -396,6 +404,12 @@
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             lastCamKey = ''; svgDirty = true;
         }
+    }
+
+    // scroll past the department-zoom start (q px) -> timeline t in 4..7 (4->5 one step, 5->6 and 6->7 two steps each)
+    function postT(q) {
+        const u = clamp(q / POST_PX) * 5;
+        return u <= 1 ? 4 + u : u <= 3 ? 5 + (u - 1) / 2 : 6 + (u - 3) / 2;
     }
 
     // the view that fits one stop on screen, with a little margin
@@ -939,7 +953,7 @@
     // what actually changed is touched: the SVG map (stages 0-4) or the 3D canvas (stages 4-5), never both.
     const smooth = v => { v = clamp(v); return v * v * (3 - 2 * v); };
     const wake = () => { if (!raf && visible) raf = requestAnimationFrame(frame); };
-    let lastLit = 0, svgHidden = false, lastCa = -1, svgDirty = true;
+    let lastLit = 0, svgHidden = false, lastCa = -1, svgDirty = true, lastDir = 0;
 
     function frame(now) {
         raf = 0;
@@ -947,7 +961,7 @@
         const lead = innerHeight * 0.25;   // the map waits a moment before it starts to zoom
         const px = -track.getBoundingClientRect().top - lead;     // scroll distance since the zoom started
         // piecewise: stages 0-4 over PRE_PX, then 4-7 over POST_PX; target is the position on the 0..7 timeline, as 0..1
-        const tT = px <= 0 ? 0 : px <= PRE_PX ? 4 * (px / PRE_PX) : 4 + 3 * clamp((px - PRE_PX) / POST_PX);
+        const tT = px <= 0 ? 0 : px <= PRE_PX ? 4 * (px / PRE_PX) : postT(px - PRE_PX);
         const target = clamp(tT / (STAGES.length - 1));
         const frameEx = clamp((px - PRE_PX - POST_PX) / EXTRA_PX);   // 0..1 through the frame-by-frame tail
         // ease toward the scroll position (frame-rate independent lerp), so zooming in AND out is gradual
@@ -959,12 +973,20 @@
         const i = Math.min(N - 2, Math.floor(t)), f = t - i;
         // smooth start and stop between stops. The approach to the department uses a softer curve (smootherstep),
         // so the camera leaves the wider view gently and glides up to the gate instead of rushing at it
-        const e = i >= 3 ? f * f * f * (f * (f * 6 - 15) + 10) : f * f * (3 - 2 * f);
+        const e = f * f * (3 - 2 * f);
 
         const a = view(i), b = view(i + 1);
         const w = Math.exp(lerp(Math.log(a.w), Math.log(b.w), e));   // zoom in logarithmic steps
         const cx = lerp(a.cx, b.cx, e), cy = lerp(a.cy, b.cy, e), h = w * ratio;
         const changed = Math.abs(t - lastT) > 1e-6;
+        const dir = t - lastT > 1e-6 ? 1 : t - lastT < -1e-6 ? -1 : 0;
+        if (dir !== 0 && dir !== lastDir) {
+            // the scroll just reversed (zooming back out): forget every cached style value so each layer
+            // is written again from the current position instead of trusting a stale cache
+            lastDir = dir;
+            lastCa = -1; lastCamKey = ''; lastCityFade = ''; lastCityShown = null;
+            lastHero = ''; lastFlatten = -1; lastInside = -1; svgDirty = true; lastCityShown = null;
+        }
         lastT = t;
 
         // cross-fade: the flat map hands over to the 3D city while the zoom is still in the top-down view
@@ -980,7 +1002,7 @@
             // keeps flying in at a slower pace than the flat map did, so there is time to pass through the blocks
             const fpx = Math.min(0.9 * cH, 0.95 * cW);
             const D0 = view(4).w * K * fpx / cW, D1 = Math.max(3, view(5).w * K * fpx / cW);
-            const uu = clamp(t - 4), gp = Math.pow(uu, 1.4), g = lerp(gp, smooth(uu), smooth((uu - 0.85) / 0.15));
+            const uu = clamp(t - 4), gp = uu, g = lerp(gp, smooth(uu), smooth((uu - 0.85) / 0.15));
             const D = Math.exp(lerp(Math.log(D0), Math.log(D1), g));
             const tx = (cx - DOOR.lon) * K, tz = (-cy - DOOR.lat) * K;
             const ps = smooth((g - 0.08) / 0.82);                                 // 0 = looking straight down, 1 = eye level at the door
@@ -1405,7 +1427,8 @@
     paintDoors(0);   // closed doors, ready before the gate opens
 
     measure();
-    addEventListener('resize', () => { measure(); wake(); });
+    let lastW = innerWidth;
+    addEventListener('resize', () => { const sameW = innerWidth === lastW; lastW = innerWidth; measure(sameW); wake(); });
     addEventListener('scroll', wake, { passive: true });   // the frame loop only runs while something is moving
     new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) wake(); }).observe(track);
     wake();

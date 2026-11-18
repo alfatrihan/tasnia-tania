@@ -51,8 +51,9 @@
         audioSrc: null,
 
         // the speech bubble always shows this Bengali line
-        speechBn: 'হ্যালো, আমি তাসনিয়া আক্তার তানিয়া, আমার পৃথিবীতে আপনাকে স্বাগতম।',
-        speechEn: 'Hello, I am Tasnia Akhter Tania. Welcome to my world.',
+        // the bubble shows these two lines one after the other (line 1, a short pause, then line 2)
+        speechBn: ['হ্যালো, আমি তাসনিয়া আক্তার তানিয়া।', 'আমার পৃথিবীতে আপনাকে স্বাগতম।'],
+        speechEn: ['Hello, I am Tasnia Akhter Tania.', 'Welcome to my world.'],
 
         restFrame: 0,        // neutral pose, before the scrub
         talkOpenFrame: 10,   // "mouth open" pose while she talks
@@ -279,7 +280,7 @@
     function renderBlend(pos) {
         if (!cache) return;
         const i0 = Math.floor(pos), i1 = Math.min(LAST, i0 + 1), a = pos - i0;
-        const key = i0 + '|' + Math.round(a * 60);
+        const key = i0 + '|' + Math.round(a * 200);
         if (key === lastBlend) return;
         lastBlend = key; wantIdx = Math.round(pos); lastIdx = -1;
         ctx.clearRect(0, 0, cache.finalW, cache.finalH);
@@ -455,16 +456,34 @@
     let rafId = 0;
 
     // the bubble follows the site's language toggle (English or Bangla)
-    const speechText = () => document.documentElement.lang === 'bn' ? TANIA_CONFIG.speechBn : TANIA_CONFIG.speechEn;
+    const speechParts = () => document.documentElement.lang === 'bn' ? TANIA_CONFIG.speechBn : TANIA_CONFIG.speechEn;
+    // the bubble text follows the scroll, not a timer, so it also works when scrolling back.
+    // line 1 (hello) shows from the end of the zoom; it switches to line 2 (welcome) at the middle of the
+    // second frame-tail step (about 1/3 of the tail), so welcome gets the longer part of the scroll.
+    const WELCOME_AT = 0.32, HELLO_AGAIN_AT = 0.24;   // a small gap between the two, so it does not flicker
+    let greetPart = 0, swapTimer = 0;
+    function showGreetPart(i) { greetPart = i; bubble.textContent = speechParts()[i]; }
     function setGreeting(on) {
         if (on === greetOn) return;
         greetOn = on;
         if (on) {
-            bubble.textContent = speechText();
+            bubble.textContent = speechParts()[greetPart];
             bubble.classList.add('show');
         } else {
             bubble.classList.remove('show');
         }
+    }
+    // a short fade between the two lines (the old one fades out, then the new one fades in)
+    function setGreetPart(i) {
+        if (i === greetPart) return;
+        greetPart = i;
+        clearTimeout(swapTimer);
+        bubble.classList.remove('show');
+        swapTimer = setTimeout(() => {
+            swapTimer = 0;
+            bubble.textContent = speechParts()[greetPart];
+            if (greetOn) bubble.classList.add('show');
+        }, 300);
     }
 
     function playGreetingAudio() {
@@ -627,8 +646,12 @@
         const inTail = t >= TL.scrub[1] - 1e-4;
         const atEnd = inTail && lastEx >= 0.999;
         setGreeting(full && !gone);
+        // the text switch point: welcome once the tail has passed about a third of its frames
+        if (inTail) setGreetPart(lastEx >= (greetPart === 1 ? HELLO_AGAIN_AT : WELCOME_AT) ? 1 : 0);
+        else if (t < TL.scrub[1] - 1e-4) setGreetPart(0);
         setTalk(atEnd && full && !gone);
         // plain frame by frame: every slice of the extra scroll shows exactly one frame, no blending
+        // smooth: the scroll position sets a fractional frame, and the two neighbouring frames are cross-faded
         if (!talkOn) renderFrame(inTail ? Math.min(LAST, Math.floor(lastEx * (LAST + 1))) : TANIA_CONFIG.restFrame);
     }
 
@@ -642,7 +665,7 @@
     addEventListener('resize', refresh, { passive: true });
 
     // language switched while she is talking: update the bubble text straight away
-    new MutationObserver(() => { if (greetOn && bubble) bubble.textContent = speechText(); })
+    new MutationObserver(() => { if (greetOn && bubble) bubble.textContent = speechParts()[greetPart]; })
         .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 
     window.TaniaRoom = { update };

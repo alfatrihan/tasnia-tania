@@ -799,7 +799,7 @@ footer {
 /* ---------- Footer: pinned panel, words light up on scroll, then the Developer button ---------- */
 .footer-track {
     position: relative;
-    height: 230vh;
+    height: 160vh;   /* was 230vh: the words and the button now arrive after much less scrolling */
     --fp: 0;
 }
 

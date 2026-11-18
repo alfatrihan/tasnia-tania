@@ -509,3 +509,388 @@ html[lang="bn"] .sb-cell small {
 @media (prefers-reduced-motion: reduce) {
     .sb, .sb > *, .sb-new, .hud-score.pop, .runner-plus.go { animation: none }
 }
+
+
+/* ===== Play section: the two games side by side, the next one peeking in (like the social cards) ===== */
+#game {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 100px 0 0
+}
+
+.play-head {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 0 16px
+}
+
+.play-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: clamp(2.2rem, 6vw, 3.2rem);
+    color: var(--blush);
+    letter-spacing: 4px;
+    line-height: 1.2
+}
+
+.play-tag {
+    margin-top: 10px;
+    color: var(--mute);
+    font-size: .95rem;
+    letter-spacing: .5px
+}
+
+html[lang="en"] .play-title .lang-bn,
+html[lang="en"] .play-tag .lang-bn { display: none }
+html[lang="bn"] .play-title .lang-en,
+html[lang="bn"] .play-tag .lang-en { display: none }
+
+/* names and small tags of the games are not shown (the scripts still set them) */
+.play-hide {
+    display: none !important
+}
+
+.play-track {
+    display: flex;
+    gap: 24px;
+    padding: 8px calc(50% - min(380px, 40vw)) 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain
+}
+
+.play-track::-webkit-scrollbar {
+    display: none
+}
+
+.play-slide {
+    flex: 0 0 min(760px, 80vw);
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 0 0 70px;
+    scroll-snap-align: center;
+    text-align: center
+}
+
+/* phones: a reel, one game per full screen, scrolled up and down */
+@media (max-width: 700px) {
+    #game {
+        height: 100vh;
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        padding: 84px 0 0
+    }
+
+    .play-head {
+        flex: 0 0 auto;
+        margin-bottom: 4px
+    }
+
+    .play-title {
+        font-size: 2rem
+    }
+
+    .play-track {
+        flex: 1 1 0;
+        min-height: 0;
+        flex-direction: column;
+        gap: 0;
+        padding: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        scroll-snap-type: y mandatory
+    }
+
+    .play-slide {
+        flex: 0 0 100%;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 10px 14px;
+        overflow-y: auto;
+        scroll-snap-align: start
+    }
+}
+
+/* ===== Straighten Tania (sliding picture puzzle) ===== */
+.pz-fold {
+    position: relative;
+    max-width: 760px;
+    margin: 0 auto
+}
+
+/* same 16:10 frame as Tania's Run */
+.pz-card {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    display: flex;
+    flex-direction: column;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    box-shadow: 0 20px 50px #0008
+}
+
+.pz-hud {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    font: 500 .78rem 'DM Sans', sans-serif;
+    letter-spacing: 1.5px;
+    color: var(--mute);
+    background: #140e1c;
+    border-bottom: 1px solid var(--line)
+}
+
+.pz-score {
+    color: var(--blush)
+}
+
+.pz-exit {
+    display: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: #1f162b;
+    color: var(--blush);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer
+}
+
+.pz-exit:focus-visible {
+    outline: 2px solid var(--rose);
+    outline-offset: 2px
+}
+
+/* the board is a square that fills the height left under the HUD, centred in the card */
+.pz-stage {
+    position: relative;
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    justify-content: center;
+    align-items: stretch
+}
+
+.pz-board {
+    position: relative;
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    max-width: 100%;
+    overflow: hidden;
+    background: var(--bg2);
+    touch-action: manipulation
+}
+
+.pz-board:focus-visible {
+    outline: 2px solid var(--rose);
+    outline-offset: -2px
+}
+
+.pz-tile {
+    position: absolute;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    overflow: hidden;
+    background: var(--bg2);
+    cursor: pointer;
+    transition: left .18s ease, top .18s ease;
+    -webkit-tap-highlight-color: transparent
+}
+
+.pz-tile::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 0 1px rgba(14, 10, 20, .6);
+    pointer-events: none;
+    transition: box-shadow .2s ease
+}
+
+.pz-tile:hover::after {
+    box-shadow: inset 0 0 0 2px var(--rose)
+}
+
+.pz-tile:focus-visible {
+    outline: 2px solid var(--blush);
+    outline-offset: -4px
+}
+
+.pz-img {
+    position: absolute;
+    display: block;
+    max-width: none;
+    object-fit: cover;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none
+}
+
+.pz-board.pz-done .pz-tile {
+    cursor: default
+}
+
+/* the start / PLAY screen and the result screen reuse the Tania's Run overlay */
+.pz-ov-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 2rem;
+    color: var(--blush);
+    margin: 0
+}
+
+.pz-ov-sub {
+    color: var(--mute);
+    font-size: .92rem;
+    margin: 0
+}
+
+.pz-result {
+    z-index: 5
+}
+
+.pz-result:not(.hidden) .pz-res-label {
+    animation: pzReveal .6s ease .1s both
+}
+
+.pz-result:not(.hidden) .pz-res-grade {
+    animation: pzReveal .7s ease .5s both
+}
+
+.pz-result:not(.hidden) .pz-res-detail {
+    animation: pzReveal .7s ease .9s both
+}
+
+.pz-result:not(.hidden) .pz-replay {
+    animation: pzReveal .7s ease 1.3s both
+}
+
+@keyframes pzReveal {
+    from { opacity: 0; transform: translateY(10px) }
+    to { opacity: 1; transform: none }
+}
+
+.pz-res-label {
+    font: 500 .8rem 'DM Sans', sans-serif;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin: 0
+}
+
+.pz-res-grade {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 2.2rem;
+    color: var(--blush);
+    margin: 0
+}
+
+.pz-res-detail {
+    color: var(--mute);
+    font-size: .9rem;
+    margin: 0
+}
+
+.pz-replay {
+    margin-top: 12px
+}
+
+/* size choice: a bar inside the card, shown after PLAY */
+.pz-bar {
+    display: flex;
+    flex: 0 0 auto;
+    justify-content: center;
+    padding: 10px 14px;
+    border-top: 1px solid var(--line);
+    background: #140e1c
+}
+
+.pz-bar.hidden {
+    display: none
+}
+
+.pz-bar.pz-appear {
+    animation: pzReveal .6s ease both
+}
+
+.pz-sizes {
+    display: flex;
+    gap: 6px
+}
+
+.pz-size {
+    font: 500 .78rem 'DM Sans', sans-serif;
+    letter-spacing: 1px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    border: 1px solid var(--line);
+    background: linear-gradient(145deg, #1f162b, #140e1c);
+    color: var(--mute);
+    cursor: pointer;
+    transition: all .25s ease
+}
+
+.pz-size:hover,
+.pz-size.on {
+    color: var(--blush);
+    border-color: var(--rose)
+}
+
+.pz-size:focus-visible {
+    outline: 2px solid var(--rose);
+    outline-offset: 3px
+}
+
+/* full screen (like Tania's Run on the phone): the card covers the whole screen */
+body.pz-lock {
+    overflow: hidden
+}
+
+.pz-card.pz-full {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    aspect-ratio: auto;
+    max-width: none;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none
+}
+
+.pz-card.pz-full .pz-exit {
+    display: inline-block
+}
+
+.pz-card.pz-full .pz-board {
+    height: auto;
+    width: min(100vw, calc(100dvh - 150px));
+    max-width: none
+}
+
+.pz-card.pz-full .pz-stage {
+    align-items: center
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pz-result:not(.hidden) * {
+        animation: none !important
+    }
+}

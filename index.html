@@ -356,30 +356,74 @@
     </section>
 
     <section id="game">
-      <h2 class="rv" id="game-title">Tania's Run</h2>
-      <div class="div rv">&#10022;</div>
-      <div class="runner-wrap" id="runner-wrap" tabindex="0">
-        <div class="runner-hud">
-          <div class="hud-row">
-            <span class="hud-pill hud-coins" id="runner-coins"><i class="coin-ico"></i><b id="runner-coin-n">0</b><span class="runner-plus" id="runner-plus">+5</span></span>
-            <span class="hud-pill hud-score" id="runner-score-wrap"><span id="runner-score">0</span></span>
+      <div class="play-head rv">
+        <h2 class="play-title"><span class="lang-en">Play</span><span class="lang-bn">প্লে</span></h2>
+        <p class="play-tag"><span class="lang-en">Pick a game and let's play together</span><span class="lang-bn">একটা খেলা বেছে নাও, চলো একসাথে খেলি</span></p>
+      </div>
+      <div class="play-track" id="play-track">
+        <div class="play-slide" id="play-slide-run">
+        <h2 class="rv play-hide" id="game-title">Tania's Run</h2>
+        <div class="div rv play-hide">&#10022;</div>
+        <div class="runner-wrap" id="runner-wrap" tabindex="0">
+          <div class="runner-hud">
+            <div class="hud-row">
+              <span class="hud-pill hud-coins" id="runner-coins"><i class="coin-ico"></i><b id="runner-coin-n">0</b><span class="runner-plus" id="runner-plus">+5</span></span>
+              <span class="hud-pill hud-score" id="runner-score-wrap"><span id="runner-score">0</span></span>
+            </div>
+            <span class="hud-best" id="runner-hi">BEST 0</span>
           </div>
-          <span class="hud-best" id="runner-hi">BEST 0</span>
+          <canvas id="runner-canvas" aria-label="Tania's Run game"></canvas>
+          <div class="runner-bubble" id="runner-bubble" aria-live="polite">
+            <div class="lang-en"><b>Hello, I am Tania</b><span><br>Tap me to save!</span></div>
+            <div class="lang-bn"><b>হ্যালো, আমি তানিয়া</b><span><br>আমাকে বাঁচাতে ট্যাপ করো!</span></div>
+          </div>
+          <button type="button" class="runner-full" id="runner-full">Full screen</button>
+          <p class="runner-rotate" id="runner-rotate">Turn your phone sideways for the best view</p>
+          <div class="runner-overlay" id="runner-overlay">
+            <p id="runner-title">Tania's Run</p>
+            <p id="runner-sub">Tap to start the game</p>
+            <button type="button" class="runner-play" id="runner-play">PLAY</button>
+          </div>
         </div>
-        <canvas id="runner-canvas" aria-label="Tania's Run game"></canvas>
-        <div class="runner-bubble" id="runner-bubble" aria-live="polite">
-          <div class="lang-en"><b>Hello, I am Tania</b><span><br>Tap me to save!</span></div>
-          <div class="lang-bn"><b>হ্যালো, আমি তানিয়া</b><span><br>আমাকে বাঁচাতে ট্যাপ করো!</span></div>
+        <p class="tap play-hide" id="runner-hint">Tap, click or press Space to jump</p>
         </div>
-        <button type="button" class="runner-full" id="runner-full">Full screen</button>
-        <p class="runner-rotate" id="runner-rotate">Turn your phone sideways for the best view</p>
-        <div class="runner-overlay" id="runner-overlay">
-          <p id="runner-title">Tania's Run</p>
-          <p id="runner-sub">Tap to start the game</p>
-          <button type="button" class="runner-play" id="runner-play">PLAY</button>
+        <div class="play-slide" id="play-slide-puzzle">
+          <h2 class="rv play-hide" id="puzzle-title">Straighten Tania</h2>
+          <div class="div rv play-hide">&#10022;</div>
+          <p class="puzzle-intro rv play-hide" id="puzzle-intro">Slide the pieces back into place to see the whole picture.</p>
+          <div class="pz-fold rv">
+            <div class="pz-card" id="pz-card">
+              <div class="pz-hud">
+                <span class="pz-moves" id="pz-moves">Moves: 0</span>
+                <span class="pz-time" id="pz-time">0:00</span>
+                <span class="pz-score" id="pz-score">Score: 0</span>
+                <button type="button" class="pz-exit" id="pz-exit" aria-label="Exit full screen">&times;</button>
+              </div>
+              <div class="pz-stage">
+                <div class="pz-board" id="pz-board" tabindex="0"></div>
+                <div class="runner-overlay" id="pz-overlay">
+                  <p class="pz-ov-title" id="pz-ov-title">Straighten Tania</p>
+                  <p class="pz-ov-sub" id="pz-ov-sub">Press PLAY to start</p>
+                  <button type="button" class="runner-play" id="pz-play">PLAY</button>
+                </div>
+                <div class="runner-overlay pz-result hidden" id="pz-result">
+                  <p class="pz-res-label" id="pz-res-label">Result</p>
+                  <p class="pz-res-grade" id="pz-res-grade"></p>
+                  <p class="pz-res-detail" id="pz-res-detail"></p>
+                  <button type="button" class="runner-play pz-replay" id="pz-replay">Play again</button>
+                </div>
+              </div>
+              <div class="pz-bar hidden" id="pz-sizes">
+                <div class="pz-sizes" role="group" aria-label="Puzzle size">
+                  <button type="button" class="pz-size on" data-n="3">3 &times; 3</button>
+                  <button type="button" class="pz-size" data-n="4">4 &times; 4</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="tap play-hide" id="pz-hint">Click a piece next to the gap, or use the arrow keys</p>
         </div>
       </div>
-      <p class="tap" id="runner-hint">Tap, click or press Space to jump</p>
     </section>
   </main>
   <footer id="footer">
@@ -480,6 +524,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="quiz.js"></script>
   <script src="game.js"></script>
+  <script src="audio/puzzle/songs.js"></script>
+  <script src="media/puzzle/pictures.js"></script>
+  <script src="puzzle.js"></script>
   <script>
     (function () {
       const audio = new Audio('audio/song.mp3');

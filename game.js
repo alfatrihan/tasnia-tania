@@ -478,7 +478,7 @@
     const isFull = () => wrap.classList.contains('fake-full');
     function layout() {
         if (isFull()) { W = Math.floor(wrap.clientWidth || window.innerWidth); H = Math.floor(wrap.clientHeight || window.innerHeight); }
-        else { W = Math.max(280, Math.floor(wrap.clientWidth)); H = Math.round(Math.min(360, Math.max(230, W * 0.62))); }
+        else { W = Math.max(280, Math.floor(wrap.clientWidth)); H = Math.round(Math.max(230, W * 0.625)); /* 16:10, same ratio as the puzzle card */ }
         if (!W || !H) return;
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.setSize(W, H, false);
