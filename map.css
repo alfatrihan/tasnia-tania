@@ -259,3 +259,17 @@ html[lang="bn"] .lang-en { display: none !important; }
     -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 45%);
     mask-image: linear-gradient(to bottom, transparent 0%, #000 45%);
 }
+
+/* ---- performance pass ----
+   Thin outlines on thousands of building shapes, each with vector-effect: non-scaling-stroke, were recalculated
+   on every zoom frame. The buildings keep their colours and the shading; they just have no outline now. */
+#map-svg .b, #map-svg .b.c1, #map-svg .b.c2,
+#map-svg .bs, #map-svg .bs.c1, #map-svg .bs.c2,
+#map-svg .br, #map-svg .br.c1, #map-svg .br.c2 {
+    stroke: none;
+    vector-effect: none;
+}
+/* distant district silhouettes: one flat colour each (no gradient painted per shape) */
+#map-svg .b.far { fill: #4a3868; fill-opacity: .9; }
+#map-svg .b.far.c1 { fill: #7a63a3; fill-opacity: .85; }
+#map-svg .b.far.c2 { fill: #b8497a; fill-opacity: .85; }

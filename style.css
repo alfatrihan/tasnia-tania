@@ -92,17 +92,8 @@ header {
 }
 
 /* a soft blur that fades out downwards, so the text under the bar is hidden near the links only */
-header::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    mask-image: linear-gradient(to bottom, #000 40%, transparent);
-    -webkit-mask-image: linear-gradient(to bottom, #000 40%, transparent);
-    pointer-events: none
-}
+/* (the header used to blur the map behind it with backdrop-filter on every scroll frame; removed for speed.
+   The dark gradient on the header itself already keeps the links readable.) */
 
 .brand {
     display: flex;
@@ -151,7 +142,7 @@ main {
 }
 
 section {
-    padding: 110px 26px;
+    padding: 64px 26px;
     max-width: 1000px;
     margin: 0 auto
 }
@@ -319,7 +310,7 @@ h2 {
     justify-content: center;
     gap: 14px;
     color: var(--rose);
-    margin: 6px 0 40px
+    margin: 6px 0 28px
 }
 
 .div::before,
@@ -434,7 +425,7 @@ h2 {
 }
 
 .fr {
-    background: linear-gradient(160deg, #3a2146, #1c1226 60%, #2a2a2a)
+    background: linear-gradient(160deg, #2b1830, #181221)
 }
 
 .fr img {
@@ -463,6 +454,12 @@ h2 {
     font-size: 1.3rem;
     font-style: italic;
     font-weight: 500
+}
+
+/* front caption over the photo: the site's dark colour (--bg), with a soft light edge so it stays readable */
+.fr b {
+    color: var(--bg);
+    text-shadow: 0 0 6px rgba(255, 214, 228, .55), 0 0 14px rgba(255, 214, 228, .25)
 }
 
 .fr.ic {
@@ -571,9 +568,6 @@ input[type=range] {
     accent-color: var(--rose)
 }
 
-#mlabel {
-    color: var(--mute)
-}
 
 .note {
     color: var(--sage);
@@ -610,7 +604,7 @@ input[type=range] {
 
 .tl li {
     position: relative;
-    margin-bottom: 70px
+    margin-bottom: 44px
 }
 
 .tl li::before {
@@ -628,9 +622,13 @@ input[type=range] {
 .tl b {
     display: block;
     color: var(--rose);
-    font-family: 'Great Vibes', cursive;
-    font-weight: 400;
-    font-size: 2.6rem;
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-size: 2rem;
+    letter-spacing: .02em;
+    opacity: var(--q, 0);
+    transform: translateY(calc((1 - var(--q, 0)) * 22px));
+    will-change: opacity, transform;
     line-height: 1.2
 }
 
@@ -638,114 +636,10 @@ input[type=range] {
     color: var(--mute)
 }
 
-.env {
-    position: relative;
-    width: min(400px, 88vw);
-    height: 250px;
-    margin: 0 auto;
-    cursor: pointer;
-    background: #1f1630;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    transition: opacity .8s .6s, transform .8s .6s
-}
-
-.flap {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 56%;
-    background: #2a1d3d;
-    clip-path: polygon(0 0, 100% 0, 50% 100%);
-    transform-origin: top;
-    transition: transform .9s;
-    z-index: 3
-}
-
-.pk {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(#1c1430, #140e24);
-    clip-path: polygon(0 0, 50% 56%, 100% 0, 100% 100%, 0 100%);
-    z-index: 2
-}
-
-.seal {
-    position: absolute;
-    left: 50%;
-    top: 56%;
-    width: 58px;
-    height: 58px;
-    margin: -29px;
-    border-radius: 50%;
-    background: radial-gradient(#f7a7c6, #c2467f);
-    display: grid;
-    place-items: center;
-    z-index: 4;
-    color: #3b1530;
-    transition: .5s;
-    box-shadow: 0 0 30px #ee8fb566;
-    animation: pulse 2.4s infinite
-}
-
-.seal svg {
-    width: 34px
-}
-
 @keyframes pulse {
     50% {
         transform: scale(1.1)
     }
-}
-
-.env.open .flap {
-    transform: rotateX(180deg);
-    z-index: 1
-}
-
-.env.open .seal {
-    opacity: 0;
-    animation: none
-}
-
-.env.open {
-    opacity: 0;
-    transform: translateY(40px);
-    pointer-events: none;
-    height: 0;
-    overflow: hidden;
-    border: 0;
-    margin: 0
-}
-
-.paper {
-    max-width: 640px;
-    margin: 0 auto;
-    background: #181221f2;
-    border: 1px solid var(--line);
-    border-radius: 6px 6px 18px 18px;
-    padding: 40px 34px;
-    box-shadow: 0 24px 70px #000a;
-    display: none
-}
-
-.paper.show {
-    display: block;
-    animation: in 1.2s both
-}
-
-.paper p {
-    margin-bottom: 20px;
-    font-size: 1.1rem;
-    opacity: 0;
-    animation: in 1s forwards
-}
-
-.paper p:first-child {
-    color: var(--rose);
-    font-family: 'Great Vibes', cursive;
-    font-size: 2.2rem
 }
 
 footer {
@@ -763,11 +657,16 @@ footer {
 
     nav {
         flex-basis: 100%;
-        justify-content: flex-start
+        justify-content: space-between
+    }
+
+    nav a {
+        padding: 6px 8px;
+        font-size: .86rem
     }
 
     section {
-        padding: 90px 20px
+        padding: 50px 20px
     }
 
     .gallery {
@@ -799,7 +698,7 @@ footer {
 /* ---------- Footer: pinned panel, words light up on scroll, then the Developer button ---------- */
 .footer-track {
     position: relative;
-    height: 160vh;   /* was 230vh: the words and the button now arrive after much less scrolling */
+    height: 135vh;   /* was 230vh: the words and the button now arrive after much less scrolling */
     --fp: 0;
 }
 
@@ -836,7 +735,7 @@ footer {
     color: var(--blush);
     opacity: .12;
     filter: blur(5px);
-    transition: opacity .8s ease, filter .8s ease;
+    transition: opacity .5s ease, filter .5s ease;
 }
 
 .fw .w.lit {
@@ -1439,31 +1338,27 @@ html[lang="bn"] #qbox {
     font-style: normal
 }
 
-html[lang="bn"] .note,
-html[lang="bn"] .paper p {
-    font-style: normal
-}
-
 /* About: the text starts only after the map has finished its zoom */
 #about .words {
     margin-top: 16vh
 }
 
-/* timeline: each year fades and rises as you scroll past it (--q is set by script.js) */
-.tl li {
-    opacity: var(--q, 0);
-    transform: translateY(calc((1 - var(--q, 0)) * 36px));
-    will-change: opacity, transform
-}
+/* timeline: years always shown; each point reveals as you scroll (--q is set per point by script.js).
+   Hidden points keep their space, so the page height is there from the start. */
+.tl .tl-pts li { will-change: auto }
+/* each word fades in from a soft blur, one after another, the same way as the footer words (script.js lights them by scroll) */
+/* each word comes out of a soft blur and brightens as you scroll (script.js sets opacity, blur and colour every frame).
+   No CSS transition here: script.js glides each word itself, so nothing lags behind the scroll. */
+.tl .tl-pts .w { display: inline-block; opacity: .12; color: var(--blush) }
 
 /* ===== Quiz: photo-card style, centred on screen, flips to the next question ===== */
 #quiz {
-    min-height: 100vh;
-    min-height: 100svh;
+    /* fixed height so the page below does not jump when the quiz starts (start card is short, question cards are taller) */
+    min-height: 600px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 60px 20px
+    padding: 40px 20px
 }
 
 #quiz-box {
@@ -2045,3 +1940,946 @@ body.dev-modal-open {
 
 /* the developer card appears straight away when the button is pressed */
 #devModal:not(.hidden) .paper-wrap { opacity: 1; }
+
+/* ===== "Things She Says": small trait meters in boxes, under the main stubborn meter ===== */
+.mset {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 14px;
+    max-width: 820px;
+    margin: 24px auto 0;
+    padding: 0 12px
+}
+.mbox {
+    text-align: left;
+    padding: 14px 16px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 214, 228, .22);
+    background: rgba(23, 16, 32, .55)
+}
+.mtop {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 10px
+}
+.mtop b {
+    color: var(--blush, #ffd6e4);
+    font-weight: 600
+}
+.mscale {
+    position: relative;
+    height: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, .06);
+    background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, .22) 0 1px, transparent 1px 25%)
+}
+.mscale i {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--rose, #ee8fb5), #cdb4f0)
+}
+.mnums {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: .68rem;
+    opacity: .55
+}
+
+/* ===== Redesigned Stubborn Meter (lilac, rose and gold; no red) ===== */
+.jed {
+    max-width: 560px;
+    margin: 46px auto 0;
+    padding: 22px 22px 18px;
+    text-align: center;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 214, 228, .28);
+    background: linear-gradient(160deg, rgba(40, 26, 56, .8), rgba(23, 16, 32, .7));
+    box-shadow: 0 14px 40px rgba(6, 2, 10, .45), inset 0 1px 0 rgba(255, 255, 255, .05)
+}
+.jed-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px
+}
+.jed-head h3 { margin: 0; text-align: left }
+.jed-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    color: var(--blush, #ffd6e4);
+    letter-spacing: .02em
+}
+.jed-track { position: relative; padding: 4px 0 }
+.jed-track input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    max-width: none;
+    height: 12px;
+    border-radius: 999px;
+    outline: none;
+    cursor: pointer;
+    background: linear-gradient(90deg, #cdb4f0 0%, #ee8fb5 calc(var(--p, 0%) ), rgba(255, 255, 255, .08) calc(var(--p, 0%) + .5%))
+}
+.jed-track input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid var(--blush, #ffd6e4);
+    background: radial-gradient(circle at 35% 30%, #ffe9f1, #ee8fb5);
+    box-shadow: 0 0 0 5px rgba(243, 217, 164, .18), 0 4px 12px rgba(6, 2, 10, .5)
+}
+.jed-track input[type=range]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--blush, #ffd6e4);
+    background: radial-gradient(circle at 35% 30%, #ffe9f1, #ee8fb5)
+}
+.jed-ticks {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 2px 0;
+    font-size: .72rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    opacity: .6
+}
+.jed-label {
+    margin: 16px 0 6px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    color: var(--blush, #ffd6e4)
+}
+.jed-note { margin: 0; opacity: .8 }
+.mdesc { margin: 8px 0 0; font-size: .85rem; opacity: .75; line-height: 1.4 }
+
+/* ===== Trait meters: one box, every trait stacked below the other with its status ===== */
+.mbox-all {
+    max-width: 560px;
+    margin: 28px auto 0;
+    padding: 6px 22px;
+    text-align: left;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 214, 228, .22);
+    background: linear-gradient(160deg, rgba(40, 26, 56, .75), rgba(23, 16, 32, .65));
+    box-shadow: 0 14px 40px rgba(6, 2, 10, .4)
+}
+.mrow {
+    padding: 16px 0 14px;
+    border-bottom: 1px solid rgba(255, 214, 228, .12)
+}
+.mrow:last-child { border-bottom: 0 }
+.mstatus {
+    margin-top: 8px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--blush, #ffd6e4)
+}
+.mrow .mdesc { margin-top: 4px }
+.mrow .jed-track { margin-top: 2px }
+.mrow .mtop { margin-bottom: 4px }
+
+/* ===== One combined card: title, stubborn meter, and trait meters together ===== */
+.mega {
+    max-width: 600px;
+    margin: 46px auto 0;
+    padding: 28px 24px 24px;
+    text-align: center;
+    border-radius: 22px;
+    border: 1px solid rgba(255, 214, 228, .28);
+    background: linear-gradient(160deg, rgba(40, 26, 56, .85), rgba(23, 16, 32, .75));
+    box-shadow: 0 18px 50px rgba(6, 2, 10, .5), inset 0 1px 0 rgba(255, 255, 255, .05)
+}
+.mega-head { margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid rgba(255, 214, 228, .18) }
+.mega-head h3 {
+    margin: 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.7rem;
+    letter-spacing: .02em;
+    color: var(--blush, #ffd6e4)
+}
+.mega-sub { margin: 6px 0 0; font-size: .9rem; opacity: .7; font-style: italic }
+.mega .jed { max-width: none; margin: 0 0 22px; padding: 0; border: 0; background: none; box-shadow: none; border-radius: 0 }
+.mega .mbox-all { max-width: none; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; border-radius: 0 }
+.mega .mbox-all .mrow:first-child { padding-top: 6px }
+
+/* stubborn meter is read-only: shown as a fixed value */
+.jed-track input[type=range]:disabled { cursor: default }
+.mega .jed.mrow { margin: 0 0 22px; padding: 16px 0 14px; border-bottom: 1px solid rgba(255, 214, 228, .12); text-align: left }
+.mrest { font-style: inherit; font-size: inherit; opacity: inherit; color: inherit }
+.mrest::before { content: " \2014  " }
+
+/* ===== Meter titles: light serif in gold, matching the section headings ===== */
+.mtop > span {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.35rem;
+    font-weight: 500;
+    letter-spacing: .03em;
+    color: var(--blush, #ffd6e4)
+}
+
+/* ===== Slider thumb in the site theme: lilac and blush, rose ring ===== */
+.jed-track input[type=range]::-webkit-slider-thumb {
+    border: 2px solid var(--rose);
+    background: radial-gradient(circle at 35% 30%, var(--blush), var(--lil));
+    box-shadow: 0 0 0 5px rgba(238, 143, 181, .2), 0 4px 12px rgba(6, 2, 10, .5)
+}
+.jed-track input[type=range]::-moz-range-thumb {
+    border: 2px solid var(--rose);
+    background: radial-gradient(circle at 35% 30%, var(--blush), var(--lil))
+}
+
+/* ===== Same text size for every meter's title and line ===== */
+.mega .mtop > span { font-size: 1.35rem }
+.mega .mstatus, .mega .mstatus .mrest { font-size: 1rem }
+.mega .mstatus .mrest { font-style: inherit }
+
+/* ===== Timeline: each point is a bullet ===== */
+.tl .tl-pts { list-style: none; margin: 8px 0 0; padding: 0 }
+.tl .tl-pts li {
+    position: relative;
+    margin: 0 0 10px;
+    padding-left: 18px;
+    color: var(--blush);
+    font-size: 1.05rem;
+    line-height: 1.85
+}
+.tl .tl-pts li::before {
+    content: "\2022";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: auto;
+    background: none;
+    color: var(--rose);
+    font-size: 1rem;
+    line-height: 1.5
+}
+
+/* ===== Measure of Tania: the meters are solid and easy to read; the card itself stays see-through ===== */
+.mega .jed-track input[type=range] {
+    height: 14px;
+    opacity: 1;
+    background: linear-gradient(90deg, #cdb4f0 0%, #ee8fb5 calc(var(--p, 0%)), #3a2c4d calc(var(--p, 0%) + .5%));
+    box-shadow: inset 0 0 0 1px rgba(255, 214, 228, .45)
+}
+.mega .jed-track input[type=range]:disabled { opacity: 1 }
+.mega .mtop b { opacity: 1; color: var(--blush, #ffd6e4) }
+.mega .mstatus { opacity: 1 }
+
+/* the card title, a little heavier */
+.mega-head h3 { font-weight: 600 }
+
+
+/* ===== closing line (last section before the footer): same word-by-word light-up as About ===== */
+#outro {
+    padding: 40px 26px 70px;
+    min-height: 0
+}
+
+#outro .words {
+    margin: 0 auto;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.25rem, 4.6vw, 1.9rem);
+    line-height: 1.5;
+    max-width: 22em;
+    text-wrap: balance
+}
+
+html[lang="bn"] #outro .words {
+    font-family: 'Hind Siliguri', sans-serif;
+    line-height: 1.8
+}
+
+
+/* ===== closing card: a soft glowing panel, a breathing lotus, an eyebrow and a last line ===== */
+#outro {
+    padding: 40px 22px 84px
+}
+
+.outro-card {
+    position: relative;
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 38px 26px 34px;
+    text-align: center;
+    border-radius: 26px;
+    border: 1px solid rgba(255, 214, 228, .16);
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(238, 143, 181, .22), transparent 65%),
+        radial-gradient(ellipse at 50% 100%, rgba(217, 184, 242, .14), transparent 60%),
+        linear-gradient(180deg, rgba(40, 24, 52, .55), rgba(20, 14, 28, .3));
+    box-shadow: 0 0 44px rgba(238, 143, 181, .12)
+}
+
+.outro-lotus {
+    display: block;
+    width: 60px;
+    height: 38px;
+    margin: 0 auto 12px;
+    color: var(--blush, #ffd6e4);
+    filter: drop-shadow(0 0 10px rgba(238, 143, 181, .65));
+    animation: outroBreathe 4.5s ease-in-out infinite
+}
+
+@keyframes outroBreathe {
+    0%, 100% { opacity: .7; transform: translateY(0) scale(1) }
+    50% { opacity: 1; transform: translateY(-3px) scale(1.05) }
+}
+
+.outro-eyebrow {
+    margin: 0 0 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .72rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--rose, #ee8fb5)
+}
+
+html[lang="bn"] .outro-eyebrow {
+    font-family: 'Hind Siliguri', sans-serif;
+    font-size: .9rem;
+    letter-spacing: .5px;
+    text-transform: none
+}
+
+.outro-tag {
+    margin: 26px 0 0;
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(1.35rem, 5vw, 1.8rem);
+    line-height: 1.3;
+    color: var(--blush, #ffd6e4)
+}
+
+.outro-tag::before {
+    content: '\2726';
+    display: block;
+    margin-bottom: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .8rem;
+    letter-spacing: 6px;
+    color: var(--rose, #ee8fb5)
+}
+
+html[lang="bn"] .outro-tag {
+    font-family: 'Hind Siliguri', sans-serif;
+    font-size: 1.1rem;
+    line-height: 1.7
+}
+
+/* ===== NAVIGATION BAR (from uploaded style.css) ===== */
+
+
+
+
+header {
+    position: fixed;
+    top: env(safe-area-inset-top, 0px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 20px 30px;
+    /* looks transparent, but fades to dark at the top so page content cannot run through the links */
+    background: linear-gradient(to bottom, rgba(20, 14, 31, .96) 0%, rgba(20, 14, 31, .8) 55%, rgba(20, 14, 31, 0) 100%);
+    border-bottom: 0
+}
+
+
+
+/* a soft blur that fades out downwards, so the text under the bar is hidden near the links only */
+/* (the header used to blur the map behind it with backdrop-filter on every scroll frame; removed for speed.
+   The dark gradient on the header itself already keeps the links readable.) */
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.5rem;
+    color: var(--rose)
+}
+
+
+
+.lotus {
+    width: 34px;
+    color: var(--blush)
+}
+
+
+
+nav {
+    display: flex;
+    gap: 2px;
+    flex: 1;
+    justify-content: flex-end;
+    overflow-x: auto;
+    scrollbar-width: none
+}
+
+
+
+nav::-webkit-scrollbar {
+    display: none
+}
+
+
+
+nav a {
+    color: var(--mute);
+    text-decoration: none;
+    padding: 6px 12px;
+    font-size: .9rem;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: .3s
+}
+
+
+
+nav a.on {
+    color: var(--blush);
+    border-color: var(--rose)
+}
+
+
+
+@media(max-width:640px) {
+
+    header {
+        flex-wrap: wrap;
+        gap: 4px
+    }
+
+
+    nav {
+        flex-basis: 100%;
+        justify-content: space-between
+    }
+
+
+    nav a {
+        padding: 6px 8px;
+        font-size: .86rem
+    }
+}
+
+
+
+/* ---- 3. Tabs: a soft glass pill, the active tab is a filled rose-lilac pill ---- */
+nav {
+    gap: 4px;
+    padding: 4px;
+    flex: 0 1 auto;
+    margin-left: auto;
+    border-radius: 999px;
+    background: rgba(34, 22, 48, .62);
+    border: 1px solid rgba(255, 214, 228, .18);
+    box-shadow: 0 6px 22px rgba(6, 2, 10, .35), inset 0 1px 0 rgba(255, 255, 255, .06)
+}
+
+
+nav a {
+    padding: 7px 15px;
+    border-bottom: 0;
+    border-radius: 999px;
+    font-size: .86rem;
+    font-weight: 500;
+    letter-spacing: .03em;
+    color: rgba(246, 235, 242, .72);
+    transition: background .35s, color .35s, box-shadow .35s
+}
+
+
+nav a:hover { color: var(--blush) }
+
+
+nav a.on {
+    color: #2b1536;
+    font-weight: 600;
+    border-color: transparent;
+    background: linear-gradient(135deg, #ffd6e4, #ee8fb5 55%, #cdb4f0);
+    box-shadow: 0 3px 14px rgba(238, 143, 181, .45)
+}
+
+
+html[lang="bn"] nav a { font-size: .88rem; letter-spacing: 0 !important }
+
+
+@media (max-width: 640px) {
+
+    nav { flex-basis: 100%; margin-left: 0; justify-content: space-between }
+
+    nav a { flex: 1 1 auto; text-align: center; padding: 7px 6px; font-size: .8rem; letter-spacing: .01em }
+
+    html[lang="bn"] nav a { font-size: .84rem }
+}
+
+
+/* ===== NAV: one pink glass pill that slides from tab to tab ===== */
+nav { position: relative; contain: layout }
+nav a { position: relative; z-index: 1; background: none; box-shadow: none }
+nav a.on {
+    background: none;
+    box-shadow: none;
+    color: #2b1536;
+    font-weight: 600;
+    border-color: transparent
+}
+.nav-pill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    z-index: 0;
+    border-radius: 999px;
+    pointer-events: none;
+    will-change: transform;
+    backface-visibility: hidden;
+    /* same pink as the active tab used before, drawn as a glossy glass bead */
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, .55) 0%, rgba(255, 255, 255, 0) 48%),
+        linear-gradient(135deg, rgba(255, 214, 228, .92), rgba(238, 143, 181, .88) 55%, rgba(205, 180, 240, .9));
+    box-shadow:
+        0 4px 14px rgba(238, 143, 181, .42),
+        inset 0 1px 0 rgba(255, 255, 255, .7),
+        inset 0 -2px 4px rgba(160, 60, 110, .18);
+    opacity: 0;
+    transition: transform .5s cubic-bezier(.3, .7, .2, 1), opacity .25s ease
+}
+.nav-pill.ready { opacity: 1 }
+@media (prefers-reduced-motion: reduce) {
+    .nav-pill { transition: opacity .2s ease }
+}
+
+/* ===== TIMELINE: one merged line per year, word-by-word reveal kept, sans-serif, smaller, no bullet dot ===== */
+.tl .tl-pts li.tl-line {
+    padding-left: 0;
+    font-family: 'Hind Siliguri', 'DM Sans', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: .92rem;
+    line-height: 1.6;
+    color: var(--blush)
+}
+.tl .tl-pts li.tl-line::before { content: none; display: none }
+html[lang="bn"] .tl .tl-pts li.tl-line {
+    font-family: 'Hind Siliguri', 'DM Sans', sans-serif;
+    font-size: .9rem;
+    line-height: 1.7
+}
+
+/* ===== TIMELINE: years rise in with a soft blur, lines reveal word by word (same as the About text) ===== */
+.tl b {
+    transform: translateY(calc((1 - var(--q, 0)) * -16px)) scale(calc(.9 + var(--q, 0) * .1));
+    filter: blur(calc((1 - var(--q, 0)) * 10px));
+    transform-origin: left center
+}
+.tl .tl-pts .tl-words .w {
+    display: inline;
+    opacity: 1;
+    color: rgba(246, 235, 242, .22);
+    transition: color .5s
+}
+.tl .tl-pts .tl-words .w.lit { color: var(--blush) }
+
+/* timeline line size: a little bigger */
+.tl .tl-pts li.tl-line { font-size: 1.02rem }
+html[lang="bn"] .tl .tl-pts li.tl-line { font-size: .99rem }
+
+html[lang="bn"] .note {
+    font-style: normal
+}
+
+/* ===== NAV: fit the whole bar inside the phone screen (no cut-off at the edges) ===== */
+header {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100vw;
+    min-width: 0;
+}
+.brand { flex: 0 0 auto; min-width: 0; white-space: nowrap }
+nav {
+    min-width: 0;
+    flex: 1 1 auto;
+    justify-content: flex-start;   /* left-aligned, so the first tab is never pushed off the left edge */
+    padding-right: 4px;
+    scroll-padding-inline: 12px
+}
+@media (max-width: 640px) {
+    header {
+        gap: 6px;
+        padding-top: 10px;
+        padding-bottom: 24px;
+        padding-left: max(10px, env(safe-area-inset-left, 0px));
+        padding-right: max(10px, env(safe-area-inset-right, 0px))
+    }
+    .brand { font-size: 1.2rem; gap: 5px }
+    .lotus { width: 24px }
+    nav { gap: 0 }
+    nav a {
+        padding: 6px 8px;
+        font-size: .78rem;
+        letter-spacing: 0
+    }
+    html[lang="bn"] nav a { font-size: .8rem }
+}
+@media (max-width: 380px) {
+    .brand { font-size: 1.05rem }
+    nav a { padding: 6px 6px; font-size: .72rem }
+    html[lang="bn"] nav a { font-size: .74rem }
+}
+
+/* ===== MEASURE (meter card): compact so the whole card fits one phone screen; font sizes unchanged ===== */
+@media (max-width: 640px) {
+    .mega {
+        margin: 12px auto 0;
+        padding: 12px 10px 10px;
+        border-radius: 16px
+    }
+    .mega-head { margin-bottom: 8px; padding-bottom: 8px }
+    .mega .jed.mrow { margin: 0 0 8px; padding: 8px 0 6px }
+    .mega .mbox-all {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 14px;
+        row-gap: 0;
+        max-width: none;
+        margin: 8px 0 0;
+        padding: 4px 12px;
+        border-radius: 14px
+    }
+    .mega .mbox-all .mrow { padding: 8px 0 6px; border-bottom: 1px solid rgba(255, 214, 228, .12) }
+    .mega .mbox-all .mrow:first-child { padding-top: 6px }
+    .mega .mbox-all .mrow:nth-last-child(-n+2) { border-bottom: 0 }
+    .mrow .mtop { margin-bottom: 0 }
+    .mega .jed-track { padding: 2px 0 }
+    .mega .jed-track input[type=range] { height: 8px }
+    .mstatus { margin-top: 2px; line-height: 1.3 }
+    .mrow .mdesc, .mega .mrest { line-height: 1.3 }
+}
+
+/* ===== MOBILE ONLY FIX: top bar stays in place when switching to Bangla =====
+   Bangla has a bigger line-height and a different font, which made the bar change height
+   and look like it jumped up. On phones only, the bar and its links now keep the same
+   line-height in both languages. Desktop styles are not touched. */
+@media (max-width: 640px) {
+    html header,
+    html[lang="bn"] header {
+        position: fixed;
+        top: 0;
+        line-height: 1.4;
+    }
+
+    html header .brand,
+    html[lang="bn"] header .brand {
+        line-height: 1.4;
+    }
+
+    html header nav a,
+    html[lang="bn"] header nav a {
+        line-height: 1.4;
+    }
+}
+
+/* ===== DESKTOP: the top menu is only as wide as its tabs, not the whole screen ===== */
+@media (min-width: 641px) {
+    nav {
+        flex: 0 1 auto;
+        margin-left: auto;
+        width: max-content;
+        max-width: 100%;
+    }
+}
+
+/* ===== TIMELINE SIZE: smaller on desktop, and fitted to the phone screen on mobile ===== */
+@media (min-width: 641px) {
+    .tl b {
+        font-size: 1.5rem;
+    }
+    html[lang="bn"] .tl b {
+        font-size: 1.4rem;
+        line-height: 1.5;
+    }
+    .tl .tl-pts li.tl-line {
+        font-size: .92rem;
+    }
+    html[lang="bn"] .tl .tl-pts li.tl-line {
+        font-size: .9rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .tl {
+        max-width: 100%;
+        padding-left: 34px;
+        overflow-wrap: anywhere;
+    }
+    .tl::before,
+    .tl::after {
+        left: 8px;
+    }
+    .tl li {
+        margin-bottom: 30px;
+    }
+    .tl li::before {
+        left: -34px;
+        width: 18px;
+        font-size: .95rem;
+    }
+    .tl b {
+        font-size: 1.4rem;
+    }
+    html[lang="bn"] .tl b {
+        font-size: 1.3rem;
+        line-height: 1.5;
+    }
+    .tl .tl-pts li.tl-line {
+        font-size: .88rem;
+        line-height: 1.65;
+    }
+    html[lang="bn"] .tl .tl-pts li.tl-line {
+        font-size: .88rem;
+    }
+}
+
+/* ===== MEASURE SECTION: fixed by layout, not by smaller text ===== */
+@media (min-width: 641px) {
+    .mega {
+        max-width: 600px;
+        padding: 22px 22px 18px;
+    }
+    .mega .mbox-all .mrow {
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+}
+
+@media (max-width: 640px) {
+    /* one meter per row, so each title and value has the full width of the card */
+    .mega .mbox-all {
+        grid-template-columns: 1fr;
+    }
+    .mega .mbox-all .mrow:nth-last-child(-n+2) {
+        border-bottom: 1px solid rgba(255, 214, 228, .12);
+    }
+    .mega .mbox-all .mrow:last-child {
+        border-bottom: 0;
+    }
+    .mega .mbox-all .mrow {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+}
+
+/* ===== DEVELOPER INFO CARD: modern typography and a cleaner surface (the paper is now a clean glass card) ===== */
+#devModal .dev-paper {
+    padding: 30px 26px 24px;
+    border-radius: 24px;
+    border: 1px solid rgba(238, 143, 181, .22);
+    background: linear-gradient(160deg, rgba(42, 27, 58, .94), rgba(17, 11, 25, .97));
+    box-shadow: 0 30px 80px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .06);
+    font-family: 'DM Sans', sans-serif;
+}
+
+#devModal .dev-modal-head h2 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    color: var(--ink);
+}
+
+#devModal .dev-modal-head h2 span {
+    color: var(--rose);
+}
+
+#devModal .dev-modal-head .eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: .66rem;
+    font-weight: 500;
+    letter-spacing: .26em;
+    color: var(--rose);
+}
+
+#devModal .dev-purpose {
+    font-family: 'DM Sans', sans-serif;
+    font-size: .92rem;
+    line-height: 1.65;
+    color: var(--mute);
+    margin-bottom: 18px;
+}
+
+#devModal .dev-profile-box {
+    padding: 18px 0 16px;
+    border-top: 1px solid rgba(255, 255, 255, .07);
+    border-bottom: 1px solid rgba(255, 255, 255, .07);
+}
+
+#devModal .dev-name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: .005em;
+    color: var(--ink);
+}
+
+#devModal .dev-edu {
+    font-family: 'DM Sans', sans-serif;
+    font-size: .8rem;
+    color: var(--mute);
+    letter-spacing: .01em;
+    line-height: 1.5;
+}
+
+#devModal .dev-social-btn {
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid rgba(255, 255, 255, .12);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 500;
+}
+
+#devModal .dev-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.12rem;
+    line-height: 1.5;
+    color: var(--lil);
+    border-top: 0;
+    padding-top: 4px;
+}
+
+html[lang="bn"] #devModal .dev-paper,
+html[lang="bn"] #devModal .dev-paper * {
+    font-family: 'Hind Siliguri', 'DM Sans', sans-serif !important;
+    letter-spacing: 0 !important;
+}
+
+html[lang="bn"] #devModal .dev-quote {
+    font-family: 'Noto Serif Bengali', serif !important;
+    font-style: normal;
+    font-size: 1rem;
+}
+
+/* ===== DEVELOPER INFO CARD: no logo icons, and a plain, easy-to-read quote (no fancy script or italic) ===== */
+#devModal .dev-social-btn svg {
+    display: none;
+}
+
+#devModal .dev-social-btn {
+    padding: 9px 16px;
+}
+
+#devModal .dev-quote {
+    font-family: 'DM Sans', sans-serif;
+    font-style: normal;
+    font-size: .92rem;
+    font-weight: 400;
+    line-height: 1.6;
+    letter-spacing: .01em;
+    color: var(--mute);
+    max-width: 34ch;
+    margin: 0 auto;
+}
+
+html[lang="bn"] #devModal .dev-quote {
+    font-family: 'Hind Siliguri', sans-serif !important;
+    font-size: .95rem;
+}
+
+/* ===== CLOSING LINE: minimal redesign. The pink script line becomes a clean, light sans-serif line ===== */
+#outro .outro-card {
+    max-width: 520px;
+    padding: 44px 28px 40px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 214, 228, .12);
+    background: rgba(24, 16, 34, .45);
+    box-shadow: none;
+}
+
+#outro .outro-lotus {
+    width: 44px;
+    height: 28px;
+    margin-bottom: 18px;
+    filter: none;
+    animation: none;
+    opacity: .85;
+}
+
+#outro .outro-eyebrow {
+    margin-bottom: 14px;
+    font-size: .66rem;
+    font-weight: 500;
+    letter-spacing: .3em;
+    color: var(--mute);
+}
+
+#outro .outro-tag {
+    margin: 28px auto 0;
+    max-width: 24em;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .98rem;
+    font-weight: 300;
+    line-height: 1.7;
+    letter-spacing: .01em;
+    color: var(--blush, #ffd6e4);
+}
+
+#outro .outro-tag::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 1px;
+    margin: 0 auto 18px;
+    background: var(--rose, #ee8fb5);
+    opacity: .7;
+}
+
+html[lang="bn"] #outro .outro-tag {
+    font-family: 'Hind Siliguri', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.8;
+}
+
+html[lang="bn"] #outro .outro-eyebrow {
+    font-size: .85rem;
+    letter-spacing: .05em;
+}
+
+/* ===== SIGNATURE: the name written in a handwritten, signature style under the closing line ===== */
+#outro .outro-sign {
+    margin: 22px 0 0;
+    font-family: 'Great Vibes', 'Hind Siliguri', cursive;
+    font-size: clamp(2rem, 7vw, 2.6rem);
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--rose, #ee8fb5);
+    transform: none;
+}
+
+/* Tidy closing box: the small label becomes the name "Tasnia" in the same signature font */
+#outro .outro-eyebrow,
+html[lang="bn"] #outro .outro-eyebrow {
+    margin: 0 0 6px;
+    font-family: 'Great Vibes', 'Hind Siliguri', cursive;
+    font-size: clamp(2.2rem, 8vw, 2.9rem);
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--rose, #ee8fb5);
+}

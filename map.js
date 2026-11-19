@@ -185,9 +185,20 @@
     tg.appendChild(mk('stop', { offset: 0.55, 'stop-color': '#7da57c' }));
     tg.appendChild(mk('stop', { offset: 1, 'stop-color': '#35553a' }));
     winDefs.appendChild(tg);
+    // a darker, more natural green for the varied campus trees
+    const tg2 = mk('radialGradient', { id: 'tree2', cx: '35%', cy: '30%', r: '72%' });
+    tg2.appendChild(mk('stop', { offset: 0, 'stop-color': '#9cc08a' }));
+    tg2.appendChild(mk('stop', { offset: 0.5, 'stop-color': '#4f7d46' }));
+    tg2.appendChild(mk('stop', { offset: 1, 'stop-color': '#1f3a26' }));
+    winDefs.appendChild(tg2);
+    const tg3 = mk('radialGradient', { id: 'tree3', cx: '40%', cy: '32%', r: '70%' });
+    tg3.appendChild(mk('stop', { offset: 0, 'stop-color': '#b8cf8e' }));
+    tg3.appendChild(mk('stop', { offset: 0.55, 'stop-color': '#6b8f4e' }));
+    tg3.appendChild(mk('stop', { offset: 1, 'stop-color': '#2b4727' }));
+    winDefs.appendChild(tg3);
     svg.insertBefore(winDefs, svg.firstChild);
 
-    function buildCity(lon, lat, R, count, roads, detail, trees) {
+    function buildCity(lon, lat, R, count, roads, detail, trees, g = cityG) {
         // roads first (under everything), as a dark asphalt strip with a lane line on top
         for (let k = 0; k < roads; k++) {
             let x = lon, y = -lat;
@@ -199,18 +210,40 @@
                 x += Math.cos(dir) * step; y += Math.sin(dir) * step * 0.8;
                 d += 'L' + x.toFixed(5) + ' ' + y.toFixed(5);
             }
-            cityG.appendChild(mk('path', { d }, 'road-base'));
+            g.appendChild(mk('path', { d }, 'road-base'));
             const p = mk('path', { d }, 'road');
-            cityG.appendChild(p);
+            g.appendChild(p);
             cityRoad.push(p);
         }
         // trees (canopy with a soft ground shadow)
         for (let k = 0; k < (trees || 0); k++) {
             const a = rnd() * Math.PI * 2, r = R * 1.05 * Math.sqrt(rnd());
             const x = lon + Math.cos(a) * r, y = -lat + Math.sin(a) * r * 0.8;
-            const tr = 0.00028 + rnd() * 0.00032;
-            cityG.appendChild(mk('ellipse', { cx: (x + tr * 0.4).toFixed(5), cy: (y + tr * 0.5).toFixed(5), rx: (tr * 1.1).toFixed(5), ry: (tr * 0.6).toFixed(5) }, 'sh'));
-            cityG.appendChild(mk('circle', { cx: x.toFixed(5), cy: (y - tr * 0.6).toFixed(5), r: tr.toFixed(5), fill: 'url(#tree)' }, 'tr'));
+            const tr = 0.00026 + rnd() * 0.00038;                  // crown radius, varies per tree
+            const pickFill = rnd();
+            const fillId = pickFill < 0.4 ? 'url(#tree)' : pickFill < 0.75 ? 'url(#tree2)' : 'url(#tree3)';
+            const cx = x, cy = y - tr * 0.85;                      // crown centre, above the trunk
+            // ground shadow, stretched away from the light
+            g.appendChild(mk('ellipse', { cx: (x + tr * 0.6).toFixed(5), cy: (y + tr * 0.55).toFixed(5), rx: (tr * 1.35).toFixed(5), ry: (tr * 0.5).toFixed(5) }, 'sh'));
+            // trunk: a short tapered stem, a little darker at the base
+            g.appendChild(mk('path', { d: `M${(x - tr * 0.07).toFixed(5)} ${y.toFixed(5)}L${(x - tr * 0.04).toFixed(5)} ${(cy + tr * 0.6).toFixed(5)}L${(x + tr * 0.04).toFixed(5)} ${(cy + tr * 0.6).toFixed(5)}L${(x + tr * 0.07).toFixed(5)} ${y.toFixed(5)}Z`, fill: '#2e2118' }));
+            // crown: 5 to 7 uneven lobes, each a slightly different size, so the outline is ragged like real foliage
+            const lobes = 5 + Math.floor(rnd() * 3);
+            for (let j = 0; j < lobes; j++) {
+                const ang = (j / lobes) * Math.PI * 2 + (rnd() - 0.5) * 0.7;
+                const off = tr * (0.3 + rnd() * 0.3);
+                const lr = tr * (0.38 + rnd() * 0.3);
+                g.appendChild(mk('circle', {
+                    cx: (cx + Math.cos(ang) * off).toFixed(5),
+                    cy: (cy + Math.sin(ang) * off * 0.75).toFixed(5),
+                    r: lr.toFixed(5), fill: fillId
+                }, 'tr'));
+            }
+            // a core lobe to fill the middle of the crown
+            g.appendChild(mk('circle', { cx: cx.toFixed(5), cy: cy.toFixed(5), r: (tr * 0.55).toFixed(5), fill: fillId }, 'tr'));
+            // sunlit highlight on the upper-left of the crown, and a soft shade on the lower-right
+            g.appendChild(mk('circle', { cx: (cx - tr * 0.22).toFixed(5), cy: (cy - tr * 0.25).toFixed(5), r: (tr * 0.3).toFixed(5), fill: '#e8f5d8', 'fill-opacity': '.16', 'pointer-events': 'none' }));
+            g.appendChild(mk('circle', { cx: (cx + tr * 0.25).toFixed(5), cy: (cy + tr * 0.3).toFixed(5), r: (tr * 0.35).toFixed(5), fill: '#0e0a14', 'fill-opacity': '.18', 'pointer-events': 'none' }));
         }
         for (let k = 0; k < count; k++) {
             const a = rnd() * Math.PI * 2;
@@ -225,10 +258,10 @@
                 const bw = 0.0009 + rnd() * 0.0016, bh = 0.0009 + rnd() * 0.0018;
                 const pick = rnd();
                 const c = pick < 0.12 ? CITY_COLORS[1] : pick < 0.18 ? CITY_COLORS[2] : CITY_COLORS[0];
-                cityG.appendChild(mk('rect', {
+                g.appendChild(mk('rect', {
                     x: (x - bw / 2).toFixed(5), y: (y - bh / 2).toFixed(5),
                     width: bw.toFixed(5), height: bh.toFixed(5)
-                }, 'b ' + c));
+                }, 'b far ' + c));   // flat colour (see map.css): no gradient to paint per shape
                 continue;
             }
             const tower = rnd() < 0.12;
@@ -243,11 +276,11 @@
             const unit = detail && rnd() < 0.6 ? mk('rect', {}, 'ru') : null;
             if (detail) {
                 const sd = Math.min(bw, bh) * 0.9;   // soft shadow thrown onto the ground behind the building
-                cityG.appendChild(mk('path', { d: `M${x0.toFixed(5)} ${yb.toFixed(5)}L${(x0 + bw).toFixed(5)} ${yb.toFixed(5)}L${(x0 + bw + sd).toFixed(5)} ${(yb - sd * 0.5).toFixed(5)}L${(x0 + sd).toFixed(5)} ${(yb - sd * 0.5).toFixed(5)}Z` }, 'sh'));
+                g.appendChild(mk('path', { d: `M${x0.toFixed(5)} ${yb.toFixed(5)}L${(x0 + bw).toFixed(5)} ${yb.toFixed(5)}L${(x0 + bw + sd).toFixed(5)} ${(yb - sd * 0.5).toFixed(5)}L${(x0 + sd).toFixed(5)} ${(yb - sd * 0.5).toFixed(5)}Z` }, 'sh'));
             }
-            cityG.append(side, roof, front);
-            if (win) cityG.appendChild(win);
-            if (unit) cityG.appendChild(unit);
+            g.append(side, roof, front);
+            if (win) g.appendChild(win);
+            if (unit) g.appendChild(unit);
             const depth = Math.min(bw, bh);
             const bObj = {
                 front, side, roof, win, unit, x0, yb, w: bw, h: bh,
@@ -295,9 +328,11 @@
     // painted once and never re-touched on scroll - so the count can stay generous without bringing
     // back the hang; it was the per-frame 3D growth/flatten work on thousands of them that was slow,
     // not the number of shapes on screen
-    DISTRICTS.forEach(([, , lon, lat]) => buildCity(lon, lat, 0.035, 36, 0, false, 0));
+    const distG = mk('g', {}, 'far-city');   // the distant district silhouettes: hidden once the zoom is inside Bogura
+    cityG.appendChild(distG);
+    DISTRICTS.forEach(([, , lon, lat]) => buildCity(lon, lat, 0.035, 36, 0, false, 0, distG));
     buildCity(boguraLabel.lon, boguraLabel.lat, 0.07, 150, 0, true, 60);   // Bogura: denser, the city centre
-    buildCity(89.3566, 24.8464, 0.012, 32, 0, true, 22);   // the college campus: a small cluster of its own
+    buildCity(89.3566, 24.8464, 0.012, 52, 0, true, 40);   // the college campus: a fuller cluster of its own
 
     // ---------- the economics department ----------
     // top-down plan (seen from above at the start of the zoom). Units: 0.00001 degree, centred on the building.
@@ -375,10 +410,11 @@
     // scroll budget: the zoom from Bangladesh to the department (t 0-4) gets PRE_FAST times less scroll;
     // the rest (t 4-7, the building, the room and Tania) keeps exactly the same scroll distance and speed
     const PRE_FAST = 2;
-    let PRE_PX = 1, POST_PX = 1, EXTRA_PX = 1;
+    let PRE_PX = 1, POST_PX = 1, EXTRA_PX = 1, trackDocTop = 0;
     // extra scroll length after the room is fully shown (t stays 7): Tania's 12 frames are played one by one over it
     const FRAME_SCROLL_VH = 0.5;   // was 1.6: the 12 frames play in about a third of the old scroll
     function measure(keepBudget) {
+        trackDocTop = track.getBoundingClientRect().top + scrollY;   // document position of the scroll track (re-read on resize)
         // keepBudget: a resize that only changed the height (phone address bar showing/hiding). The scroll
         // track is left alone so the zoom does not jump; only the canvas and the map box are re-sized.
         if (!keepBudget) {
@@ -398,7 +434,7 @@
         if (r.width) {
             ratio = r.height / r.width; pxW = r.width;
             // the 3D canvas: backing store capped at 1.5x on phones / 2x elsewhere (fill-rate, not sharpness, is the limit)
-            const dpr = Math.min(window.devicePixelRatio || 1, innerWidth < 760 ? 1.5 : 2);
+            const dpr = Math.min(window.devicePixelRatio || 1, innerWidth < 760 ? 1.25 : 1.5);
             cW = r.width; cH = r.height;
             cv.width = Math.round(cW * dpr); cv.height = Math.round(cH * dpr);
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -410,6 +446,17 @@
     // the speed eases smoothly from 1 (t 4-5) to 0.5 (t 5-7) over the first 2 units instead of changing at one point,
     // so the zoom into the department and the walk into the room never speed up or jump between two frames.
     // The total still reaches t = 7 at u = 5.
+    // stages 0-4 (Bangladesh -> department). Weights are the scroll share of each step: the Bogura -> college
+    // steps (1->2, 2->3) get less scroll, so they move faster; the first and last steps get a little more.
+    const PRE_W = [0, 1.25, 1.85, 2.45, 4];
+    function preT(f) {                       // f = 0..1 through the whole stage 0-4 scroll
+        const x = clamp(f) * 4;
+        for (let k = 0; k < 4; k++) {
+            if (x <= PRE_W[k + 1]) return k + (x - PRE_W[k]) / (PRE_W[k + 1] - PRE_W[k]);
+        }
+        return 4;
+    }
+
     function postT(q) {
         const u = clamp(q / POST_PX) * 5;
         if (u >= 2) return 4 + 0.5 * u + 0.5;
@@ -965,21 +1012,21 @@
     // what actually changed is touched: the SVG map (stages 0-4) or the 3D canvas (stages 4-5), never both.
     const smooth = v => { v = clamp(v); return v * v * (3 - 2 * v); };
     const wake = () => { if (!raf && visible) raf = requestAnimationFrame(frame); };
-    let lastLit = 0, svgHidden = false, lastCa = -1, svgDirty = true, lastDir = 0;
+    let lastLit = 0, svgHidden = false, lastCa = -1, svgDirty = true, lastDir = 0, lastDistOn = true;
 
     function frame(now) {
         raf = 0;
         if (!visible) { sp = null; if (window.TaniaRoom) window.TaniaRoom.update(-1); return; }   // off screen: skip all the work
         const lead = innerHeight * 0.25;   // the map waits a moment before it starts to zoom
-        const px = -track.getBoundingClientRect().top - lead;     // scroll distance since the zoom started
+        const px = scrollY - trackDocTop - lead;                  // scroll distance since the zoom started (no layout read per frame)
         // piecewise: stages 0-4 over PRE_PX, then 4-7 over POST_PX; target is the position on the 0..7 timeline, as 0..1
-        const tT = px <= 0 ? 0 : px <= PRE_PX ? 4 * (px / PRE_PX) : postT(px - PRE_PX);
+        const tT = px <= 0 ? 0 : px <= PRE_PX ? preT(px / PRE_PX) : postT(px - PRE_PX);
         const target = clamp(tT / (STAGES.length - 1));
         const frameEx = clamp((px - PRE_PX - POST_PX) / EXTRA_PX);   // 0..1 through the frame-by-frame tail
         // ease toward the scroll position (frame-rate independent lerp), so zooming in AND out is gradual
         const dt = Math.min(64, now - lastNow || 16); lastNow = now;
         if (sp === null || reduceMotion) sp = target;
-        else { sp += (target - sp) * (1 - Math.exp(-dt / 130)); if (Math.abs(target - sp) < 0.00008) sp = target; }
+        else { sp += (target - sp) * (1 - Math.exp(-dt / 70)); if (Math.abs(target - sp) < 0.00008) sp = target; }
         const p = sp;
         const N = STAGES.length, t = p * (N - 1);
         const i = Math.min(N - 2, Math.floor(t)), f = t - i;
@@ -1036,6 +1083,8 @@
                 if (cityFade !== lastCityFade) { cityG.style.opacity = cityFade; lastCityFade = cityFade; }
                 const cityShown = t > 0.35;   // hidden (not just faded) while far out, so it costs nothing to draw
                 if (cityShown !== lastCityShown) { cityG.style.display = cityShown ? '' : 'none'; lastCityShown = cityShown; }
+                const distOn = t < 1.3;
+                if (distOn !== lastDistOn) { distG.style.display = distOn ? '' : 'none'; lastDistOn = distOn; }
                 const cityOn = t > 0.7;
                 if (cityOn && cityStart === null) cityStart = now;
                 if (!cityOn && cityStart !== null) {
@@ -1113,7 +1162,7 @@
 
                 // the campus buildings settle flat into the ground as the camera tips toward the horizon (reversible)
                 const flattenT = clamp((t - 3.1) / 1.2);
-                const flattenKey = Math.round(flattenT * 120);
+                const flattenKey = Math.round(flattenT * 40);
                 if (flattenKey !== lastFlatten) {
                     lastFlatten = flattenKey;
                     const keep = Math.max(0.06, 1 - flattenT * 0.94);
@@ -1131,11 +1180,8 @@
                     pn.ring.setAttribute('r', (r * (2 + pulse * 1.5)).toFixed(4));
                     pn.ring.setAttribute('opacity', o * (1 - pulse) * 0.8);
                 });
-                // window glimmer on the (few) lit panes, ~8 fps is plenty
-                if (t > 0.7 && now - lastLit > 125) {
-                    lastLit = now;
-                    litRects.forEach((r, k) => r.setAttribute('fill-opacity', (0.62 + 0.23 * Math.sin(now / 1100 + k * 1.9)).toFixed(2)));
-                }
+                // (the old window glimmer changed the window pattern 8 times a second, which repainted every window
+                //  on the screen; the windows are static now)
             }
         } else if (!svgHidden) { svg.style.visibility = 'hidden'; svgHidden = true; }
 

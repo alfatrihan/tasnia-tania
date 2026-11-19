@@ -49,7 +49,7 @@
             gTry: 'Keep trying',
             replay: 'Play again',
             piece: 'Piece',
-            peek: 'Preview picture'
+            peek: 'Preview picture (3 times per round)'
         },
         bn: {
             title: 'তানিয়াকে সোজা করো',
@@ -66,7 +66,7 @@
             gTry: 'আরেকবার চেষ্টা করো',
             replay: 'আবার খেলো',
             piece: 'টুকরো',
-            peek: 'ছবিটা একবার দেখো'
+            peek: 'ছবিটা ৩ বার দেখো'
         }
     };
     const lang = () => (document.documentElement.lang === 'bn' ? 'bn' : 'en');
@@ -89,18 +89,21 @@
     peekImg.className = 'pz-peek-img';
     peekImg.alt = '';
     peekImg.draggable = false;
-    let peekUsed = false, peekTimer = 0;
+    const PEEK_MAX = 3;                  // how many times the picture can be shown per round
+    let peekLeft = PEEK_MAX, peekTimer = 0;
     peekImg.addEventListener('click', hidePeek);      // tap the picture to close it early
     if (peekBtn) peekBtn.addEventListener('click', showPeek);
 
+    const peekN = document.getElementById('pz-peek-n');
     function refreshPeek() {
+        if (peekN) peekN.textContent = Math.max(0, peekLeft);   // how many times the picture can still be shown
         if (!peekBtn) return;
-        peekBtn.disabled = !(playing && !solved && !peekUsed);
-        peekBtn.classList.toggle('used', peekUsed);
+        peekBtn.disabled = !(playing && !solved && peekLeft > 0);
+        peekBtn.classList.toggle('used', peekLeft <= 0);
     }
     function showPeek() {
         if (!peekBtn || peekBtn.disabled) return;
-        peekUsed = true;
+        peekLeft--;
         peekImg.classList.add('show');
         peekBtn.classList.add('open');
         clearTimeout(peekTimer);
@@ -122,6 +125,17 @@
     function hideHelp() {
         clearTimeout(helpTimer);
         if (helpEl) helpEl.classList.remove('show');
+    }
+
+    // second line of the bubble: the straighten text on PLAY, 'tap me to play' on the start screen
+    const HELP_TIP = {
+        straighten: { en: "Let's see if you can straighten me!", bn: 'দেখি আমাকে সোজা করতে পারো কিনা!' },
+        play: { en: 'Tap me to play!', bn: 'আমাকে খেলতে ট্যাপ করো!' }
+    };
+    function setHelpTip(k) {
+        const en = document.getElementById('pz-tip-en'), bn = document.getElementById('pz-tip-bn');
+        if (en) en.innerHTML = '<br>' + HELP_TIP[k].en;
+        if (bn) bn.innerHTML = '<br>' + HELP_TIP[k].bn;
     }
 
     function hidePeek() {
@@ -405,7 +419,7 @@
 
         hidePeek();
         hideHelp();
-        peekUsed = false;                // the reveal comes back for every new round
+        peekLeft = PEEK_MAX;             // the reveal comes back (3 times) for every new round
         picIndex = pickPicture();
         build();
 
@@ -499,10 +513,13 @@
         resultEl.classList.add('hidden');
         newRound();
         applyText();
+        setHelpTip('play');
+        hideHelp();                      // Tania stays hidden on the start screen; she greets again on the next PLAY
     }
 
     function exitFull() {
         if (!isFull()) return;
+        greetedOnce = false;             // left full screen: the next PLAY greets again (Tania's line + voice)
         card.classList.remove('pz-full');
         document.body.classList.remove('pz-lock');
         fsHolder.parentNode.insertBefore(card, fsHolder);
@@ -515,16 +532,26 @@
     }
 
     // PLAY: the screen goes full, then the game starts (the 3x3 / 4x4 choice appears, the music starts)
+    // the greeting (Tania's bubble + voice) plays only on the first PLAY of this page visit
+    let greetedOnce = false;
     playBtn.addEventListener('click', () => {
         if (!isFull()) enterFull();   // PLAY goes full screen at once; the Exit full screen button appears at the bottom
+        const first = !greetedOnce;
+        greetedOnce = true;
         setTimeout(() => {
             playing = true;
             refreshPeek();
-            showHelp();
             overlay.classList.add('hidden');
             sizesWrap.classList.remove('hidden');
             sizesWrap.classList.add('pz-appear');
-            playVoice(() => { if (playing) armTapForMusic(); });   // voice first; the music starts on the first tap
+            if (first) {
+                setHelpTip('straighten');
+                showHelp();
+                playVoice(() => { if (playing) armTapForMusic(); });   // voice first; the music starts on the first tap
+            } else {
+                hideHelp();
+                startMusic();                                            // later PLAY: no greeting, music starts at once
+            }
         }, 380);
     });
 

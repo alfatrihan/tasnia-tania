@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@400;500&family=Great+Vibes&family=Noto+Serif+Bengali:wght@400;500;600&family=Hind+Siliguri:wght@400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@400;500&family=Great+Vibes&family=Noto+Serif+Bengali:wght@400;500;600&family=Hind+Siliguri:wght@400;500;600&family=Playfair+Display:wght@500&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="game.css">
@@ -37,13 +37,11 @@
     <div class="brand"><svg class="lotus" viewBox="0 0 64 40">
         <use href="#lotus" />
       </svg>Tania</div>
-    <nav id="nav"><a href="#home">Home</a><a href="#about">About</a><a href="#vibe">Vibe</a><a href="#social">Social</a><a href="#says">Her
-        Words</a><a href="#why">Why Her</a><a href="#time">Timeline</a><a href="#letter">Letter</a><a
-        href="#game">Play</a></nav>
+    <nav id="nav"><span class="nav-pill" aria-hidden="true"></span><a href="#home" data-tab="home">Welcome</a><a href="#about" data-tab="story">Journey</a><a href="#why" data-tab="her">Her World</a><a href="#quiz" data-tab="play">Playroom</a><a href="#social" data-tab="social">Connect</a></nav>
   </header>
 
   <main>
-    <div id="home" class="hero">
+    <div id="home" class="hero" data-tab="home">
       <div class="stick" id="stick">
         <div id="core"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.6">
             <use href="#lotus" />
@@ -59,7 +57,8 @@
       </div>
     </div>
 
-    <section id="about">
+    <!-- ================= STORY ================= -->
+    <section id="about" data-tab="story">
       <div class="map-track" id="map-track">
         <div class="map-sticky">
           <div class="map-frame">
@@ -83,97 +82,98 @@
         this person is different. Each word lights up slowly as you scroll.</p>
     </section>
 
-    <section id="vibe">
+    <!-- ================= STORY: photos come before the timeline ================= -->
+    <section id="vibe" data-tab="story">
       <h2 class="rv">Her Vibe</h2>
       <div class="div rv">&#10022;</div>
       <div class="gallery">
         <div class="flip">
           <div class="in2">
             <div class="fr"><span class="ph">photo 1</span><img src="media/photo1.jpg" alt=""
-                onerror="this.remove()"><b>Lavender evenings</b></div>
+                onerror="this.remove()"><b>Just relaxing</b></div>
             <div class="bk">
-              <p>Write the memory behind this photo.</p>
+              <p>A quiet little moment, sitting back and enjoying the day. We took a few pictures before moving on.</p>
             </div>
           </div>
         </div>
         <div class="flip">
           <div class="in2">
             <div class="fr"><span class="ph">photo 2</span><img src="media/photo2.jpg" alt=""
-                onerror="this.remove()"><b>Green and quiet</b></div>
+                onerror="this.remove()"><b>Green day</b></div>
             <div class="bk">
-              <p>Write the memory behind this photo.</p>
+              <p>Spent a little time sitting on the grass and enjoying the greenery. This picture was taken during that break.</p>
             </div>
           </div>
         </div>
         <div class="flip">
           <div class="in2">
             <div class="fr"><span class="ph">photo 3</span><img src="media/photo3.jpg" alt=""
-                onerror="this.remove()"><b>Henna and festivals</b></div>
+                onerror="this.remove()"><b>Getting ready</b></div>
             <div class="bk">
-              <p>Write the memory behind this photo.</p>
+              <p>Getting ready in front of the mirror and fixing my earrings before heading out. Took this picture along the way.</p>
             </div>
           </div>
         </div>
         <div class="flip">
           <div class="in2">
             <div class="fr"><span class="ph">photo 4</span><img src="media/photo4.jpg" alt=""
-                onerror="this.remove()"><b>Her kind of smile</b></div>
+                onerror="this.remove()"><b>Sunny moment</b></div>
             <div class="bk">
-              <p>Write the memory behind this photo.</p>
+              <p>Took this picture outside while enjoying the fresh air and the greenery around me.</p>
             </div>
           </div>
         </div>
         <div class="flip">
           <div class="in2">
             <div class="fr"><span class="ph">photo 5</span><img src="media/photo5.jpg" alt=""
-                onerror="this.remove()"><b>Memory 5</b></div>
+                onerror="this.remove()"><b>Out for a walk</b></div>
             <div class="bk">
-              <p>Write the memory behind this photo.</p>
+              <p>A few pictures in the garden before heading back. The weather and the greenery made a nice setting.</p>
             </div>
           </div>
         </div>
         <div class="flip">
           <div class="in2">
             <div class="fr"><span class="ph">photo 6</span><img src="media/photo6.jpg" alt=""
-                onerror="this.remove()"><b>Memory 6</b></div>
+                onerror="this.remove()"><b>Blue outfit</b></div>
             <div class="bk">
-              <p>Write the memory behind this photo.</p>
+              <p>Stopped for a moment near the flowers and took a quick picture in this outfit.</p>
             </div>
           </div>
         </div>
         <div class="flip">
           <div class="in2">
             <div class="fr"><span class="ph">photo 7</span><img src="media/photo7.jpg" alt=""
-                onerror="this.remove()"><b>Memory 7</b></div>
+                onerror="this.remove()"><b>Pink mood</b></div>
             <div class="bk">
-              <p>Write the memory behind this photo.</p>
+              <p>Spending some time outdoors and taking a few pictures among the flowers.</p>
             </div>
           </div>
         </div>
         <div class="flip">
           <div class="in2">
             <div class="fr"><span class="ph">photo 8</span><img src="media/photo8.jpg" alt=""
-                onerror="this.remove()"><b>Memory 8</b></div>
+                onerror="this.remove()"><b>A little walk</b></div>
             <div class="bk">
-              <p>Write the memory behind this photo.</p>
+              <p>Took this while walking along the garden path. It was a nice spot for a quick photo.</p>
             </div>
           </div>
         </div>
         <div class="flip">
           <div class="in2">
             <div class="fr"><span class="ph">photo 9</span><img src="media/photo9.jpg" alt=""
-                onerror="this.remove()"><b>Memory 9</b></div>
+                onerror="this.remove()"><b>Cafe break</b></div>
             <div class="bk">
-              <p>Write the memory behind this photo.</p>
+              <p>Took a seat at the table for a little break, and got a picture before carrying on with the day.</p>
             </div>
           </div>
         </div>
         <div class="flip">
           <div class="in2">
             <div class="fr"><span class="ph">photo 10</span><img src="media/photo10.jpg" alt=""
-                onerror="this.remove()"><b>Memory 10</b></div>
+                onerror="this.remove()"><b>Flower side</b></div>
             <div class="bk">
-              <p>Write the memory behind this photo.</p>
+              <p>Sat near the flowers for a while and took a few pictures in the afternoon light.</p>
             </div>
           </div>
         </div>
@@ -181,75 +181,42 @@
       <p class="tap">Tap a photo to turn it over</p>
     </section>
 
-    <!-- ===== Social Platforms: profile-style cards in a swipe carousel =====
-         Profile picture: media/profile.jpg
-         Facebook cover: media/fb-cover.jpg
-         Instagram posts: media/post1.jpg ... media/post6.jpg
-         Replace the two href values below with the real profile links. -->
-    <section id="social">
-      <h2 class="rv">Social Platforms</h2>
+    <section id="time" data-tab="story">
+      <h2 class="rv">Tania&rsquo;s Timeline</h2>
       <div class="div rv">&#10022;</div>
-      <div class="soc-track" id="soc-track">
-
-        <div class="soc-card soc-fb">
-          <div class="soc-fb-cover"><img src="media/fb-cover.jpg" alt="" onerror="this.remove()"></div>
-          <div class="soc-fb-av"><img src="media/profile.jpg" alt="" onerror="this.remove()"><span>T</span></div>
-          <div class="soc-fb-body">
-            <h3>Tasnia Tania</h3>
-            <p class="soc-bio">Quiet kindness, loud laughter &#10022;</p>
-            <div class="soc-fb-stats">
-              <div><b>856</b><span>Friends</span></div>
-              <div><b>64</b><span>Posts</span></div>
-              <div><b>1.2K</b><span>Followers</span></div>
-            </div>
-            <a class="soc-btn soc-btn-fb" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg><span>Visit Facebook</span></a>
-          </div>
-        </div>
-
-        <div class="soc-card soc-ig">
-          <div class="soc-ig-top"><span>_tasnia_tania</span><span class="soc-ig-dots">&#8226;&#8226;&#8226;</span></div>
-          <div class="soc-ig-head">
-            <div class="soc-ig-ring"><div class="soc-ig-img"><img src="media/profile.jpg" alt="" onerror="this.remove()"><span>T</span></div></div>
-            <div class="soc-ig-stats">
-              <div><b>48</b><span>posts</span></div>
-              <div><b>1,284</b><span>followers</span></div>
-              <div><b>312</b><span>following</span></div>
-            </div>
-          </div>
-          <div class="soc-ig-bio">
-            <b>Tasnia Tania</b>
-            <p class="soc-bio">Quiet kindness, loud laughter &#10022;</p>
-          </div>
-          <div class="soc-ig-grid">
-            <div><img src="media/post1.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>412</span></div>
-            <div><img src="media/post2.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>288</span></div>
-            <div><img src="media/post3.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>530</span></div>
-            <div><img src="media/post4.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>196</span></div>
-            <div><img src="media/post5.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>741</span></div>
-            <div><img src="media/post6.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>365</span></div>
-          </div>
-          <a class="soc-btn soc-btn-ig" href="https://www.instagram.com/_tasnia_tania/" target="_blank" rel="noopener noreferrer">Visit Instagram</a>
-        </div>
-
-      </div>
-      <p class="tap">Swipe to see her profiles, then tap Visit</p>
+      <ol class="tl" id="tl">
+        <li><b><span class="lang-en">2004</span><span class="lang-bn">২০০৪</span></b>
+          <ul class="tl-pts"><li class="tl-line"><span class="lang-en tl-words">The story begins the day Tania came into the world, and even the earliest memories are where it all starts.</span><span class="lang-bn tl-words">পৃথিবীতে তানিয়ার আগমনের দিন থেকে গল্পের শুরু, ছোটবেলার প্রথম স্মৃতিও এখান থেকেই।</span></li></ul>
+        </li>
+        <li><b><span class="lang-en">2009</span><span class="lang-bn">২০০৯</span></b>
+          <ul class="tl-pts"><li class="tl-line"><span class="lang-en tl-words">A new chapter opens with starting school, and a fresh start begins at this stage of childhood.</span><span class="lang-bn tl-words">স্কুলে ভর্তির সঙ্গে নতুন অধ্যায় শুরু, ছোটবেলার এই ধাপ থেকেই নতুন দিনের শুরু।</span></li></ul>
+        </li>
+        <li><b><span class="lang-en">2015</span><span class="lang-bn">২০১৫</span></b>
+          <ul class="tl-pts"><li class="tl-line"><span class="lang-en tl-words">Jannat’s name is woven into memories of old friends, an important year before her friendship with Sadia.</span><span class="lang-bn tl-words">পুরোনো বন্ধুদের স্মৃতিতে জান্নাত-এর নাম জড়িয়ে যাওয়া, সাদিয়ার বন্ধুত্বের আগের গুরুত্বপূর্ণ বছর।</span></li></ul>
+        </li>
+        <li><b><span class="lang-en">2018</span><span class="lang-bn">২০১৮</span></b>
+          <ul class="tl-pts"><li class="tl-line"><span class="lang-en tl-words">A wonderful time passed until the results came out, a special memory of a day worth living again.</span><span class="lang-bn tl-words">ফলাফল দেখার আগ পর্যন্ত দারুণ কেটে যাওয়া সময়, আর এমন এক বিশেষ দিন যা আবার ফিরে পেতে ইচ্ছে করে।</span></li></ul>
+        </li>
+        <li><b><span class="lang-en">2019</span><span class="lang-bn">২০১৯</span></b>
+          <ul class="tl-pts"><li class="tl-line"><span class="lang-en tl-words">The friendship with Sadia and Ria begins, adding another chapter to the story of old people and new memories.</span><span class="lang-bn tl-words">সাদিয়া ও রিয়া-এর সঙ্গে বন্ধুত্বের শুরু, পুরোনো মানুষ আর নতুন স্মৃতির গল্পে আরেকটি অধ্যায়।</span></li></ul>
+        </li>
+        <li><b><span class="lang-en">2021</span><span class="lang-bn">২০২১</span></b>
+          <ul class="tl-pts"><li class="tl-line"><span class="lang-en tl-words">An important time and memories of the SSC exam, along with the fun tiffin days at Uttaran High School.</span><span class="lang-bn tl-words">এসএসসি পরীক্ষার গুরুত্বপূর্ণ সময় ও স্মৃতি, সঙ্গে উত্তরণ হাই স্কুলের মজার টিফিনের দিনগুলো।</span></li></ul>
+        </li>
+        <li><b><span class="lang-en">2022</span><span class="lang-bn">২০২২</span></b>
+          <ul class="tl-pts"><li class="tl-line"><span class="lang-en tl-words">Supti and Lithi join the circle of friends, and a new friendship brings the start of new time together.</span><span class="lang-bn tl-words">বন্ধুত্বের তালিকায় সুপ্তি ও লিথি-এর যুক্ত হওয়া, আর একসঙ্গে কাটানো নতুন সময়ের শুরু।</span></li></ul>
+        </li>
+        <li><b><span class="lang-en">2023</span><span class="lang-bn">২০২৩</span></b>
+          <ul class="tl-pts"><li class="tl-line"><span class="lang-en tl-words">The HSC chapter and a new journey, with trips alongside Lithi and Supti and the special moment of her sister Taiba’s birth.</span><span class="lang-bn tl-words">এইচএসসি পরীক্ষার অধ্যায় ও নতুন পথচলা, লিথি ও সুপ্তির সঙ্গে ঘোরাঘুরি, আর ছোট বোন তাইবার জন্মের বিশেষ মুহূর্ত।</span></li></ul>
+        </li>
+        <li><b><span class="lang-en">Today</span><span class="lang-bn">আজ</span></b>
+          <ul class="tl-pts"><li class="tl-line"><span class="lang-en tl-words">Today’s journey with old people and all the new memories, a beautiful time together and the start of a new story.</span><span class="lang-bn tl-words">পুরোনো মানুষ আর নতুন সব স্মৃতি নিয়ে আজকের এই পথচলা, একসঙ্গে কাটানো সুন্দর সময় আর নতুন গল্পের শুরু।</span></li></ul>
+        </li>
+      </ol>
     </section>
 
-    <section id="says">
-      <h2 class="rv">Things She Says</h2>
-      <div class="div rv">&#10022;</div>
-      <p class="tap" style="margin:0">Pick a petal</p>
-      <div class="pet" id="pet"></div>
-      <div id="qbox"><span>Each petal holds something she once said.</span></div>
-      <div class="meter card rv rs">
-        <h3>Tania&rsquo;s Stubborn Meter</h3>
-        <input type="range" id="rng" min="0" max="100" value="0">
-        <p id="mlabel"></p>
-        <p class="note">...but always good-hearted.</p>
-      </div>
-    </section>
-
-    <section id="why">
+    <!-- ================= HER WORLD ================= -->
+    <section id="why" data-tab="her">
       <h2 class="rv">Why She Is Special</h2>
       <div class="div rv">&#10022;</div>
       <div class="gallery why-gallery">
@@ -317,45 +284,63 @@
       <p class="tap">Tap a card to read why</p>
     </section>
 
-    <section id="time">
-      <h2 class="rv">Our Timeline</h2>
+    <section id="says" data-tab="her">
+      <h2 class="rv">Things She Says</h2>
       <div class="div rv">&#10022;</div>
-      <ol class="tl" id="tl">
-        <li><b>Year</b>
-          <p>The day we met. Write what you remember.</p>
-        </li>
-        <li><b>Year</b>
-          <p>A moment that made us closer.</p>
-        </li>
-        <li><b>Today</b>
-          <p>And here we are, with a website to prove it.</p>
-        </li>
-      </ol>
+      <p class="tap" style="margin:0">Pick a petal</p>
+      <div class="pet" id="pet"></div>
+      <div id="qbox"><span>Each petal holds something she once said.</span></div>
+      <div class="mega card rv rs">
+        <div class="mega-head">
+          <h3><span class="lang-en">A Measure of Tania</span><span class="lang-bn">তানিয়ার মাপজোখ</span></h3>
+          <p class="mega-sub"><span class="lang-en">A little map of who she is</span><span class="lang-bn">সে কেমন মানুষ, এক নজরে</span></p>
+        </div>
+      <div class="jed mrow">
+        <div class="mtop">
+          <span><span class="lang-en">Tania&rsquo;s Stubborn Meter</span><span class="lang-bn">তানিয়ার জেদ-মিটার</span></span>
+          <b id="jedval">0%</b>
+        </div>
+        <div class="jed-track">
+          <input type="range" id="rng" min="0" max="100" value="0" disabled aria-label="Stubborn meter">
+        </div>
+        <div id="mlabel" class="mstatus"><span class="lang-en">Stubborn, but good-hearted</span><span class="lang-bn">জেদি, কিন্তু ভালো মনের</span></div>
+      </div>
+        <div class="mbox-all">
+          <div class="mrow">
+            <div class="mtop"><span><span class="lang-en">Care</span><span class="lang-bn">যত্ন</span></span><b>88%</b></div>
+            <div class="jed-track"><input type="range" class="trait-rng" min="0" max="100" value="88" disabled></div>
+            <div class="mstatus"><span class="lang-en">Very caring</span><span class="lang-bn">খুব কেয়ারিং</span><span class="mrest"><span class="lang-en">Very free and caring with people she is close to.</span><span class="lang-bn">যার সাথে ফ্রি, তার সাথে অনেক ফ্রি আর খুব কেয়ারিং।</span></span></div>
+          </div>
+          <div class="mrow">
+            <div class="mtop"><span><span class="lang-en">Trust</span><span class="lang-bn">বিশ্বাস</span></span><b>90%</b></div>
+            <div class="jed-track"><input type="range" class="trait-rng" min="0" max="100" value="90" disabled></div>
+            <div class="mstatus"><span class="lang-en">Unshakable trust</span><span class="lang-bn">অটুট ভরসা</span></div>
+          </div>
+          <div class="mrow">
+            <div class="mtop"><span><span class="lang-en">Freedom Lover</span><span class="lang-bn">স্বাধীনতা প্রেমী</span></span><b>88%</b></div>
+            <div class="jed-track"><input type="range" class="trait-rng" min="0" max="100" value="88" disabled></div>
+            <div class="mstatus"><span class="lang-en">Loves to be free</span><span class="lang-bn">মুক্ত মনের মানুষ</span></div>
+          </div>
+          <div class="mrow">
+            <div class="mtop"><span><span class="lang-en">Life of the Adda</span><span class="lang-bn">আড্ডার প্রাণ</span></span><b>78%</b></div>
+            <div class="jed-track"><input type="range" class="trait-rng" min="0" max="100" value="78" disabled></div>
+            <div class="mstatus"><span class="lang-en">Loves a good adda</span><span class="lang-bn">আড্ডা দিতে ভীষণ পছন্দ করে</span></div>
+          </div>
+          <div class="mrow">
+            <div class="mtop"><span><span class="lang-en">Sulk</span><span class="lang-bn">অভিমান</span></span><b>74%</b></div>
+            <div class="jed-track"><input type="range" class="trait-rng" min="0" max="100" value="74" disabled></div>
+            <div class="mstatus"><span class="lang-en">Quiet, but remembers</span><span class="lang-bn">চুপচাপ, কিন্তু মনে রাখে</span><span class="mrest"><span class="lang-en">Says nothing, but keeps it inside.</span><span class="lang-bn">মুখে কিছু বলে না, মনে মনে রেখে দেয়।</span></span></div>
+          </div>
+        </div>      </div>
     </section>
 
-    <section id="letter">
-      <h2 class="rv">A Letter for Tania</h2>
-      <div class="div rv">&#10022;</div>
-      <div class="env rv rs" id="env">
-        <div class="flap"></div>
-        <div class="pk"></div>
-        <div class="seal"><svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="2">
-            <use href="#lotus" />
-          </svg></div>
-      </div>
-      <p class="tap" id="hint">Tap the seal to open</p>
-      <article class="paper" id="paper">
-        <p style="animation-delay:.6s">Dear Tania,</p>
-        <p style="animation-delay:1.6s">Write your personal letter here, in your own words. This is the heart of the
-          whole site.</p>
-        <p style="animation-delay:2.6s">Always,<br>Your friend</p>
-      </article>
-    </section>
-    <section id="quiz">
+
+    <!-- ================= PLAY ================= -->
+    <section id="quiz" data-tab="play">
       <div class="qz" id="quiz-box"></div>
     </section>
 
-    <section id="game">
+    <section id="game" data-tab="play">
       <div class="play-petals" id="play-petals" aria-hidden="true"></div>
       <h2 class="rv play-title"><span class="lang-en">Play</span><span class="lang-bn">খেলা</span></h2>
       <div class="div rv">&#10022;</div>
@@ -376,8 +361,16 @@
           </div>
           <canvas id="runner-canvas" aria-label="Tania's Run game"></canvas>
           <div class="runner-bubble" id="runner-bubble" aria-live="polite">
-            <div class="lang-en"><b>Hello, I am Tania</b><span><br>Tap me to save!</span></div>
-            <div class="lang-bn"><b>হ্যালো, আমি তানিয়া</b><span><br>আমাকে বাঁচাতে ট্যাপ করো!</span></div>
+            <div class="lang-en"><b>Hello, I am Tania</b><span id="runner-tip-en"><br>Tap me to save!</span></div>
+            <div class="lang-bn"><b>হ্যালো, আমি তানিয়া</b><span id="runner-tip-bn"><br>আমাকে বাঁচাতে ট্যাপ করো!</span></div>
+          </div>
+          <div class="runner-angry" id="runner-angry" aria-hidden="true">
+            <div class="runner-angry-card">
+              <div class="runner-angry-text">
+                <span class="lang-en">Collect the coin!</span>
+                <span class="lang-bn">কালেক্ট দ্য কয়েন!</span>
+              </div>
+            </div>
           </div>
           <button type="button" class="runner-full" id="runner-full">Full screen</button>
           <p class="runner-rotate" id="runner-rotate">Turn your phone sideways for the best view</p>
@@ -399,7 +392,7 @@
                 <span class="pz-chip pz-moves" id="pz-moves" title="Moves"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg><b id="pz-moves-n">0</b></span>
                 <span class="pz-chip pz-time" id="pz-time" title="Time"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg><b id="pz-time-n">0:00</b></span>
                 <span class="pz-chip pz-score" id="pz-score" title="Score"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.6 6.1 20.8l1.2-6.5-4.8-4.6 6.6-.9z"/></svg><b id="pz-score-n">0</b></span>
-                <button type="button" class="pz-peek" id="pz-peek" title="Preview picture" aria-label="Preview picture" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="pz-peek-slash" d="M4 4l16 16"/></svg></button>
+                <button type="button" class="pz-peek" id="pz-peek" title="Preview picture" aria-label="Preview picture" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="pz-peek-slash" d="M4 4l16 16"/></svg><b class="pz-peek-n" id="pz-peek-n">3</b></button>
               </div>
               <div class="pz-bar hidden" id="pz-sizes">
                 <div class="pz-sizes" role="group" aria-label="Puzzle size">
@@ -423,8 +416,8 @@
               </div>
               <div class="pz-help" id="pz-help" aria-hidden="true">
                 <div class="pz-help-bubble">
-                  <div class="lang-en"><b>Hello, I am Tania</b><span><br>Let's see if you can straighten me!</span></div>
-                  <div class="lang-bn"><b>হ্যালো, আমি তানিয়া</b><span><br>দেখি আমাকে সোজা করতে পারো কিনা!</span></div>
+                  <div class="lang-en"><b>Hello, I am Tania</b><span id="pz-tip-en"><br>Let's see if you can straighten me!</span></div>
+                  <div class="lang-bn"><b>হ্যালো, আমি তানিয়া</b><span id="pz-tip-bn"><br>দেখি আমাকে সোজা করতে পারো কিনা!</span></div>
                 </div>
                 <img class="pz-help-img" id="pz-help-img" src="media/puzzle/tania-helper.png" alt="">
               </div>
@@ -437,6 +430,73 @@
       </div>
       <div class="g-dots play-dots" id="play-dots" aria-label="Swipe right to see the next game"></div>
     </section>
+
+    <!-- ================= SOCIAL (last) ================= -->
+    <!-- ===== Social Platforms: profile-style cards in a swipe carousel =====
+         Profile picture: media/profile.jpg
+         Facebook cover: media/fb-cover.jpg
+         Instagram posts: media/post1.jpg ... media/post6.jpg
+         Replace the two href values below with the real profile links. -->
+    <section id="social" data-tab="social">
+      <h2 class="rv">Social Platforms</h2>
+      <div class="div rv">&#10022;</div>
+      <div class="soc-track" id="soc-track">
+
+        <div class="soc-card soc-fb">
+          <div class="soc-fb-cover"><img src="media/fb-cover.jpg" alt="" onerror="this.remove()"></div>
+          <div class="soc-fb-av"><img src="media/profile.jpg" alt="" onerror="this.remove()"><span>T</span></div>
+          <div class="soc-fb-body">
+            <h3>Tasnia Tania</h3>
+            <p class="soc-bio">Quiet kindness, loud laughter &#10022;</p>
+            <div class="soc-fb-stats">
+              <div><b>856</b><span>Friends</span></div>
+              <div><b>64</b><span>Posts</span></div>
+              <div><b>1.2K</b><span>Followers</span></div>
+            </div>
+            <a class="soc-btn soc-btn-fb" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg><span>Visit Facebook</span></a>
+          </div>
+        </div>
+
+        <div class="soc-card soc-ig">
+          <div class="soc-ig-top"><span>_tasnia_tania</span><span class="soc-ig-dots">&#8226;&#8226;&#8226;</span></div>
+          <div class="soc-ig-head">
+            <div class="soc-ig-ring"><div class="soc-ig-img"><img src="media/profile.jpg" alt="" onerror="this.remove()"><span>T</span></div></div>
+            <div class="soc-ig-stats">
+              <div><b>48</b><span>posts</span></div>
+              <div><b>1,284</b><span>followers</span></div>
+              <div><b>312</b><span>following</span></div>
+            </div>
+          </div>
+          <div class="soc-ig-bio">
+            <b>Tasnia Tania</b>
+            <p class="soc-bio">Quiet kindness, loud laughter &#10022;</p>
+          </div>
+          <div class="soc-ig-grid">
+            <div><img src="media/post1.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>412</span></div>
+            <div><img src="media/post2.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>288</span></div>
+            <div><img src="media/post3.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>530</span></div>
+            <div><img src="media/post4.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>196</span></div>
+            <div><img src="media/post5.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>741</span></div>
+            <div><img src="media/post6.jpg" alt="" onerror="this.remove()"><span class="soc-heart"><svg class="soc-heart-ico" viewBox="0 0 24 24" width="11" height="11" style="fill:#fff" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21.1 8.6 21.6 11.9 19.5 16.4 12 21 12 21z"/></svg>365</span></div>
+          </div>
+          <a class="soc-btn soc-btn-ig" href="https://www.instagram.com/_tasnia_tania/" target="_blank" rel="noopener noreferrer">Visit Instagram</a>
+        </div>
+
+      </div>
+      <p class="tap">Swipe to see her profiles, then tap Visit</p>
+    </section>
+    <!-- closing: a soft glowing card. The words light up as you scroll, like the About text.
+         Edit the English here and the Bangla in lang.js -->
+    <section id="outro" data-tab="social">
+      <div class="outro-card">
+        <svg class="outro-lotus" viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <use href="#lotus" />
+        </svg>
+        <p class="words">Some people never reach for the spotlight, yet they quietly make ordinary days glow a little warmer. Tania is one of them.</p>
+        <p class="outro-tag">The flowers keep blooming, even after the scroll ends.</p>
+      </div>
+    </section>
+
   </main>
   <footer id="footer">
     <!-- tall scroll track: the panel inside stays pinned while the visitor keeps scrolling,
@@ -604,6 +664,42 @@
     })();
   </script>
   <script src="lang.js"></script>
+  <script>
+    (function () {
+      const nav = document.getElementById('nav');
+      const pill = nav && nav.querySelector('.nav-pill');
+      if (!pill) return;
+      let lastOn = null, queued = false;
+
+      // move the pill to the tab that is currently lit (only when it actually changes)
+      function place(animate) {
+        const on = nav.querySelector('a.on') || nav.querySelector('a');
+        if (!on) return;
+        if (on === lastOn && !animate) return;
+        lastOn = on;
+        if (!animate) pill.style.transition = 'none';
+        pill.style.top = on.offsetTop + 'px';
+        pill.style.height = on.offsetHeight + 'px';
+        pill.style.width = on.offsetWidth + 'px';
+        pill.style.transform = 'translateX(' + on.offsetLeft + 'px)';
+        if (!pill.classList.contains('ready')) pill.classList.add('ready');
+        if (!animate) requestAnimationFrame(() => { pill.style.transition = ''; });
+      }
+
+      // check once per frame at most, on scroll and on resize; no observers, so no loops
+      function check() {
+        queued = false;
+        const on = nav.querySelector('a.on');
+        if (on !== lastOn) place(true);
+      }
+      function schedule() { if (!queued) { queued = true; requestAnimationFrame(check); } }
+
+      addEventListener('scroll', schedule, { passive: true });
+      addEventListener('resize', () => place(false));
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => place(false));
+      place(false);
+    })();
+  </script>
 </body>
 
 </html>

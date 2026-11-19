@@ -34,7 +34,7 @@
 
     // speed (world units per frame): starts slow, speeds up gradually
     const SPEED0 = 0.15, SPEED_MAX = 0.32, RAMP = 0.00014;
-    const GRAV = 0.011, JUMP = 0.23;
+    const GRAV = 0.011, JUMP = 0.27;   // a little higher jump, so the high coins can be reached
     const HERO_Z = 0;
     const SPAWN_D = 42, KILL_D = 5, FIRST_D = 9;    // distance along the road where obstacles appear / disappear
     const WRAP = 112;                  // road lines repeat every WRAP units
@@ -137,7 +137,7 @@
         cape: std(0x181221), scarf: std(0x2b1830), eye: std(0x0e0a14),
         stone: std(0x4a3360, { emissive: 0x1a1024 }), moss: std(0x9bb89a),
         bark: std(0x5a3d2b), barkTop: std(0xc9a27a), wood: std(0x7a5536), woodDark: std(0x4a3322),
-        pine1: soft(0x4d7552), pine2: soft(0x6f9a6c), blossom1: soft(0xee8fb5), blossom2: soft(0xffd6e4), blossom3: soft(0xe57aa8),
+        pine1: soft(0x3a5a42, { roughness: 0.95 }), pine2: soft(0x4f7258, { roughness: 0.95 }), blossom1: soft(0xd98aa8, { roughness: 0.95 }), blossom2: soft(0xf0c4d4, { roughness: 0.95 }), blossom3: soft(0xc46d93, { roughness: 0.95 }),
         mountain1: std(0x2a1d3d), mountain2: std(0x3d2a4f), hill: std(0x2b2040)
     };
 
@@ -163,43 +163,116 @@
     }
 
     // background: mountains and hills (fixed, far away, faded by fog)
+    // deterministic "noise" from a position, so duplicated seam vertices stay in place (no cracks)
+    const hash3 = (x, y, z) => { const v = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453; return v - Math.floor(v); };
+    // rocky mountain: a faceted, uneven ridge with a darker base and lighter, rosy-lilac peaks
+    function ridgedMountain(r, h, base) {
+        const geo = new THREE.ConeGeometry(r, h, 16, 10, false);
+        const p = geo.attributes.position, cols = [];
+        const cBase = new THREE.Color(base), cPeak = new THREE.Color(0x7a6290), cRock = new THREE.Color(0x4a3a60);
+        for (let i = 0; i < p.count; i++) {
+            const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+            const t = (y + h / 2) / h;                          // 0 at the base, 1 at the peak
+            const a = Math.atan2(z, x);
+            // broad ridges around the mountain, plus small rough noise, stronger toward the top
+            const ridge = Math.sin(a * 5 + h) * 0.09 + Math.sin(a * 11 + r) * 0.04;
+            const rough = (hash3(x, y, z) - 0.5) * 0.12;
+            const k = 1 + (ridge + rough) * (0.4 + t * 0.9);
+            p.setX(i, x * k); p.setZ(i, z * k);
+            p.setY(i, y + (hash3(z, x, y) - 0.5) * 0.35 * t);
+            // colour: darker rock at the bottom, lighter ridges and peak, a little variation per facet
+            const c = cBase.clone().lerp(cPeak, Math.pow(t, 1.6));
+            c.lerp(cRock, (hash3(x * 3, y, z * 3) > 0.7 ? 0.35 : 0));
+            c.multiplyScalar(0.9 + hash3(x, z, y) * 0.2);
+            cols.push(c.r, c.g, c.b);
+        }
+        geo.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+        geo.computeVertexNormals();
+        const mat = new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 1, metalness: 0 });
+        return new THREE.Mesh(geo, mat);
+    }
     for (let i = 0; i < 9; i++) {
         const r = 6 + Math.random() * 4, h = 8 + Math.random() * 8;
-        const cone = new THREE.Mesh(new THREE.ConeGeometry(r, h, 6), i % 2 ? M.mountain1 : M.mountain2);
-        cone.position.set(30 + Math.random() * 10, h / 2 - 0.2, -100 + i * 25 + Math.random() * 6);
-        scene.add(cone);
+        const x = 30 + Math.random() * 10, z = -100 + i * 25 + Math.random() * 6;
+        const main = ridgedMountain(r, h, i % 2 ? 0x2a1d3d : 0x3d2a4f);
+        main.position.set(x, h / 2 - 0.2, z);
+        scene.add(main);
+        if (i % 3 === 0) {
+            const peak = ridgedMountain(r * 0.55, h * 0.6, i % 2 ? 0x3d2a4f : 0x2a1d3d);
+            peak.position.set(x - r * 0.9, h * 0.3 - 0.2, z + 2);
+            scene.add(peak);
+        }
     }
+    // rolling hills: low, lumpy, overlapping; the same deterministic noise keeps the seams closed
     for (let i = 0; i < 7; i++) {
-        const hill = new THREE.Mesh(new THREE.SphereGeometry(9, 12, 8), M.hill);
+        const base = new THREE.SphereGeometry(9, 16, 12);
+        const p = base.attributes.position;
+        for (let v = 0; v < p.count; v++) {
+            const x = p.getX(v), y = p.getY(v), z = p.getZ(v);
+            const k = 1 + (hash3(x, y, z) - 0.5) * 0.14 + Math.sin(Math.atan2(z, x) * 3 + i) * 0.04;
+            p.setXYZ(v, x * k, y * (1 + (hash3(z, y, x) - 0.5) * 0.12), z * k);
+        }
+        base.computeVertexNormals();
+        const hill = new THREE.Mesh(base, M.hill);
         hill.scale.set(1, 0.35, 1);
         hill.position.set(20 + Math.random() * 4, 0, -90 + i * 30);
         scene.add(hill);
+        const lump = new THREE.Mesh(new THREE.SphereGeometry(5 + Math.random() * 2, 14, 10), M.hill);
+        lump.scale.set(1, 0.3, 1);
+        lump.position.set(hill.position.x - 4 + Math.random() * 3, 0, hill.position.z + 5);
+        scene.add(lump);
     }
 
     // trees on the far side of the road (move with the road)
+    // rougher, more natural silhouettes: uneven foliage edges, tapered trunks, slightly lean trunks
+    function roughenTree(geo, amt) {
+        const p = geo.attributes.position;
+        for (let i = 0; i < p.count; i++) {
+            const k = 1 + (Math.random() - 0.5) * amt;
+            p.setXYZ(i, p.getX(i) * k, p.getY(i) * (1 + (Math.random() - 0.5) * amt * 0.5), p.getZ(i) * k);
+        }
+        geo.computeVertexNormals();
+        return geo;
+    }
     function makeTree(kind, s) {
         const g = new THREE.Group();
-        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.12 * s, 0.18 * s, 1.4 * s, 6), M.bark);
-        trunk.position.y = 0.7 * s; g.add(trunk);
+        const trunkGeo = new THREE.CylinderGeometry(0.07 * s, 0.14 * s, 1.5 * s, 8);
+        const trunk = new THREE.Mesh(trunkGeo, M.bark);
+        trunk.position.y = 0.75 * s; trunk.rotation.z = (Math.random() - 0.5) * 0.08; g.add(trunk);
         if (kind === 'pine') {
-            for (let k = 0; k < 3; k++) {
-                const c = new THREE.Mesh(new THREE.ConeGeometry((1.5 - k * 0.35) * s, 1.6 * s, 7), k % 2 ? M.pine2 : M.pine1);
-                c.position.y = (1.6 + k * 0.9) * s; g.add(c);
+            // layered, drooping branches: wider and irregular at the bottom, narrow at the top
+            for (let k = 0; k < 4; k++) {
+                const r = (1.25 - k * 0.28) * s, h = (1.5 - k * 0.12) * s;
+                const geo = roughenTree(new THREE.ConeGeometry(r, h, 9, 2), 0.22);
+                const c = new THREE.Mesh(geo, k % 2 ? M.pine2 : M.pine1);
+                c.position.set((Math.random() - 0.5) * 0.08 * s, (1.35 + k * 0.78) * s, (Math.random() - 0.5) * 0.08 * s);
+                c.rotation.y = Math.random() * 6;
+                g.add(c);
             }
         } else {
+            // blossom tree: a crown of soft, uneven clumps
             const mats = [M.blossom1, M.blossom2, M.blossom3];
-            for (let k = 0; k < 3; k++) {
-                const f = new THREE.Mesh(new THREE.IcosahedronGeometry((0.9 - k * 0.15) * s, 1), mats[k]);
-                f.position.set((k - 1) * 0.4 * s, (2.1 + (k % 2) * 0.5) * s, (k % 2 ? 0.2 : -0.2) * s);
+            // a solid core keeps the inside filled, then overlapping clumps form the outer crown
+            const core = roughenTree(new THREE.IcosahedronGeometry(0.75 * s, 2), 0.2);
+            const cm = new THREE.Mesh(core, M.blossom1); cm.position.set(0, 2.2 * s, 0); g.add(cm);
+            const clumps = [
+                [-0.5, 2.0, -0.2, 0.55], [0.5, 2.1, 0.1, 0.58], [0, 2.7, 0, 0.6], [-0.2, 1.8, 0.45, 0.5],
+                [0.35, 1.85, -0.45, 0.5], [-0.45, 2.6, 0.3, 0.5], [0.45, 2.55, -0.3, 0.5], [0.05, 2.25, 0.5, 0.5],
+                [-0.1, 2.35, -0.5, 0.5], [0.2, 3.0, 0.1, 0.45], [-0.3, 3.0, -0.1, 0.42]
+            ];
+            clumps.forEach(([x, y, z, r], k) => {
+                const geo = roughenTree(new THREE.IcosahedronGeometry(r * s, 2), 0.3);
+                const f = new THREE.Mesh(geo, mats[k % 3]);
+                f.position.set(x * s, y * s, z * s);
                 g.add(f);
-            }
+            });
         }
         return g;
     }
     for (let i = 0; i < 24; i++) {
         const kind = i % 3 === 0 ? 'blossom' : 'pine';
-        const g = makeTree(kind, 0.9 + Math.random() * 0.6);
-        g.scale.y = 0.85 + Math.random() * 0.35;
+        const g = makeTree(kind, 0.7 + Math.random() * 0.4);
+        g.scale.y = 0.9 + Math.random() * 0.2;
         g.position.x = i % 2 ? 5.2 + Math.random() * 4.5 : -(6 + Math.random() * 5);
         g.rotation.y = Math.random() * 6;
         scene.add(g);
@@ -343,13 +416,16 @@
         // open hair: three long strands falling down the back and shoulders; each is a chain of pivots,
         // so it bends and sways like real loose hair (see the animation in update)
         const braid = [];
-        [[0, -0.12], [-0.12, -0.08], [0.12, -0.08]].forEach(([sx, sz]) => {
+        // strand length: HAIR_SEGS pivots per strand, each SEG_LEN long and SEG_GAP apart (tips reach about waist height)
+        const HAIR_SEGS = 6, SEG_LEN = 0.26, SEG_GAP = 0.22;
+        [[0, -0.13], [-0.07, -0.13], [0.07, -0.13], [-0.13, -0.1], [0.13, -0.1], [-0.2, -0.05], [0.2, -0.05]].forEach(([sx, sz], i) => {
             let parent = root;
-            for (let k = 0; k < 4; k++) {
+            for (let k = 0; k < HAIR_SEGS; k++) {
                 const pv = new THREE.Group();
-                pv.position.set(k ? 0 : sx, k ? -0.27 : 2.2, k ? 0 : sz);
+                pv.position.set(k ? 0 : sx, k ? -SEG_GAP : 2.2, k ? 0 : sz);
+                pv.userData = { i, k, side: sx };
                 parent.add(pv);
-                const len = 0.3, r0 = 0.07 - k * 0.01, r1 = 0.058 - k * 0.008;
+                const len = SEG_LEN, r0 = 0.078 - k * 0.007, r1 = 0.066 - k * 0.006;
                 const geo = new THREE.CylinderGeometry(r1, r0, len, 10);
                 geo.translate(0, -len / 2, 0);
                 const seg = new THREE.Mesh(geo, mHair);
@@ -383,7 +459,7 @@
             { geo: new THREE.CylinderGeometry(0.068, 0.068, 0.04, 12), mat: mRose, y: -0.52 },
             { geo: new THREE.SphereGeometry(0.065, 10, 8), mat: mSkin, y: -0.6 }
         ]);
-        return { root, legL: leg(-0.12), legR: leg(0.12), armL: arm(-0.31), armR: arm(0.31), capePivot, cape, capeBase, braid };
+        return { root, legL: leg(-0.12), legR: leg(0.12), armL: arm(-0.31), armR: arm(0.31), capePivot, cape, capeBase, braid, hairSegs: HAIR_SEGS };
     }
     const tania = buildTania();
     scene.add(tania.root);
@@ -432,18 +508,72 @@
     function spawnCoins() {
         const z0 = -DIR * SPAWN_D;
         if (obstacles.some(o => Math.abs(o.g.position.z - z0) < 5)) return false;   // not right on top of an obstacle
-        // low coins: walk through them; high coins: sit above Tania's head, so she has to jump for them
-        const y = Math.random() < 0.5 ? 0.45 : 2.0;
+        // low coins: walk through them; high coins: sit above Tania's whole height, so she has to jump up for them
+        const y = Math.random() < 0.5 ? 0.45 : 2.85;
         for (let k = 0; k < 5; k++) {
             const m = new THREE.Mesh(coinGeo, coinMat);
             m.position.set(0, y, z0 - DIR * k * 0.85);
             scene.add(m);
-            coinList.push({ m, y });
+            coinList.push({ m, y, passed: false });
         }
         return true;
     }
     const plusEl = document.getElementById('runner-plus');
     const scoreWrap = document.getElementById('runner-score-wrap');
+    // angry face above Tania: shown after 5 coins in a row were missed
+    const angryEl = document.getElementById('runner-angry');
+    let coinMisses = 0, angryTimer = 0;
+    // 3D angry face: a little rose-coloured face with plum eyes and brows, built once and shown above Tania
+    let angryGroup = null, angryStart = 0;
+    function buildAngry() {
+        if (angryGroup) return;
+        angryGroup = new THREE.Group();
+        const skin = new THREE.MeshStandardMaterial({ color: 0xee8fb5, emissive: 0x3a1430, roughness: 0.35, metalness: 0.05 });
+        const plum = new THREE.MeshStandardMaterial({ color: 0x171020, roughness: 0.5 });
+        const blush = new THREE.MeshStandardMaterial({ color: 0xffd6e4, emissive: 0x5a2a40, roughness: 0.4 });
+        const lilac = new THREE.MeshStandardMaterial({ color: 0xcdb4f0, emissive: 0x3a2050, roughness: 0.4 });
+        const halo = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.035, 8, 40), new THREE.MeshBasicMaterial({ color: 0xcdb4f0, transparent: true, opacity: 0.45 }));
+        halo.position.set(0, 0, -0.05); angryGroup.add(halo);
+        const gloss = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.8 }));
+        gloss.position.set(-0.14, 0.2, 0.34); angryGroup.add(gloss);
+        angryGroup.add(new THREE.Mesh(new THREE.SphereGeometry(0.38, 28, 20), skin));
+        for (const sx of [-1, 1]) {
+            const eye = new THREE.Mesh(new THREE.SphereGeometry(0.055, 14, 10), plum);
+            eye.position.set(sx * 0.14, 0.05, 0.31); angryGroup.add(eye);
+            const brow = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.05, 0.05), plum);
+            brow.position.set(sx * 0.14, 0.15, 0.33); brow.rotation.z = -sx * 0.5;   // angry: brows slope in
+            angryGroup.add(brow);
+            const cheek = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 8), blush);
+            cheek.position.set(sx * 0.24, -0.06, 0.28); angryGroup.add(cheek);
+        }
+        const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.028, 8, 16, Math.PI), plum);   // frown arc
+        mouth.position.set(0, -0.17, 0.33); angryGroup.add(mouth);
+        // anger veins: small crosses floating at the top-right of the face
+        for (const [x, y] of [[0.42, 0.36], [0.2, 0.52]]) {
+            const a = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.03, 0.03), lilac);
+            const b = a.clone(); b.rotation.z = Math.PI / 2;
+            a.position.set(x, y, 0.1); b.position.set(x, y, 0.1);
+            a.rotation.z = Math.PI / 4; b.rotation.z = Math.PI / 4 + Math.PI / 2;
+            angryGroup.add(a, b);
+        }
+        angryGroup.visible = false;
+        scene.add(angryGroup);
+    }
+    function showAngry() {
+        if (!angryEl) return;
+        buildAngry();
+        angryStart = performance.now();
+        angryGroup.visible = true;
+        angryGroup.scale.setScalar(0.01);
+        angryEl.classList.remove('show'); void angryEl.offsetWidth; angryEl.classList.add('show');
+        clearTimeout(angryTimer);
+        angryTimer = setTimeout(hideAngry, 1800);
+    }
+    function hideAngry() {
+        clearTimeout(angryTimer);
+        if (angryGroup) angryGroup.visible = false;
+        if (angryEl) angryEl.classList.remove('show');
+    }
     function collectPop() {
         scoreWrap.classList.remove('pop'); void scoreWrap.offsetWidth; scoreWrap.classList.add('pop');
         plusEl.classList.remove('go'); void plusEl.offsetWidth; plusEl.classList.add('go');
@@ -496,7 +626,7 @@
         coinList.length = 0;
     }
     function reset() {
-        state = 'running'; v = SPEED0; distance = 0; score = 0; bonus = 0; coins = 0; coinCool = 2;
+        state = 'running'; v = SPEED0; distance = 0; score = 0; bonus = 0; coins = 0; coinCool = 2; coinMisses = 0; hideAngry();
         clearObstacles();
         hero.y = 0; hero.vy = 0; hero.onGround = true; hero.holding = false;
         overlay.classList.add('hidden');
@@ -511,16 +641,33 @@
     }
     function release() { hero.holding = false; }
     // PLAY: open the whole phone screen and show Tania's greeting. The run starts on the first tap.
+    // the greeting (voice + bubble) plays only on the first PLAY of this page visit
+    let greetedOnce = false;
     function startGame() {
         if (state !== 'ready' && state !== 'over') return;
         setFull(true);                       // open the game on the whole phone screen
-        enterGameAudio();
-        state = 'intro';
-        clearObstacles();
-        hero.y = 0; hero.vy = 0; hero.onGround = true; hero.holding = false;
-        v = SPEED0; distance = 0; score = 0; bonus = 0; coins = 0; coinCool = 2;
-        overlay.classList.add('hidden');
-        bubble.classList.add('show');
+        if (!greetedOnce) {
+            // first PLAY: greeting voice and bubble, the run starts on the first tap
+            greetedOnce = true;
+            enterGameAudio();
+            state = 'intro';
+            clearObstacles();
+            hero.y = 0; hero.vy = 0; hero.onGround = true; hero.holding = false;
+            v = SPEED0; distance = 0; score = 0; bonus = 0; coins = 0; coinCool = 2; coinMisses = 0; hideAngry();
+            overlay.classList.add('hidden');
+            setTip('save');
+            bubble.classList.add('show');
+        } else {
+            // every later PLAY (replay): no voice, no bubble. Tania stands still and the run
+            // starts only on the first tap, the same as the first time
+            if (window.siteMusic) window.siteMusic.pause();
+            state = 'intro';
+            clearObstacles();
+            hero.y = 0; hero.vy = 0; hero.onGround = true; hero.holding = false;
+            v = SPEED0; distance = 0; score = 0; bonus = 0; coins = 0; coinCool = 2; coinMisses = 0; hideAngry();
+            overlay.classList.add('hidden');
+            bubble.classList.remove('show');
+        }
     }
     function startOrJump() {
         if (state === 'ready') return;       // the game starts from the PLAY button
@@ -561,6 +708,13 @@
             const mv = v * dt;
             for (const o of obstacles) o.g.position.z += DIR * mv;
             for (const c of coinList) c.m.position.z += DIR * mv;
+            for (const c of coinList) {
+                // a coin that Tania has run past without collecting counts as a miss
+                if (!c.passed && DIR * (c.m.position.z - HERO_Z) > 0.55) {
+                    c.passed = true;
+                    if (++coinMisses >= 5) { coinMisses = 0; showAngry(); }
+                }
+            }
             for (let i = coinList.length - 1; i >= 0; i--) {
                 if (DIR * coinList[i].m.position.z > KILL_D) { scene.remove(coinList[i].m); coinList.splice(i, 1); }
             }
@@ -607,7 +761,7 @@
                 const c = coinList[i];
                 if (Math.abs(c.m.position.z - HERO_Z) < 0.55 && Math.abs(hero.y - c.y) < 0.8) {
                     scene.remove(c.m); coinList.splice(i, 1);
-                    coins++; bonus += 5; collectPop();
+                    coins++; bonus += 5; collectPop(); coinMisses = 0;
                 }
             }
         }
@@ -671,7 +825,16 @@
         tania.root.rotation.z = running ? Math.sin(hero.phase * 2) * 0.025 : 0;
         // braid and cape trail behind her and ripple
         const back = 0.12 + sp * 1.3 + (hero.onGround ? 0 : 0.3);
-        tania.braid.forEach((b, i) => { b.rotation.x = back * (i ? 0.45 : 0.7) + Math.sin(t * 0.012 - i * 0.9) * 0.16 * (0.4 + sp * 3); });
+        // hair: the bend builds up gradually from the roots to the tips, with a soft wave running down
+        // each strand; the tips lag behind and splay outward a little, like real hair in the wind
+        tania.braid.forEach((b) => {
+            const { i, k, side } = b.userData;
+            const N = tania.hairSegs;
+            const lift = back * 0.2 * (1 + k * 0.12);
+            const wave = Math.sin(t * 0.004 - k * 0.8 - i * 0.6) * 0.05 * (0.3 + sp * 2) * (k + 1) / N;
+            b.rotation.x = 0.07 + lift + wave;   // gentle rest bend: the hair falls back, clear of the coat's back
+            b.rotation.z = side * 0.035 * (k + 1) / N + Math.sin(t * 0.0025 + i * 1.1 + k * 0.5) * 0.03 * (k + 1) / N;
+        });
         tania.capePivot.rotation.x = 0.05 + sp * 0.5 + Math.sin(t * 0.004) * 0.04 + (hero.onGround ? 0 : 0.25);
         animateCape(t, sp);
 
@@ -684,10 +847,17 @@
         camera.position.set(-2.2 + Math.sin(t * 0.0005) * 0.15, 3.2 + bounce * 0.4, 6.5);
         camera.lookAt(0, 1.0, -4);
 
+        if (angryGroup && angryGroup.visible) {
+            const k = Math.min(1, (performance.now() - angryStart) / 450);
+            const pop = 1 - Math.pow(1 - k, 3);                     // springs in
+            angryGroup.scale.setScalar(pop * 0.42);                 // small, so it never covers the track
+            angryGroup.position.set(0.85, hero.y + 2.95 + Math.sin(t * 0.004) * 0.05, HERO_Z);  // beside her head
+            angryGroup.rotation.z = Math.sin(t * 0.004) * 0.05 * pop;
+        }
         renderer.render(scene, camera);
 
         // keep the greeting bubble above Tania's head while the intro is shown
-        if (state === 'intro') {
+        if (state === 'intro' || state === 'ready') {
             const head = new THREE.Vector3(0, hero.y + 2.7, HERO_Z).project(camera);
             bubble.style.left = ((head.x + 1) / 2 * W) + 'px';
             bubble.style.top = ((1 - head.y) / 2 * H - 16) + 'px';
@@ -752,6 +922,14 @@
             titleEl.textContent = L.title;
             subEl.textContent = L.start;
         }
+    }
+
+    // second line of the bubble: 'tap me to save' during the start, 'tap me to play' on the start screen
+    const TIP = { save: { en: 'Tap me to save!', bn: 'আমাকে বাঁচাতে ট্যাপ করো!' }, play: { en: 'Tap me to play!', bn: 'আমাকে খেলতে ট্যাপ করো!' } };
+    function setTip(k) {
+        const en = document.getElementById('runner-tip-en'), bn = document.getElementById('runner-tip-bn');
+        if (en) en.innerHTML = '<br>' + TIP[k].en;
+        if (bn) bn.innerHTML = '<br>' + TIP[k].bn;
     }
 
     // ---------- greeting voice and game music ----------
@@ -825,6 +1003,7 @@
                 wrap.parentNode.insertBefore(holder, wrap);
                 document.body.appendChild(wrap);
             } else {
+                greetedOnce = false;     // left full screen: the next PLAY greets again (voice + bubble)
                 leaveGameAudio();
                 if (holder) { holder.parentNode.insertBefore(wrap, holder); holder.remove(); holder = null; }
                 if (state === 'running' || state === 'intro') {
@@ -832,6 +1011,7 @@
                 overlay.classList.remove('hidden');
                 bubble.classList.remove('show');
             }
+            if (state === 'ready') { setTip('play'); bubble.classList.add('show'); }   // start screen: hello, tap me to play
             }
             wrap.classList.toggle('fake-full', on);
             document.body.classList.toggle('runner-lock', on);

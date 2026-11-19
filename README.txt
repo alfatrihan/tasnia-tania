@@ -22,3 +22,12 @@ MAP (About section, scroll-driven zoom)
 
   To rebuild the Bangladesh / Bogura files from a newer bangladesh-geojson release:
       python3 tools/make_shapes.py path/to/bangladesh.geojson data/bangladesh.js data/bogura.js
+
+PAGE ORDER AND TABS (top menu has 5 tabs; each section carries data-tab in index.html)
+  Home      #home
+  Story     #about (map)  ->  #vibe (photos)  ->  #time (timeline)
+  Her World #why (why she is special)  ->  #says (her words)  ->  #letter (letter, no tab of its own)
+  Play      #quiz  ->  #game (two games)
+  Social    #social, then #outro (closing line that lights up word by word), then the footer
+  To move a section: cut its <section> block and paste it elsewhere; set data-tab to the tab it belongs to.
+  Tab names: index.html <nav> (English) and the '#nav a' line in lang.js (Bangla).

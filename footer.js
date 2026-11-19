@@ -16,20 +16,23 @@
     splitWords();
     const spans = words.children;           // live list: still correct after the language switch
 
-    const WORDS_END = 0.55;                  // the words light up over the first 55% of the scroll
-    const BTN_START = 0.2;                   // the button starts rising while the words are still lighting
-    const BTN_END = 0.45;                    // and is fully in place by then
-    let last = -1;
+    const WORDS_END = 0.45;                  // the words light up over the first 55% of the scroll
+    const BTN_START = 0.16;                  // the button starts rising while the words are still lighting
+    const BTN_END = 0.36;                    // and is fully in place by then
+    let last = -1, lastW = -1;
 
     function frame() {
         const total = Math.max(1, track.offsetHeight - innerHeight);
-        const p = clamp(-track.getBoundingClientRect().top / total);
+        const top = track.getBoundingClientRect().top;
+        const p = clamp(-top / total);
+        // the words start to light as soon as the footer comes up from the bottom of the screen, not only once it is pinned
+        const wp = clamp((innerHeight - top) / (innerHeight + WORDS_END * total));
 
-        if (p !== last) {
-            last = p;
+        if (p !== last || wp !== lastW) {
+            last = p; lastW = wp;
             track.style.setProperty('--fp', p.toFixed(3));
 
-            const n = spans.length * clamp(p / WORDS_END);
+            const n = spans.length * wp;
             for (let i = 0; i < spans.length; i++) spans[i].classList.toggle('lit', i < n);
 
             const bp = clamp((p - BTN_START) / (BTN_END - BTN_START));

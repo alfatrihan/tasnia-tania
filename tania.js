@@ -25,7 +25,7 @@
      end of that stretch: talk-cycle (or lip-level audio, if a voice file is set)
    She is always fully opaque. The only exception is when she has scrolled off the top
    of the screen (under the header): then she is removed in one step, never faded — so the
-   section that follows (#vibe) rises up the screen and covers her without ever showing a
+   section that follows (#time) rises up the screen and covers her without ever showing a
    visibly cut-off head.
 
    The room's camera is map.js's #mi-cam group. While Tania is on screen this file takes
@@ -217,6 +217,7 @@
        5) Layout for Tania, from the camera (so she is exactly where the room's desk is)
        --------------------------------------------------------------------------- */
     let cache = null;   // { W, H, dpr, finalW, finalH }
+    let sceneBox = null, navBottomCache = -1, lastBlurQ = -1;   // measured once per resize, not every frame
     let visible = false, lastT = -1;
 
     function layoutFromCamera(c, W, H) {
@@ -582,8 +583,8 @@
 
     function fadeUnderHeader(rect, L) {
         if (rect.top > -1) return 1;                                  // stage still stuck at the top
-        const header = document.querySelector('header');
-        const navBottom = header ? header.getBoundingClientRect().bottom : 70;
+        if (navBottomCache < 0) { const header = document.querySelector('header'); navBottomCache = header ? header.getBoundingClientRect().bottom : 70; }
+        const navBottom = navBottomCache;
         const headY = rect.top + L.top + L.h * 0.04;
         return smooth((headY - navBottom) / (L.h * 0.22));           // 1 = fully shown, 0 = gone
     }
@@ -620,8 +621,8 @@
         // the one camera: the room and Tania both use it (zoom in until her cut edge is on the bottom of the screen)
         const W = rect.width, H = rect.height;
         const k = smooth((t - TL.zoom[0]) / (TL.zoom[1] - TL.zoom[0]));
-        const sr = sceneSvg.getBoundingClientRect();
-        const SW = sr.width || W, SH = sr.height || H;          // the room's own box, as map.js draws it
+        if (!sceneBox) { const sr = sceneSvg.getBoundingClientRect(); sceneBox = { w: sr.width || W, h: sr.height || H }; }
+        const SW = sceneBox.w, SH = sceneBox.h;                 // the room's own box, as map.js draws it (read once per resize)
         const c = cameraAt(k, SW, SH);
         applyCamera(c, SW, SH);
         const L = layoutFromCamera(c, W, H);
@@ -639,7 +640,9 @@
         glow.style.opacity = (0.9 * fade).toFixed(3);
 
         // the room is sharp when the gate opens, and gradually goes out of focus as the camera moves in
-        if (artEl) artEl.style.filter = k > 0.001 ? 'blur(' + (2.5 * k).toFixed(2) + 'px)' : 'none';
+        // quarter-pixel steps only: re-setting a filter on the big room layer on every frame is costly
+        const blurQ = Math.round(2.5 * k * 4) / 4;
+        if (artEl && blurQ !== lastBlurQ) { lastBlurQ = blurQ; artEl.style.filter = blurQ > 0 ? 'blur(' + blurQ + 'px)' : 'none'; }
 
         // frames: the extra scroll after the zoom plays the 12 frames one at a time, in order, forwards and backwards
         const full = t >= TL.zoom[1];
@@ -663,6 +666,7 @@
     };
     addEventListener('scroll', refresh, { passive: true });
     addEventListener('resize', refresh, { passive: true });
+    addEventListener('resize', () => { sceneBox = null; navBottomCache = -1; }, { passive: true });
 
     // language switched while she is talking: update the bubble text straight away
     new MutationObserver(() => { if (greetOn && bubble) bubble.textContent = speechParts()[greetPart]; })

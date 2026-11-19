@@ -96,7 +96,7 @@ function spawn(x, y, burst, amb) { const a = Math.random() * 6.283, s = burst ? 
 for (let i = 0; i < 34; i++)spawn(Math.random() * W, Math.random() * H, 0, 1);
 addEventListener('pointermove', e => { ptr.x = e.clientX; ptr.y = e.clientY; const n = Date.now(); if (e.pointerType === 'mouse' && n - lastT > 70) { lastT = n; spawn(e.clientX, e.clientY, 0, 0) } });
 addEventListener('click', e => {
-    if (e.target.closest('button,.flip,input,a,.env,.modal-card,.runner-wrap')) return;
+    if (e.target.closest('button,.flip,input,a,.modal-card,.runner-wrap')) return;
     // keep the bloom fully on screen so its petals are never cut off at the edge
     const bx = Math.max(40, Math.min(W - 40, e.clientX)), by = Math.max(40, Math.min(H - 40, e.clientY));
     B.push({ x: bx, y: by, t: 0, R: 24 + Math.random() * 28, rot: Math.random() * 6 });
@@ -192,17 +192,27 @@ function draw(t) {
     }
     for (let i = B.length - 1; i >= 0; i--) { const o = B[i]; o.t += .016; flower(o.x, o.y, o.R, ease(Math.min(1, o.t / 1.3)), o.rot + o.t * .25, 2, 6, o.t > 5 ? 1 - (o.t - 5) : 1); if (o.t > 6) B.splice(i, 1) }
     const tl = G('tl'), tr = tl.getBoundingClientRect(); tl.style.setProperty('--p', clamp((H * .7 - tr.top) / tr.height));
-    tl.querySelectorAll('li').forEach(li => { const q = clamp((H * .9 - li.getBoundingClientRect().top) / (H * .4)); li.style.setProperty('--q', q.toFixed(3)); });
+    // at the very bottom of the page every point is on screen, so all of them are shown in full (the last points
+    // could otherwise stop short of the scroll that lights them)
+    const tlEnd = scrollY + innerHeight >= document.documentElement.scrollHeight - 4;
+    tl.querySelectorAll('li').forEach(li => { const s0 = tlEnd ? 1 : clamp((H * .88 - li.getBoundingClientRect().top) / (H * .46)); const q = s0 * s0 * (3 - 2 * s0); li.style.setProperty('--q', q.toFixed(3)); });   // scroll-linked, eased in and out: nothing shows before the year is in view
+    $('.tl-words').forEach(e => { const q = clamp((H * .85 - e.getBoundingClientRect().top) / (H * .45)), ws = e.children, n = ws.length * q; for (let i = 0; i < ws.length; i++)ws[i].classList.toggle('lit', i < n) });   // timeline lines light word by word, like the About text
     $('.words').forEach(e => { const q = clamp((H * .85 - e.getBoundingClientRect().top) / (H * .45)), ws = e.children, n = ws.length * q; for (let i = 0; i < ws.length; i++)ws[i].classList.toggle('lit', i < n) });
     requestAnimationFrame(draw)
 }
 requestAnimationFrame(draw);
 $('.words').forEach(e => e.innerHTML = e.textContent.split(' ').map(w => '<span class="w">' + w + ' </span>').join(''));
+// timeline lines: split into words, lit by scroll exactly like the About text
+$('.tl-words').forEach(e => e.innerHTML = e.textContent.trim().split(/\s+/).map(w => '<span class="w">' + w + '</span>').join(' '));
 const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in') }), { threshold: .2, rootMargin: '0px 0px -8% 0px' });
 $('.rv').forEach(e => io.observe(e));
 const links = $('#nav a');
-new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(a => { const on = a.getAttribute('href') === '#' + e.target.id; a.classList.toggle('on', on); if (on) centerNav(a) }) }), { threshold: .35 }).observe(hero);
-$('main section').forEach(s => new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(a => { const on = a.getAttribute('href') === '#' + s.id; a.classList.toggle('on', on); if (on) centerNav(a) }) }), { threshold: .35 }).observe(s));
+// nav tabs: each section / the hero carries data-tab; the tab of whatever crosses the middle of the screen lights up.
+// (the centre line, not a % of the element, so the very tall map section lights its tab too)
+const tabOf = el => el.dataset.tab;
+const tabIO = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; const t = tabOf(e.target); links.forEach(a => { const on = a.dataset.tab === t; if (on && !a.classList.contains('on')) centerNav(a); a.classList.toggle('on', on) }) }), { rootMargin: '-45% 0px -54% 0px', threshold: 0 });
+tabIO.observe(hero);
+$('main section').forEach(s => tabIO.observe(s));
 $('.flip').forEach(f => f.onclick = () => f.classList.toggle('on'));
 const Q = ['"I am not angry. I am just right, loudly."', '"Add something she always says."', '"Tears are just drops of something I feel deeply."', '"Add another of her sayings here."', '"Add her funniest line here."'];
 Q.forEach((q, i) => {
@@ -210,9 +220,9 @@ Q.forEach((q, i) => {
     b.onclick = () => { b.classList.add('used'); G('qbox').innerHTML = '<span>' + q + '</span>'; for (let k = 0; k < 8; k++) { const r = b.getBoundingClientRect(); spawn(r.left + 20, r.top + 30, 1, 0) } }; G('pet').appendChild(b)
 });
 const rng = G('rng'), ml = G('mlabel'), L = ['Calm as a lake', 'Slightly stubborn', 'Fully committed to being right', 'Immovable, like a mountain'];
-const meter = () => { const v = +rng.value; ml.textContent = L[v < 25 ? 0 : v < 55 ? 1 : v < 85 ? 2 : 3] }; rng.oninput = meter; meter();
+const jedVal = document.getElementById('jedval');
+const meter = () => { const v = +rng.value; jedVal.textContent = v + '%'; rng.style.setProperty('--p', v + '%'); }; meter();
 let ran = 0; new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting && !ran) { ran = 1; const t0 = performance.now(); (function f(t) { const k = clamp((t - t0) / 2200); rng.value = Math.round(72 * ease(k)); meter(); if (k < 1) requestAnimationFrame(f) })(t0) } }), { threshold: .6 }).observe(rng);
-G('env').onclick = () => { const e = G('env'); e.classList.add('open'); G('hint').style.display = 'none'; setTimeout(() => { G('paper').classList.add('show'); for (let i = 0; i < 30; i++)spawn(Math.random() * W, H * .3, 1, 0) }, 900) };
 
 // ---------- Developer Info modal: opens straight away ----------
 (() => {
@@ -316,3 +326,40 @@ $('.gallery').forEach(g => {
     track.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(update) }, { passive: true });
     update();
 })();
+
+
+/* ===== Trait meters: same slider design as the stubborn meter. Each one rises to its set value when its row comes into view, and the user can drag any of them ===== */
+(() => {
+    const rows = [...document.querySelectorAll('.mbox-all .mrow')];
+    if (!rows.length) return;
+    const setVal = (row, v) => {
+        const rng = row.querySelector('.trait-rng'), num = row.querySelector('.mtop b');
+        rng.value = v;
+        rng.style.setProperty('--p', v + '%');
+        num.textContent = v + '%';
+    };
+    const items = rows.map(row => {
+        const rng = row.querySelector('.trait-rng');
+        const target = parseInt(rng.value, 10) || 0;
+        rng.setAttribute('aria-label', row.querySelector('.mtop span').textContent.trim());
+        setVal(row, 0);
+        return { row, target, done: false };
+    });
+    const run = (it) => {
+        const t0 = performance.now(), dur = 1800;
+        (function step(t) {
+            const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+            setVal(it.row, Math.round(it.target * e));
+            if (k < 1) requestAnimationFrame(step);
+        })(t0);
+    };
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(en => {
+            if (!en.isIntersecting) return;
+            const it = items.find(x => x.row === en.target);
+            if (it && !it.done) { it.done = true; setTimeout(() => run(it), items.indexOf(it) * 150); }
+        });
+    }, { threshold: 0.6 });
+    rows.forEach(r => io.observe(r));
+})();
+
