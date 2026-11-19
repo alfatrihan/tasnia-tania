@@ -88,16 +88,18 @@
     const T = {
         en: { title: 'How well do you know her?', intro: 'Answer 10 random questions and find out how well you know Tania.',
               start: 'Start', submit: 'Submit', replay: 'Play again', right: 'correct answers',
-              hi: 'Great job! You really know me quite well.',
-              mid: 'Nice effort! A bit more and you will know me completely. Want to hear a few more stories?',
-              low: 'We are still a bit like strangers, and that is totally fine. Let us get to know each other, little by little!',
-              full: 'All correct! Wow, you really know me inside out. Thank you for paying so much attention, it made me really happy!' },
+              hi: 'Wow! You actually know me pretty well! I\'m impressed by how much you know about me. But hey, there are still one or two secrets left!',
+              mid: 'Well, well! Looks like you know a thing or two about me! But there\'s still a lot left to discover. A little more investigation wouldn\'t hurt!',
+              lowmid: 'Well, well! Looks like you know a thing or two about me! But there\'s still a lot left to discover. A little more investigation wouldn\'t hurt!',
+              low: 'Oops! Looks like the mission of getting to know me hasn\'t even properly started! No worries, you can\'t know someone in a day. Give it another try!',
+              full: 'What?! You got everything right! Have you secretly been doing research on me? Honestly, it feels really nice to know that you\'ve paid so much attention!' },
         bn: { title: 'তাকে তুমি কতটা চেনো?', intro: 'এলোমেলো ১০টি প্রশ্নের উত্তর দাও, দেখো তানিয়াকে তুমি কতটা চেনো।',
               start: 'শুরু করো', submit: 'সাবমিট', replay: 'আবার খেলো', right: 'সঠিক উত্তর',
-              hi: 'দারুণ করেছো! তুমি তো আমাকে বেশ ভালোই চেনো।',
-              mid: 'ভালোই হয়েছে! আরেকটু চেষ্টা করলে পুরোটাই চিনে ফেলবে। আমার আরও কিছু গল্প শুনবে?',
-              low: 'আমরা তো এখনো একটু অপরিচিত, কোনো সমস্যা নেই। চলো, একটু একটু করে একে অপরকে জানি!',
-              full: 'সব কটা উত্তর ঠিক! বাহ, তুমি তো আমাকে একদম ভেতর থেকে চেনো। এত মন দিয়ে খেয়াল করার জন্য ধন্যবাদ, সত্যিই ভালো লাগলো!' }
+              hi: 'ওয়াও! তুমি তো আমাকে বেশ ভালোই চেনো! আমার সম্পর্কে এত কিছু জানো দেখে একটু অবাকই হলাম। তবে একটা-দুটো তথ্য এখনো তোমার অজানা!',
+              mid: 'বাহ! দেখছি আমার সম্পর্কে কিছু কিছু খবর রাখো! তবে এখনো অনেক কিছু অজানা রয়ে গেছে। আরেকটু খোঁজখবর নাও, মন্দ হবে না!',
+              lowmid: 'বাহ! দেখছি আমার সম্পর্কে কিছু কিছু খবর রাখো! তবে এখনো অনেক কিছু অজানা রয়ে গেছে। আরেকটু খোঁজখবর নাও, মন্দ হবে না!',
+              low: 'আরে! আমাকে চেনার মিশনটা মনে হচ্ছে এখনো শুরুই হয়নি! সমস্যা নেই, পরিচয় তো আর একদিনে হয় না। আরেকবার চেষ্টা করো!',
+              full: 'এ কী! সবগুলোই ঠিক! তুমি কি আমার ওপর গোপনে গবেষণা করেছো নাকি? সত্যি বলতে, এত মনোযোগ দিয়ে আমাকে চেনার জন্য অনেক ভালো লাগলো!' }
     };
     const lang = () => (document.documentElement.lang === 'bn' ? 'bn' : 'en');
 
@@ -125,6 +127,16 @@
         requestAnimationFrame(step);
     }
 
+    // Result characters: one PNG per result tier.
+    // Files go in media/quiz/ next to index.html. If a file is missing, the logo shows instead (media/logo.png).
+    const CHARACTER = {
+        full: { expr: 'excited', src: 'media/quiz/quiz-full-excited.png' },
+        hi:   { expr: 'happy',   src: 'media/quiz/quiz-hi-happy.png' },
+        mid:  { expr: 'encouraging', src: 'media/quiz/quiz-mid-encouraging.png' },
+        lowmid: { expr: 'hopeful', src: 'media/quiz/quiz-lowmid-hopeful.png' },
+        low:  { expr: 'gentle',  src: 'media/quiz/quiz-low-gentle.png' }
+    };
+
     // enter = true when a new question card should flip in
     function render(enter) {
         const L = T[lang()], n = qs.length;
@@ -143,17 +155,29 @@
                 '<p class="qz-q">' + Q.q[lang()] + '</p>' +
                 '<div class="qz-opts">' + Q.o.map((o, k) =>
                     '<button type="button" class="qz-opt' + (k === picked ? ' sel' : '') + '" data-act="pick" data-k="' + k + '">' +
-                    '<span class="qz-tick"></span><span>' + o[lang()] + '</span></button>').join('') + '</div>' +
+                    '<span>' + o[lang()] + '</span></button>').join('') + '</div>' +
                 '';
         } else {
             const pct = Math.round(score / n * 100);
-            const msg = score === n ? L.full : pct >= 80 ? L.hi : pct >= 50 ? L.mid : L.low;
+            // five tiers: full 100% | hi 80-99% | mid 65-79% | lowmid 50-64% | low under 50%
+            const tier = score === n ? 'full' : pct >= 80 ? 'hi' : pct >= 65 ? 'mid' : pct >= 50 ? 'lowmid' : 'low';
+            const msg = L[tier];
+            // character for this result tier (see CHARACTER below)
+            const ch = CHARACTER[tier];
             card = '<div class="qz-end">' +
-                '<div class="qz-tania"><svg viewBox="0 0 64 40" class="qz-lotus"><use href="#lotus"/></svg></div>' +
-                '<div class="qz-bubble">' + msg + '</div>' +
-                '<div class="qz-pct"><b id="qz-pct">0</b>%</div>' +
-                '<p class="qz-sub">' + score + ' / ' + n + ' ' + L.right + '</p>' +
-                '<button type="button" class="qz-btn" data-act="start">' + L.replay + '</button></div>';
+                '<div class="qz-stage">' +
+                    '<div class="qz-bubble-wrap"><div class="qz-bubble">' + msg + '</div></div>' +
+                    '<div class="qz-tania qz-' + tier + '">' +
+                        '<img class="qz-lotus logo-img" src="media/logo.png" alt="" onerror="this.remove()">' +
+                        '<img class="qz-char" src="' + ch.src + '" alt="" onerror="this.remove()">' +
+                    '</div>' +
+                '</div>' +
+                '<div class="qz-side">' +
+                    '<div class="qz-pct"><b id="qz-pct">0</b>%</div>' +
+                    '<p class="qz-sub">' + score + ' / ' + n + ' ' + L.right + '</p>' +
+                    '<button type="button" class="qz-btn" data-act="start">' + L.replay + '</button>' +
+                '</div>' +
+            '</div>';
         }
         box.innerHTML = '<h2 class="qz-title">' + L.title + '</h2>' +
             '<div class="qz-stack' + (hasNext ? ' more' : '') + '">' +
@@ -172,12 +196,22 @@
             busy = true;
             if (picked === qs[idx].a) score++;
             const card = box.querySelector('.qz-card');
-            if (card) card.classList.add('flip-out');
-            setTimeout(() => {
+            // move on once the exit animation has finished (with a fallback timer in case it never fires)
+            let moved = false;
+            const next = () => {
+                if (moved) return;
+                moved = true;
                 busy = false;
                 if (idx + 1 < qs.length) { idx++; picked = -1; render(true); }
                 else { view = 'end'; render(false); }
-            }, 480);
+            };
+            if (card) {
+                // the entrance class must go first, or its animation would override the exit
+                card.classList.remove('enter');
+                card.classList.add('flip-out');
+                card.addEventListener('animationend', next, { once: true });
+            }
+            setTimeout(next, 700);
         }
     });
 

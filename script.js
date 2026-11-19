@@ -18,7 +18,8 @@ function size() {
     const nw = innerWidth, nh = innerHeight, widthChanged = nw !== W;
     if (!widthChanged && nh <= H) return;
     W = nw; H = widthChanged ? nh : Math.max(H, nh);
-    D = Math.min(devicePixelRatio || 1, 1.5);
+    // petals and flowers do not need full sharpness: a lower resolution on phones keeps scrolling smooth (fill-rate)
+    D = Math.min(devicePixelRatio || 1, innerWidth < 760 ? 1 : 1.5);
     cv.width = W * D; cv.height = H * D;
     cv.style.width = W + 'px'; cv.style.height = H + 'px';
     cx.setTransform(D, 0, 0, D, 0, 0);
@@ -285,6 +286,14 @@ $('.gallery').forEach(g => {
         raf = 0; const mid = g.getBoundingClientRect().left + g.clientWidth / 2; let best = 0, bd = Infinity;
         cards.forEach((c, i) => { const r = c.getBoundingClientRect(), d = Math.abs(r.left + r.width / 2 - mid); if (d < bd) { bd = d; best = i } });
         dots.forEach((d, i) => d.classList.toggle('on', i === best));
+        // the card in the middle gets a gentle wave (see style.css "photo wave")
+        cards.forEach((c, i) => {
+            if (i === best && !c.classList.contains('centre')) {
+                c.classList.remove('arrive'); void c.offsetWidth; c.classList.add('arrive');
+                c.addEventListener('animationend', () => c.classList.remove('arrive'), { once: true });
+            }
+            c.classList.toggle('centre', i === best);
+        });
     }
     g.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(update) }, { passive: true });
     update();

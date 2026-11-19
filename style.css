@@ -459,6 +459,7 @@ h2 {
 /* front caption over the photo: the site's dark colour (--bg), with a soft light edge so it stays readable */
 .fr b {
     color: var(--bg);
+    font-weight: 600;
     text-shadow: 0 0 6px rgba(255, 214, 228, .55), 0 0 14px rgba(255, 214, 228, .25)
 }
 
@@ -1240,7 +1241,7 @@ html {
 /* lift when tapped/pressed (not flipped yet) */
 .gallery .flip:not(.on):hover .in2,
 .gallery .flip:not(.on):active .in2 {
-    transform: translateY(-12px)
+    transform: translateY(-3px)
 }
 
 .g-dots {
@@ -1434,11 +1435,18 @@ html[lang="bn"] #quiz-box .qz-title {
     transform: translateY(-4px)
 }
 
-/* submit: the current page is pushed away to the side and fades out */
-.qz-card.flip-out {
-    transform: translate(-115%, 30px) rotate(-16deg);
-    opacity: 0;
-    transition: transform .5s ease-in, opacity .45s ease-in
+/* submit: the current page is pushed away to the side and fades out.
+   It is a keyframe animation, so it plays on every screen and wins over the hover lift. */
+.qz-card.flip-out,
+.qz-card.enter.flip-out {
+    pointer-events: none;
+    animation: qzExit .5s ease-in both
+}
+
+/* the answered card slides off to the left like a page turning away, on desktop and phone */
+@keyframes qzExit {
+    from { opacity: 1; transform: none }
+    to { opacity: 0; transform: translate(-110%, 16px) rotate(-12deg) }
 }
 
 /* the next page slides in from the right, onto the stack */
@@ -1583,28 +1591,92 @@ html[lang="bn"] .qz-q {
 }
 
 /* result */
+/* result: the character stands large on the left, the bubble sits above her head, the score is on the right */
 .qz-end {
     display: grid;
-    justify-items: center;
-    gap: 12px;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: 18px;
+    width: 100%;
     text-align: center
 }
 
-.qz-tania {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
+.qz-stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px
+}
+
+/* the bubble sits in the flow above her, so it never covers her head */
+.qz-bubble-wrap {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    width: 100%
+}
+
+.qz-side {
     display: grid;
-    place-items: center;
-    background: radial-gradient(#4a2a45, #1c1226);
-    border: 1px solid var(--blush);
-    box-shadow: 0 0 36px #ee8fb566;
-    animation: qzBob 2.4s ease-in-out infinite
+    justify-items: center;
+    gap: 12px
+}
+
+.qz-tania {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    display: grid;
+    place-items: center
 }
 
 .qz-lotus {
     width: 58%;
     color: var(--blush)
+}
+
+/* the result character sits over the lotus; if its PNG is missing, the lotus shows */
+.qz-char {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: bottom;
+    pointer-events: none;
+    /* the lower part fades out, so the picture never looks cut off */
+    -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 62%, transparent 100%)
+}
+
+.qz-tania:has(.qz-char) .qz-lotus { display: none }
+
+/* each tier arrives differently, then stays still: full pops in, the others fade in */
+.qz-full .qz-char { animation: qzPop .7s cubic-bezier(.2, 1.4, .4, 1) both }
+.qz-hi .qz-char { animation: qzFade .9s ease-out both }
+.qz-mid .qz-char { animation: qzFade .8s ease-out both }
+.qz-lowmid .qz-char { animation: qzFade 1s ease-out both }
+.qz-low .qz-char { animation: qzFade 1.4s ease-out both }
+
+@keyframes qzPop {
+    0% { opacity: 0; transform: scale(.4) rotate(-8deg) }
+    100% { opacity: 1; transform: none }
+}
+
+@keyframes qzFade {
+    from { opacity: 0; transform: translateY(8px) }
+    to { opacity: 1; transform: none }
+}
+
+@keyframes qzNod {
+    0%, 100% { transform: rotate(-3deg) translateY(0) }
+    50% { transform: rotate(3deg) translateY(-4px) }
+}
+
+@keyframes qzSway {
+    0%, 100% { transform: translateX(-2px) }
+    50% { transform: translateX(2px) }
 }
 
 @keyframes qzBob {
@@ -1613,12 +1685,14 @@ html[lang="bn"] .qz-q {
 }
 
 .qz-bubble {
-    max-width: 380px;
+    position: relative;
+    max-width: 340px;
     padding: 12px 16px;
     border-radius: 14px;
     background: #140e1c;
     border: 1px solid rgba(255, 214, 228, .25);
     color: var(--ink);
+    line-height: 1.6;
     animation: qzIn .6s .2s ease-out both
 }
 
@@ -1639,7 +1713,7 @@ html[lang="bn"] .qz-q {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .qz-tania, .qz-bubble, .qz-card, .qz-card.enter { animation: none; transition: none }
+    .qz-tania, .qz-char, .qz-bubble, .qz-card, .qz-card.enter { animation: none; transition: none }
 }
 
 
@@ -2594,6 +2668,19 @@ nav {
     }
 }
 
+/* the tab bar always takes its own full-width row under the brand, in both languages.
+   Bangla tabs are a little narrower, so they used to fit beside the brand and jump to the top. */
+@media (max-width: 640px) {
+    html header nav,
+    html[lang="bn"] header nav {
+        flex: 0 0 100%;
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0;
+        order: 2;
+    }
+}
+
 /* ===== DESKTOP: the top menu is only as wide as its tabs, not the whole screen ===== */
 @media (min-width: 641px) {
     nav {
@@ -2882,4 +2969,114 @@ html[lang="bn"] #outro .outro-eyebrow {
     letter-spacing: 0;
     text-transform: none;
     color: var(--rose, #ee8fb5);
+}
+
+/* Why She Is Special: subtitle on the front, and a readable back that scrolls if the text is long */
+.why-sub {
+    margin-top: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .85rem;
+    font-style: normal;
+    line-height: 1.5;
+    color: var(--mute)
+}
+
+.why-gallery .bk {
+    justify-content: flex-start;
+    overflow-y: auto;
+    text-align: center
+}
+
+.why-gallery .bk p {
+    margin: auto 0;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .88rem;
+    font-style: normal;
+    line-height: 1.6;
+    text-align: center;
+    color: var(--mute)
+}
+
+/* symbol icons on the Why cards: theme rose, with a soft glow */
+.why-gallery .fr.ic .why-icon {
+    width: 48px;
+    height: 48px;
+    color: var(--rose);
+    filter: drop-shadow(0 0 6px rgba(238, 143, 181, .35))
+}
+
+html[lang="bn"] .why-gallery .bk p {
+    font-family: var(--bn-font);
+    font-size: .95rem;
+    line-height: 1.75
+}
+
+/* "A Measure of Tania": the small line under the title sits outside the box, like the other section subtitles */
+.measure-sub {
+    margin: 0 0 22px;
+    text-align: center;
+    font-size: .95rem;
+    font-style: italic;
+    color: var(--mute)
+}
+
+/* the speech bubble's tail points down to her head */
+.qz-bubble::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -7px;
+    width: 12px;
+    height: 12px;
+    background: #140e1c;
+    border-right: 1px solid rgba(255, 214, 228, .25);
+    border-bottom: 1px solid rgba(255, 214, 228, .25);
+    transform: translateX(-50%) rotate(45deg)
+}
+
+/* on a phone the pieces are a little smaller, but the order is the same: bubble, her, then the score */
+@media (max-width: 640px) {
+    .qz-tania {
+        width: 200px;
+        height: 200px
+    }
+    .qz-bubble {
+        max-width: 280px
+    }
+}
+
+/* ===== Photo wave: the card in the middle of the gallery bobs up and down gently,
+   and each new card that comes to the middle hops once as it arrives ===== */
+.gallery .flip {
+    transition: transform .6s cubic-bezier(.3, .8, .3, 1)
+}
+
+.gallery .flip.centre {
+    animation: photoWave 3.4s ease-in-out infinite
+}
+
+.gallery .flip.centre.arrive {
+    animation: photoHop .7s cubic-bezier(.3, .9, .4, 1) 1
+}
+
+@keyframes photoWave {
+    0%, 100% { translate: 0 0 }
+    50% { translate: 0 -18px }
+}
+
+@keyframes photoHop {
+    0% { translate: 0 0 }
+    40% { translate: 0 -3px }
+    70% { translate: 0 -1px }
+    100% { translate: 0 0 }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gallery .flip.centre,
+    .gallery .flip.centre.arrive { animation: none }
+}
+
+/* the site logo (media/logo.png) keeps its proportions inside the size each spot already has */
+.logo-img {
+    object-fit: contain
 }

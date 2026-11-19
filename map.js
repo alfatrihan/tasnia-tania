@@ -405,12 +405,24 @@
         return { ...pin, ring, dot: d };
     });
 
+    // 3D canvas resolution: baseDpr is set on each measure; cvScale drops below 1 while frames are too slow to keep up
+    let baseDpr = 1, cvScale = 1, r3Quick = 0;
+    const R3_BUDGET = 12;   // ms: a 3D frame that takes longer than this lowers the canvas resolution a step
+    function applyCanvasSize() {
+        const dpr = baseDpr * cvScale;
+        cv.width = Math.max(1, Math.round(cW * dpr)); cv.height = Math.max(1, Math.round(cH * dpr));
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
     let ratio = 0.6;   // height / width of the map box
     let pxW = 760;     // width of the map box in pixels
     // scroll budget: the zoom from Bangladesh to the department (t 0-4) gets PRE_FAST times less scroll;
     // the rest (t 4-7, the building, the room and Tania) keeps exactly the same scroll distance and speed
     const PRE_FAST = 2;
     let PRE_PX = 1, POST_PX = 1, EXTRA_PX = 1, trackDocTop = 0;
+    // the viewport height the scroll timeline is built on. It is fixed at each full measure, so a phone's address bar
+    // showing or hiding (which changes innerHeight while scrolling) cannot move the zoom to another point.
+    let BASE_H = innerHeight;
     // extra scroll length after the room is fully shown (t stays 7): Tania's 12 frames are played one by one over it
     const FRAME_SCROLL_VH = 0.5;   // was 1.6: the 12 frames play in about a third of the old scroll
     function measure(keepBudget) {
@@ -420,24 +432,24 @@
         if (!keepBudget) {
             // remember the original scroll length once (from the CSS height), then size the track to the new budget
             if (!track.dataset.origSpan) track.dataset.origSpan = String(track.offsetHeight - innerHeight);
-            const orig = +track.dataset.origSpan, lead0 = innerHeight * 0.25;
+            BASE_H = innerHeight;
+            const orig = +track.dataset.origSpan, lead0 = BASE_H * 0.25;
             const span = Math.max(1, orig - lead0);
             // per stage interval: Bangladesh->...->department (t 0-4) uses the same scroll step everywhere,
             // and the college->department step (t 4-5) now matches it; the room and Tania (t 5-7) keep their step
             const STEP = span / 14;
             PRE_PX = STEP * 4;
             POST_PX = STEP * 5;   // weights: 4->5 = 1 step, 5->6 = 2 steps, 6->7 = 2 steps
-            EXTRA_PX = innerHeight * FRAME_SCROLL_VH;
-            track.style.height = (innerHeight + lead0 + PRE_PX + POST_PX + EXTRA_PX) + 'px';
+            EXTRA_PX = BASE_H * FRAME_SCROLL_VH;
+            track.style.height = (BASE_H + lead0 + PRE_PX + POST_PX + EXTRA_PX) + 'px';
         }
         const r = svg.getBoundingClientRect();
         if (r.width) {
             ratio = r.height / r.width; pxW = r.width;
-            // the 3D canvas: backing store capped at 1.5x on phones / 2x elsewhere (fill-rate, not sharpness, is the limit)
-            const dpr = Math.min(window.devicePixelRatio || 1, innerWidth < 760 ? 1.25 : 1.5);
+            // the 3D canvas: backing store capped at 1x on phones / 1.25x on desktop (fill-rate is the limit, not sharpness)
+            baseDpr = Math.min(window.devicePixelRatio || 1, innerWidth < 760 ? 1 : 1.25);
             cW = r.width; cH = r.height;
-            cv.width = Math.round(cW * dpr); cv.height = Math.round(cH * dpr);
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            applyCanvasSize();
             lastCamKey = ''; svgDirty = true;
         }
     }
@@ -448,7 +460,7 @@
     // The total still reaches t = 7 at u = 5.
     // stages 0-4 (Bangladesh -> department). Weights are the scroll share of each step: the Bogura -> college
     // steps (1->2, 2->3) get less scroll, so they move faster; the first and last steps get a little more.
-    const PRE_W = [0, 1.25, 1.85, 2.45, 4];
+    const PRE_W = [0, 1.0, 1.45, 1.85, 4];   // was [0, 1.25, 1.85, 2.45, 4]: Bangladesh -> college now takes less scroll (faster)
     function preT(f) {                       // f = 0..1 through the whole stage 0-4 scroll
         const x = clamp(f) * 4;
         for (let k = 0; k < 4; k++) {
@@ -1017,7 +1029,7 @@
     function frame(now) {
         raf = 0;
         if (!visible) { sp = null; if (window.TaniaRoom) window.TaniaRoom.update(-1); return; }   // off screen: skip all the work
-        const lead = innerHeight * 0.25;   // the map waits a moment before it starts to zoom
+        const lead = BASE_H * 0.25;   // the map waits a moment before it starts to zoom (fixed, see BASE_H)
         const px = scrollY - trackDocTop - lead;                  // scroll distance since the zoom started (no layout read per frame)
         // piecewise: stages 0-4 over PRE_PX, then 4-7 over POST_PX; target is the position on the 0..7 timeline, as 0..1
         const tT = px <= 0 ? 0 : px <= PRE_PX ? preT(px / PRE_PX) : postT(px - PRE_PX);
@@ -1026,7 +1038,7 @@
         // ease toward the scroll position (frame-rate independent lerp), so zooming in AND out is gradual
         const dt = Math.min(64, now - lastNow || 16); lastNow = now;
         if (sp === null || reduceMotion) sp = target;
-        else { sp += (target - sp) * (1 - Math.exp(-dt / 70)); if (Math.abs(target - sp) < 0.00008) sp = target; }
+        else { sp += (target - sp) * (1 - Math.exp(-dt / 95)); if (Math.abs(target - sp) < 0.00008) sp = target; }
         const p = sp;
         const N = STAGES.length, t = p * (N - 1);
         const i = Math.min(N - 2, Math.floor(t)), f = t - i;
@@ -1066,7 +1078,16 @@
             const tx = (cx - DOOR.lon) * K, tz = (-cy - DOOR.lat) * K;
             const ps = smooth((g - 0.08) / 0.82);                                 // 0 = looking straight down, 1 = eye level at the door
             const key = D.toFixed(3) + '|' + tx.toFixed(2) + '|' + tz.toFixed(2) + '|' + ps.toFixed(4) + '|' + cW + 'x' + cH + (facadeReady ? 'f' : '');
-            if (key !== lastCamKey) { render3D(D, tx, tz, ps, now); lastCamKey = key; }
+            if (key !== lastCamKey) {
+                const t0 = performance.now();
+                render3D(D, tx, tz, ps, now);
+                lastCamKey = key;
+                // adaptive resolution: a slow 3D frame draws at a lower resolution for a while (the canvas is stretched
+                // to the same size, so the layout does not change); when frames are fast again, sharpness comes back
+                const cost = performance.now() - t0;
+                if (cost > R3_BUDGET && cvScale > 0.5) { cvScale = Math.max(0.5, cvScale - 0.125); r3Quick = 0; applyCanvasSize(); lastCamKey = ''; }
+                else if (cost < R3_BUDGET * 0.5 && cvScale < 1 && ++r3Quick > 30) { cvScale = Math.min(1, cvScale + 0.125); r3Quick = 0; applyCanvasSize(); lastCamKey = ''; }
+            }
         } else if (cvOn) { cv.style.display = 'none'; cvOn = false; lastCa = -1; }
 
         // ----- flat SVG map (hidden, and not updated at all, once the 3D city has fully taken over) -----
@@ -1200,7 +1221,7 @@
                 // as the gate opens, otherwise its green shows through the arch as a glitch
                 svg.style.opacity = (1 - smooth((t - 5.0) / 0.3)).toFixed(3);
                 interior.style.visibility = gIn <= 0 ? 'hidden' : 'visible';
-                camG.setAttribute('transform', `translate(500 ${(300 - 80 * walk).toFixed(2)}) scale(${(1 + 0.65 * walk).toFixed(4)}) translate(-500 -300)`);
+                camG.setAttribute('transform', `translate(500 ${(300 - 80 * walk).toFixed(2)}) scale(${(1 + 0.3 * walk).toFixed(4)}) translate(-500 -300)`);
                 gateG.style.opacity = (1 - smooth((t - 5.55) / 0.35)).toFixed(3);
                 paintDoors(dP);
                 capEl.style.opacity = smooth((t - 5.6) / 0.35).toFixed(3);
@@ -1244,32 +1265,32 @@
         // ceiling beams
         for (let i = 0; i <= 4; i++) {
             const xb = 360 + 70 * i;
-            r += line([[xb, 190], [500 + (xb - 500) * K, 0]], 'stroke="#0b0710" stroke-opacity=".55" stroke-width="7"');
+            r += line([[xb, 190], [500 + (xb - 500) * K, 0]], 'stroke="#140810" stroke-opacity=".55" stroke-width="7"');
         }
-        [.28, .55, .8].forEach(s => { r += line([[360 * s, 190 * s], [1000 - 360 * s, 190 * s]], 'stroke="#0b0710" stroke-opacity=".5" stroke-width="' + (5 + 9 * (1 - s)) + '"'); });
+        [.28, .55, .8].forEach(s => { r += line([[360 * s, 190 * s], [1000 - 360 * s, 190 * s]], 'stroke="#140810" stroke-opacity=".5" stroke-width="' + (5 + 9 * (1 - s)) + '"'); });
         // floor boards
         for (let i = 0; i <= 12; i++) {
             const xb = 360 + 280 * i / 12;
-            r += line([[xb, 410], [500 + (xb - 500) * K, 600]], 'stroke="#12091a" stroke-opacity=".5" stroke-width="1.3"');
+            r += line([[xb, 410], [500 + (xb - 500) * K, 600]], 'stroke="#3c2639" stroke-opacity=".5" stroke-width="1.3"');
         }
         for (let k = 0; k < 7; k++) {
             const s = .12 + k * .13;
             const [x1, y] = FP(s, -1), [x2] = FP(s, 1);
-            r += line([[x1, y], [x2, y]], 'stroke="#12091a" stroke-opacity=".25" stroke-width="1"');
+            r += line([[x1, y], [x2, y]], 'stroke="#3c2639" stroke-opacity=".25" stroke-width="1"');
         }
         // wall panelling: wainscot, rail, panels, crown moulding, skirting
         [-1, 1].forEach(sd => {
-            r += WQ(sd, 0, 1, 0, .27, 'fill="#1d1329" fill-opacity=".9"');
+            r += WQ(sd, 0, 1, 0, .27, 'fill="#4b2e49" fill-opacity=".9"');
             r += WQ(sd, 0, 1, .27, .295, 'fill="#ee8fb5" fill-opacity=".55"');
-            for (let s = .06; s < .9; s += .2) r += WQ(sd, s, s + .15, .05, .23, 'fill="none" stroke="#4a3668" stroke-width="1.3"');
-            r += WQ(sd, 0, 1, .955, 1, 'fill="#4a3668"');
-            r += WQ(sd, 0, 1, 0, .035, 'fill="#0e0914"');
+            for (let s = .06; s < .9; s += .2) r += WQ(sd, s, s + .15, .05, .23, 'fill="none" stroke="#733c67" stroke-width="1.3"');
+            r += WQ(sd, 0, 1, .955, 1, 'fill="#733c67"');
+            r += WQ(sd, 0, 1, 0, .035, 'fill="#16060f"');
         });
-        r += poly([BW(360, 0), BW(640, 0), BW(640, .27), BW(360, .27)], 'fill="#1d1329" fill-opacity=".9"');
+        r += poly([BW(360, 0), BW(640, 0), BW(640, .27), BW(360, .27)], 'fill="#4b2e49" fill-opacity=".9"');
         r += poly([BW(360, .27), BW(640, .27), BW(640, .295), BW(360, .295)], 'fill="#ee8fb5" fill-opacity=".55"');
-        for (let i = 0; i < 5; i++) r += `<rect x="${368 + i * 56}" y="${(410 - .23 * 220).toFixed(1)}" width="48" height="${(.18 * 220).toFixed(1)}" fill="none" stroke="#4a3668" stroke-width="1.2"/>`;
-        r += '<rect x="360" y="190" width="280" height="9" fill="#4a3668"/><rect x="360" y="199" width="280" height="2" fill="#ee8fb5" fill-opacity=".5"/>';
-        r += '<rect x="360" y="402" width="280" height="8" fill="#0e0914"/>';
+        for (let i = 0; i < 5; i++) r += `<rect x="${368 + i * 56}" y="${(410 - .23 * 220).toFixed(1)}" width="48" height="${(.18 * 220).toFixed(1)}" fill="none" stroke="#733c67" stroke-width="1.2"/>`;
+        r += '<rect x="360" y="190" width="280" height="9" fill="#733c67"/><rect x="360" y="199" width="280" height="2" fill="#ee8fb5" fill-opacity=".5"/>';
+        r += '<rect x="360" y="402" width="280" height="8" fill="#16060f"/>';
 
         // ---- window with a dusk sky, curtains and a light shaft ----
         r += '<ellipse cx="500" cy="290" rx="110" ry="120" fill="url(#rm-wglow)"/>';
@@ -1278,49 +1299,49 @@
         for (let k = 0; k < 14; k++) r += `<circle cx="${f1(458 + rr() * 84)}" cy="${f1(222 + rr() * 60)}" r="${f1(.5 + rr() * .9)}" fill="#fff" fill-opacity="${f1(.4 + rr() * .5)}"/>`;
         r += '<circle cx="528" cy="244" r="8" fill="#fff4dc"/><circle cx="531" cy="242" r="7" fill="#e7a8c6" fill-opacity=".55"/>';
         let cx0 = 453;
-        while (cx0 < 547) { const bw = 7 + rr() * 11, bh = 12 + rr() * 30; r += `<rect x="${f1(cx0)}" y="${f1(346 - bh)}" width="${f1(bw)}" height="${f1(bh)}" fill="#1b1230"/>`; if (rr() < .6) r += `<rect x="${f1(cx0 + 2)}" y="${f1(346 - bh + 4)}" width="2" height="2.4" fill="#ffe2a8"/>`; cx0 += bw + 1; }
+        while (cx0 < 547) { const bw = 7 + rr() * 11, bh = 12 + rr() * 30; r += `<rect x="${f1(cx0)}" y="${f1(346 - bh)}" width="${f1(bw)}" height="${f1(bh)}" fill="#45283c"/>`; if (rr() < .6) r += `<rect x="${f1(cx0 + 2)}" y="${f1(346 - bh + 4)}" width="2" height="2.4" fill="#ffe2a8"/>`; cx0 += bw + 1; }
         r += '</g>';
         r += '<path d="M453 346V262A47 47 0 0 1 547 262V346Z" fill="none" stroke="#cdb4f0" stroke-width="5"/>';
         r += '<path d="M500 215V346M453 304H547" stroke="#ffd6e4" stroke-width="3"/>';
-        r += '<rect x="445" y="346" width="110" height="8" rx="2" fill="#ffd6e4"/><rect x="445" y="354" width="110" height="3" fill="#05030a" fill-opacity=".35"/>';
+        r += '<rect x="445" y="346" width="110" height="8" rx="2" fill="#ffd6e4"/><rect x="445" y="354" width="110" height="3" fill="#0a0408" fill-opacity=".35"/>';
         r += '<line x1="426" y1="198" x2="574" y2="198" stroke="#ffd6e4" stroke-width="3"/><circle cx="424" cy="198" r="4" fill="#ee8fb5"/><circle cx="576" cy="198" r="4" fill="#ee8fb5"/>';
         r += '<path d="M432 199H466V392Q449 400 432 392Z" fill="url(#rm-cur)"/><path d="M534 199H568V392Q551 400 534 392Z" fill="url(#rm-cur)"/>';
-        r += '<path d="M432 199H466V214Q449 222 432 214Z" fill="#05030a" fill-opacity=".25"/><path d="M534 199H568V214Q551 222 534 214Z" fill="#05030a" fill-opacity=".25"/>';
+        r += '<path d="M432 199H466V214Q449 222 432 214Z" fill="#0a0408" fill-opacity=".25"/><path d="M534 199H568V214Q551 222 534 214Z" fill="#0a0408" fill-opacity=".25"/>';
 
         // ---- back wall pictures: supply & demand chart, clock, bar chart ----
-        r += '<rect x="371" y="233" width="52" height="58" fill="#16101f" stroke="#ee8fb5" stroke-width="2.5"/>';
+        r += '<rect x="371" y="233" width="52" height="58" fill="#3b2538" stroke="#ee8fb5" stroke-width="2.5"/>';
         r += '<path d="M380 281V245M380 281H415" stroke="#cdb4f0" stroke-width="1.4" fill="none"/>';
         r += '<path d="M382 276L412 249" stroke="#ee8fb5" stroke-width="2" fill="none"/><path d="M382 250L412 276" stroke="#cdb4f0" stroke-width="2" fill="none"/>';
         r += '<circle cx="397" cy="263" r="3" fill="#ffd6e4"/><path d="M397 263V281M397 263H380" stroke="#ffd6e4" stroke-opacity=".6" stroke-width="1" stroke-dasharray="2 2" fill="none"/>';
-        r += '<circle cx="602" cy="248" r="17" fill="#f6ebf2" stroke="#cdb4f0" stroke-width="3.5"/><path d="M602 248V237M602 248L610 253" stroke="#24192f" stroke-width="2" stroke-linecap="round"/><circle cx="602" cy="248" r="1.8" fill="#ee8fb5"/>';
-        for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6; r += `<line x1="${f1(602 + Math.sin(a) * 13)}" y1="${f1(248 - Math.cos(a) * 13)}" x2="${f1(602 + Math.sin(a) * 15)}" y2="${f1(248 - Math.cos(a) * 15)}" stroke="#7a5aa8" stroke-width="1"/>`; }
-        r += '<rect x="578" y="278" width="50" height="46" fill="#16101f" stroke="#cdb4f0" stroke-width="2.5"/>';
+        r += '<circle cx="602" cy="248" r="17" fill="#d8c7d5" stroke="#cdb4f0" stroke-width="3.5"/><path d="M602 248V237M602 248L610 253" stroke="#45293e" stroke-width="2" stroke-linecap="round"/><circle cx="602" cy="248" r="1.8" fill="#ee8fb5"/>';
+        for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6; r += `<line x1="${f1(602 + Math.sin(a) * 13)}" y1="${f1(248 - Math.cos(a) * 13)}" x2="${f1(602 + Math.sin(a) * 15)}" y2="${f1(248 - Math.cos(a) * 15)}" stroke="#a55389" stroke-width="1"/>`; }
+        r += '<rect x="578" y="278" width="50" height="46" fill="#3b2538" stroke="#cdb4f0" stroke-width="2.5"/>';
         [[584, 14, '#ee8fb5'], [594, 22, '#cdb4f0'], [604, 30, '#ffd6e4'], [614, 37, '#9bb89a']].forEach(([bx, bh, c]) => { r += `<rect x="${bx}" y="${318 - bh}" width="7" height="${bh}" fill="${c}"/>`; });
-        r += '<rect x="376" y="302" width="36" height="24" fill="#2a1d3d" stroke="#ee8fb5" stroke-width="2"/><path d="M382 318l8-8 6 5 9-9 6 6" stroke="#9bb89a" stroke-width="1.6" fill="none"/>';
+        r += '<rect x="376" y="302" width="36" height="24" fill="#4f2f49" stroke="#ee8fb5" stroke-width="2"/><path d="M382 318l8-8 6 5 9-9 6 6" stroke="#9bb89a" stroke-width="1.6" fill="none"/>';
 
         // ---- left wall: bookshelf ----
-        r += WQ(-1, .6, .93, .05, .86, 'fill="#3a2433"');
-        r += WQ(-1, .615, .915, .075, .835, 'fill="#120b1b"');
-        const spineC = ['#ee8fb5', '#cdb4f0', '#ffd6e4', '#9bb89a', '#b8497a', '#f6ebf2', '#7a5aa8', '#e7a8c6'];
+        r += WQ(-1, .6, .93, .05, .86, 'fill="#5c3350"');
+        r += WQ(-1, .615, .915, .075, .835, 'fill="#3b2536"');
+        const spineC = ['#ee8fb5', '#cdb4f0', '#ffd6e4', '#9bb89a', '#ab527e', '#d8c7d5', '#a55389', '#e7a8c6'];
         for (let row = 0; row < 4; row++) {
             const h0 = .085 + row * .19;
-            r += WQ(-1, .6, .93, h0 - .012, h0 + .004, 'fill="#5a3a4d"');
+            r += WQ(-1, .6, .93, h0 - .012, h0 + .004, 'fill="#733c60"');
             let s = .622;
             while (s < .895) {
                 const bw = .012 + rr() * .016, bh = .1 + rr() * .07;
                 if (s + bw > .91) break;
-                r += WQ(-1, s, s + bw, h0 + .004, h0 + .004 + bh, `fill="${spineC[Math.floor(rr() * spineC.length)]}" stroke="#120b1b" stroke-width=".4"`);
+                r += WQ(-1, s, s + bw, h0 + .004, h0 + .004 + bh, `fill="${spineC[Math.floor(rr() * spineC.length)]}" stroke="#3b2536" stroke-width=".4"`);
                 s += bw + .002;
             }
         }
-        r += WQ(-1, .6, .93, .86, .875, 'fill="#5a3a4d"');
+        r += WQ(-1, .6, .93, .86, .875, 'fill="#733c60"');
 
         // ---- right wall: chalkboard with supply & demand ----
-        r += WQ(1, .38, .76, .30, .80, 'fill="#c9a0b8"');
+        r += WQ(1, .38, .76, .30, .80, 'fill="#d9b06a"');
         r += WQ(1, .395, .745, .335, .785, 'fill="url(#rm-board)"');
-        r += WQ(1, .37, .77, .275, .305, 'fill="#8a5a6e"');
+        r += WQ(1, .37, .77, .275, .305, 'fill="#c9a24a"');
         const BP = (s, h) => WP(1, s, h);
-        r += line([BP(.43, .70), BP(.43, .39), BP(.71, .39)], 'stroke="#f6ebf2" stroke-opacity=".85" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"');
+        r += line([BP(.43, .70), BP(.43, .39), BP(.71, .39)], 'stroke="#d8c7d5" stroke-opacity=".85" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"');
         r += line([BP(.44, .43), BP(.70, .72)], 'stroke="#ee8fb5" stroke-width="2.6" stroke-linecap="round"');
         r += line([BP(.44, .72), BP(.70, .43)], 'stroke="#cdb4f0" stroke-width="2.6" stroke-linecap="round"');
         const E = BP(.57, .575);
@@ -1328,16 +1349,16 @@
         r += line([E, BP(.43, .575)], 'stroke="#ffd6e4" stroke-opacity=".7" stroke-width="1.3" stroke-dasharray="3 3"');
         r += `<circle cx="${f1(E[0])}" cy="${f1(E[1])}" r="3.4" fill="#ffd6e4"/>`;
         [['P', BP(.425, .735)], ['Q', BP(.725, .385)], ['S', BP(.72, .735)], ['D', BP(.72, .425)]].forEach(([t, p]) => { r += `<text x="${f1(p[0] - 3)}" y="${f1(p[1] + 3)}" font-size="9" font-family="Cormorant Garamond, serif" font-style="italic" font-weight="700" fill="#ffd6e4">${t}</text>`; });
-        r += WQ(1, .45, .52, .31, .33, 'fill="#f6ebf2" fill-opacity=".7"');
+        r += WQ(1, .45, .52, .31, .33, 'fill="#d8c7d5" fill-opacity=".7"');
 
         // ---- framed pictures near the front of both walls ----
-        r += WQ(-1, .12, .27, .42, .74, 'fill="#c9a0b8"') + WQ(-1, .135, .255, .45, .71, 'fill="url(#rm-art1)"');
-        r += WQ(1, .12, .27, .42, .74, 'fill="#c9a0b8"') + WQ(1, .135, .255, .45, .71, 'fill="url(#rm-art2)"');
+        r += WQ(-1, .12, .27, .42, .74, 'fill="#d9b06a"') + WQ(-1, .135, .255, .45, .71, 'fill="url(#rm-art1)"');
+        r += WQ(1, .12, .27, .42, .74, 'fill="#d9b06a"') + WQ(1, .135, .255, .45, .71, 'fill="url(#rm-art2)"');
 
         // ---- rug ----
-        r += poly([FP(.26, -.66), FP(.26, .66), FP(.9, .66), FP(.9, -.66)], 'fill="#2a1638" stroke="#ee8fb5" stroke-width="2.5"');
-        r += poly([FP(.3, -.58), FP(.3, .58), FP(.86, .58), FP(.86, -.58)], 'fill="#5b2a58"');
-        r += poly([FP(.34, -.5), FP(.34, .5), FP(.82, .5), FP(.82, -.5)], 'fill="#3d2255" stroke="#ffd6e4" stroke-opacity=".6" stroke-width="1.4"');
+        r += poly([FP(.26, -.66), FP(.26, .66), FP(.9, .66), FP(.9, -.66)], 'fill="#502849" stroke="#ee8fb5" stroke-width="2.5"');
+        r += poly([FP(.3, -.58), FP(.3, .58), FP(.86, .58), FP(.86, -.58)], 'fill="#781848"');
+        r += poly([FP(.34, -.5), FP(.34, .5), FP(.82, .5), FP(.82, -.5)], 'fill="#673055" stroke="#ffd6e4" stroke-opacity=".6" stroke-width="1.4"');
         r += poly([FP(.43, 0), FP(.58, .32), FP(.73, 0), FP(.58, -.32)], 'fill="#ee8fb5" fill-opacity=".75"');
         r += poly([FP(.5, 0), FP(.58, .15), FP(.66, 0), FP(.58, -.15)], 'fill="#ffd6e4"');
         [-.4, .4].forEach(u => { [.4, .58, .76].forEach(s => { const p = FP(s, u); r += `<ellipse cx="${f1(p[0])}" cy="${f1(p[1])}" rx="${f1(10 * s)}" ry="${f1(3 * s)}" fill="#cdb4f0" fill-opacity=".75"/>`; }); });
@@ -1346,26 +1367,26 @@
         r += poly([FP(.93, -.3), FP(.93, .3), FP(.34, .46), FP(.34, -.46)], 'fill="url(#rm-shaft)"');
 
         // ---- lecture desk under the window ----
-        r += '<ellipse cx="500" cy="428" rx="98" ry="9" fill="#05030a" fill-opacity=".5"/>';
+        r += '<ellipse cx="500" cy="428" rx="98" ry="9" fill="#0a0408" fill-opacity=".5"/>';
         r += '<polygon points="436,378 564,378 582,392 418,392" fill="url(#rm-wood)"/>';
-        r += '<rect x="418" y="392" width="164" height="32" fill="#5e3a30"/><rect x="418" y="392" width="164" height="3" fill="#05030a" fill-opacity=".35"/>';
-        r += '<rect x="428" y="399" width="64" height="20" fill="none" stroke="#3a2420" stroke-width="1.5"/><rect x="508" y="399" width="64" height="20" fill="none" stroke="#3a2420" stroke-width="1.5"/>';
+        r += '<rect x="418" y="392" width="164" height="32" fill="#5a3a43"/><rect x="418" y="392" width="164" height="3" fill="#0a0408" fill-opacity=".35"/>';
+        r += '<rect x="428" y="399" width="64" height="20" fill="none" stroke="#482f38" stroke-width="1.5"/><rect x="508" y="399" width="64" height="20" fill="none" stroke="#482f38" stroke-width="1.5"/>';
         r += '<circle cx="460" cy="409" r="2.6" fill="#ee8fb5"/><circle cx="540" cy="409" r="2.6" fill="#ee8fb5"/>';
         // laptop
-        r += '<rect x="474" y="351" width="52" height="30" rx="2" fill="#17101f" stroke="#3a2c52" stroke-width="1.5"/><rect x="477" y="354" width="46" height="24" fill="url(#rm-screen)"/>';
+        r += '<rect x="474" y="351" width="52" height="30" rx="2" fill="#3b2538" stroke="#673c5c" stroke-width="1.5"/><rect x="477" y="354" width="46" height="24" fill="url(#rm-screen)"/>';
         r += '<path d="M481 374l8-8 6 4 8-9 7 5 8-7" stroke="#ffd6e4" stroke-width="1.5" fill="none"/>';
-        r += '<polygon points="470,381 530,381 536,387 464,387" fill="#2b2040"/>';
+        r += '<polygon points="470,381 530,381 536,387 464,387" fill="#482943"/>';
         r += '<ellipse cx="500" cy="388" rx="50" ry="6" fill="#cdb4f0" fill-opacity=".18"/>';
         // books, lamp, cup
         r += '<rect x="440" y="369" width="30" height="9" fill="#ee8fb5"/><rect x="443" y="361" width="26" height="8" fill="#cdb4f0"/><rect x="441" y="354" width="28" height="7" fill="#9bb89a"/>';
-        r += '<ellipse cx="552" cy="379" rx="11" ry="3" fill="#24192f"/><path d="M552 379L546 361L536 354" stroke="#c9a0b8" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M526 351L548 351L542 362L530 362Z" fill="#9bb89a"/>';
+        r += '<ellipse cx="552" cy="379" rx="11" ry="3" fill="#45293e"/><path d="M552 379L546 361L536 354" stroke="#d9b06a" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M526 351L548 351L542 362L530 362Z" fill="#9bb89a"/>';
         r += '<ellipse cx="536" cy="368" rx="30" ry="22" fill="url(#rm-lampglow)"/>';
         r += '<rect x="560" y="366" width="9" height="12" fill="#cdb4f0"/><path d="M563 366l-2-9M566 366l3-8" stroke="#ee8fb5" stroke-width="1.4"/>';
 
         // ---- globe on a stand ----
         const g = FP(.58, .78);
-        r += `<ellipse cx="${f1(g[0])}" cy="${f1(g[1])}" rx="26" ry="7" fill="#05030a" fill-opacity=".5"/>`;
-        r += `<path d="M${f1(g[0] - 16)} ${f1(g[1])}L${f1(g[0])} ${f1(g[1] - 46)}L${f1(g[0] + 16)} ${f1(g[1])}" stroke="#8a5a6e" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+        r += `<ellipse cx="${f1(g[0])}" cy="${f1(g[1])}" rx="26" ry="7" fill="#0a0408" fill-opacity=".5"/>`;
+        r += `<path d="M${f1(g[0] - 16)} ${f1(g[1])}L${f1(g[0])} ${f1(g[1] - 46)}L${f1(g[0] + 16)} ${f1(g[1])}" stroke="#c9a24a" stroke-width="4" fill="none" stroke-linecap="round"/>`;
         r += `<circle cx="${f1(g[0])}" cy="${f1(g[1] - 76)}" r="30" fill="url(#rm-globe)"/>`;
         r += `<path d="M${f1(g[0] - 14)} ${f1(g[1] - 92)}q9-8 18 1q-2 9-10 8z M${f1(g[0] + 2)} ${f1(g[1] - 70)}q10-4 14 6q-6 9-14 2z M${f1(g[0] - 18)} ${f1(g[1] - 68)}q6-3 8 5q-5 4-8-1z" fill="#9bb89a" fill-opacity=".85"/>`;
         r += `<ellipse cx="${f1(g[0])}" cy="${f1(g[1] - 76)}" rx="30" ry="9" fill="none" stroke="#ffd6e4" stroke-opacity=".4" stroke-width="1"/><path d="M${f1(g[0] + 30)} ${f1(g[1] - 76)}A30 30 0 0 1 ${f1(g[0] - 22)} ${f1(g[1] - 54)}" stroke="#ffd6e4" stroke-width="3" fill="none" stroke-linecap="round"/>`;
@@ -1374,26 +1395,34 @@
         [-1, 1].forEach(sd => {
             const p = WP(sd, .46, .66);
             r += `<ellipse cx="${f1(p[0])}" cy="${f1(p[1])}" rx="54" ry="64" fill="url(#rm-lampglow)"/>`;
-            r += `<path d="M${f1(p[0] - 9)} ${f1(p[1] + 8)}L${f1(p[0] - 5)} ${f1(p[1] - 10)}H${f1(p[0] + 5)}L${f1(p[0] + 9)} ${f1(p[1] + 8)}Z" fill="#ffe2a8"/><rect x="${f1(p[0] - 3)}" y="${f1(p[1] + 8)}" width="6" height="7" fill="#c9a0b8"/>`;
+            r += `<path d="M${f1(p[0] - 9)} ${f1(p[1] + 8)}L${f1(p[0] - 5)} ${f1(p[1] - 10)}H${f1(p[0] + 5)}L${f1(p[0] + 9)} ${f1(p[1] + 8)}Z" fill="#ffe2a8"/><rect x="${f1(p[0] - 3)}" y="${f1(p[1] + 8)}" width="6" height="7" fill="#d9b06a"/>`;
         });
         [[.3, 1.12], [.72, .8]].forEach(([s, sc]) => {
             const y = 190 * s, ly = y + 52 * sc;
             r += `<ellipse cx="500" cy="${f1(ly + 40 * sc)}" rx="${f1(120 * sc)}" ry="${f1(90 * sc)}" fill="url(#rm-lampglow)"/>`;
-            r += `<line x1="500" y1="${f1(y)}" x2="500" y2="${f1(ly)}" stroke="#c9a0b8" stroke-width="${f1(2 * sc)}"/>`;
+            r += `<line x1="500" y1="${f1(y)}" x2="500" y2="${f1(ly)}" stroke="#d9b06a" stroke-width="${f1(2 * sc)}"/>`;
             r += `<path d="M${f1(500 - 26 * sc)} ${f1(ly + 22 * sc)}Q500 ${f1(ly - 20 * sc)} ${f1(500 + 26 * sc)} ${f1(ly + 22 * sc)}Z" fill="#ee8fb5"/>`;
             r += `<ellipse cx="500" cy="${f1(ly + 22 * sc)}" rx="${f1(26 * sc)}" ry="${f1(5 * sc)}" fill="#fff1c4"/>`;
         });
 
         // ---- potted plants in the front corners ----
         [172, 828].forEach((px, ix) => {
-            r += `<ellipse cx="${px}" cy="594" rx="46" ry="9" fill="#05030a" fill-opacity=".5"/>`;
+            r += `<ellipse cx="${px}" cy="594" rx="46" ry="9" fill="#0a0408" fill-opacity=".5"/>`;
             for (let a = -70; a <= 70; a += 17) {
-                const c = ['#6f9a6e', '#9bb89a', '#4f7a52', '#85ac82'][Math.abs(a / 17 | 0) % 4];
+                const c = ['#778d76', '#9bb89a', '#607662', '#869a84'][Math.abs(a / 17 | 0) % 4];
                 r += `<ellipse cx="${px}" cy="500" rx="13" ry="${44 + (ix ? 6 : 0) + (Math.abs(a) % 3) * 6}" fill="${c}" transform="rotate(${a} ${px} 560)"/>`;
             }
-            r += `<path d="M${px - 36} 552L${px - 28} 594H${px + 28}L${px + 36} 552Z" fill="url(#rm-pot)"/><ellipse cx="${px}" cy="552" rx="36" ry="9" fill="#e7a8c6"/><ellipse cx="${px}" cy="552" rx="30" ry="6" fill="#2a1d1a"/>`;
+            r += `<path d="M${px - 36} 552L${px - 28} 594H${px + 28}L${px + 36} 552Z" fill="url(#rm-pot)"/><ellipse cx="${px}" cy="552" rx="36" ry="9" fill="#e7a8c6"/><ellipse cx="${px}" cy="552" rx="30" ry="6" fill="#453339"/>`;
         });
 
+        // ---- key light from high on the right: matches the photo (lit from the viewer's right, above) ----
+        // source S on the right wall near the ceiling; the beam lands on Tania's head (room x 500, y 300)
+        const S = [700, 40], HEAD = [555, 255], HR = 100;
+        r += `<ellipse cx=\"${S[0] - 30}\" cy=\"${S[1] + 20}\" rx=\"150\" ry=\"130\" fill=\"url(#rm-spill)\"/>`;
+        r += `<polygon points=\"${S[0] - 6},${S[1]} ${S[0] + 6},${S[1]} 700,600 250,600\" fill=\"url(#rm-beam)\"/>`;
+        r += `<ellipse cx=\"480\" cy=\"582\" rx=\"240\" ry=\"34\" fill=\"url(#rm-spill)\"/>`;
+        r += `<ellipse cx=\"${HEAD[0] + 18}\" cy=\"${HEAD[1] - 6}\" rx=\"${HR}\" ry=\"${HR * 0.7}\" fill=\"url(#rm-headlight)\"/>`;
+        r += `<rect x=\"${S[0] - 12}\" y=\"${S[1] - 6}\" width=\"24\" height=\"8\" rx=\"2\" fill=\"#f8c8b8\"/>`;
         // ---- warm ambient light ----
         r += '<ellipse cx="500" cy="330" rx="300" ry="200" fill="url(#rm-glow)"/>';
 
@@ -1411,28 +1440,31 @@
         const s = '<defs>' +
             '<clipPath id="mi-hole"><path d="' + hole + '"/></clipPath>' +
             '<clipPath id="rm-wclip"><path d="M453 346V262A47 47 0 0 1 547 262V346Z"/></clipPath>' +
-            lg('rm-ceil', 0, 1, [[0, '#0d0813'], [1, '#2a1d3a']]) +
-            lg('rm-floor', 0, 1, [[0, '#7a4e68'], [0.35, '#5a3550'], [1, '#22131f']]) +
-            lg('rm-wl', 1, 0, [[0, '#150e20'], [1, '#3a2a52']]) +
-            lg('rm-wr', 1, 0, [[0, '#3a2a52'], [1, '#150e20']]) +
-            lg('rm-back', 0, 1, [[0, '#3f2d5a'], [1, '#2a1d3d']]) +
-            lg('rm-sky', 0, 1, [[0, '#150e38'], [0.5, '#5a3a86'], [0.85, '#d878a6'], [1, '#ffc2a8']]) +
-            lg('rm-cur', 0.5, 0, [[0, '#7a2a52'], [0.3, '#ee8fb5'], [0.6, '#a8386c'], [1, '#d97099']], ' spreadMethod="repeat"') +
-            lg('rm-wood', 0, 1, [[0, '#a8766a'], [1, '#7a4a3e']]) +
-            lg('rm-screen', 0, 1, [[0, '#cdb4f0'], [1, '#7a5aa8']]) +
-            lg('rm-board', 0, 1, [[0, '#2a1f40'], [1, '#17102a']]) +
-            lg('rm-art1', 1, 1, [[0, '#ee8fb5'], [0.5, '#cdb4f0'], [1, '#5b3a86']]) +
-            lg('rm-art2', 0, 1, [[0, '#ffd6e4'], [0.55, '#ee8fb5'], [1, '#6b4a8a']]) +
-            lg('rm-pot', 1, 0, [[0, '#c9a0b8'], [1, '#7a4a62']]) +
-            lg('rm-door', 0, 1, [[0, '#5a3347'], [1, '#33202f']]) +
+            lg('rm-ceil', 0, 1, [[0, '#392638'], [1, '#50304f']]) +
+            lg('rm-floor', 0, 1, [[0, '#7e476d'], [0.35, '#673c5f'], [1, '#45293e']]) +
+            lg('rm-wl', 1, 0, [[0, '#452b42'], [1, '#5c3555']]) +
+            lg('rm-wr', 1, 0, [[0, '#5c3555'], [1, '#452b42']]) +
+            lg('rm-back', 0, 1, [[0, '#5c3659'], [1, '#4f2f49']]) +
+            lg('rm-sky', 0, 1, [[0, '#432949'], [0.5, '#781848'], [0.85, '#f898c8'], [1, '#f8c8b8']]) +
+            lg('rm-cur', 0.5, 0, [[0, '#781848'], [0.3, '#f898c8'], [0.6, '#b75e94'], [1, '#f8a8d8']], ' spreadMethod="repeat"') +
+            lg('rm-wood', 0, 1, [[0, '#7e4c55'], [1, '#673d46']]) +
+            lg('rm-screen', 0, 1, [[0, '#cdb4f0'], [1, '#a55389']]) +
+            lg('rm-board', 0, 1, [[0, '#482943'], [1, '#3b2538']]) +
+            lg('rm-art1', 1, 1, [[0, '#f898c8'], [0.5, '#cdb4f0'], [1, '#781848']]) +
+            lg('rm-art2', 0, 1, [[0, '#f8c8b8'], [0.55, '#f898c8'], [1, '#781848']]) +
+            lg('rm-pot', 1, 0, [[0, '#f898c8'], [1, '#781848']]) +
+            lg('rm-door', 0, 1, [[0, '#67425a'], [1, '#4b3548']]) +
             lg('rm-shaft', 0, 1, [[0, '#ffd6e4', 0.34], [1, '#ffd6e4', 0]]) +
+            '<linearGradient id="rm-beam" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f8c8b8" stop-opacity=".7"/><stop offset=".7" stop-color="#f898c8" stop-opacity=".3"/><stop offset="1" stop-color="#f898c8" stop-opacity=".2"/></linearGradient>' +
+            rg('rm-spill', [[0, '#f8c8b8', 0.38], [1, '#f8c8b8', 0]]) +
+            rg('rm-headlight', [[0, '#f8c8b8', 0.42], [1, '#f898c8', 0]]) +
             rg('rm-wglow', [[0, '#ffc2d6', 0.4], [1, '#ffc2d6', 0]]) +
             rg('rm-lampglow', [[0, '#ffe2a8', 0.5], [1, '#ffe2a8', 0]]) +
-            rg('rm-glow', [[0, '#ffe2b8', 0.3], [1, '#ffe2b8', 0]]) +
-            rg('rm-globe', [[0, '#8f78c0'], [1, '#2e2250']], '38%') +
-            '<pattern id="stone" patternUnits="userSpaceOnUse" width="110" height="56"><rect width="110" height="56" fill="#4a3a63"/>' +
-            '<path d="M0 28H110M0 56H110M55 0V28M27 28V56M82 28V56" stroke="#2a2040" stroke-width="3"/>' +
-            '<path d="M2 2H53M57 30H108" stroke="#ffffff" stroke-opacity=".08" stroke-width="2"/></pattern>' +
+            rg('rm-glow', [[0, '#dec0ab', 0.3], [1, '#dec0ab', 0]]) +
+            rg('rm-globe', [[0, '#f898c8'], [1, '#5a2f49']], '38%') +
+            '<pattern id="stone" patternUnits="userSpaceOnUse" width="110" height="56"><rect width="110" height="56" fill="#673058"/>' +
+            '<path d="M0 28H110M0 56H110M55 0V28M27 28V56M82 28V56" stroke="#45263c" stroke-width="3"/>' +
+            '<path d="M2 2H53M57 30H108" stroke="#ded5de" stroke-opacity=".08" stroke-width="2"/></pattern>' +
             '</defs>';
         const scene = '<g id="mi-cam" transform="translate(500 300) scale(1) translate(-500 -300)">' + r + gate + '</g>';
         interiorArt.innerHTML = '<svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' + s + scene + '</svg>';
@@ -1467,15 +1499,15 @@
             };
             const shade = Math.min(0.6, 0.6 * sn);          // the swung leaf turns a little darker
             let h = `<path d="${pathOf([P(0, DOOR_TOP), P(1, DOOR_TOP), P(1, DOOR_BOT), P(0, DOOR_BOT)])}" fill="url(#rm-door)"/>`;
-            for (let k = 1; k < 4; k++) h += `<path d="${linePath([P(k / 4, DOOR_TOP), P(k / 4, DOOR_BOT)])}" stroke="#24141f" stroke-opacity=".7" stroke-width="2.4" fill="none"/>`;
-            h += `<path d="${pathOf([P(0.11, 150), P(0.89, 150), P(0.89, 360), P(0.11, 360)])}" fill="none" stroke="#24141f" stroke-opacity=".5" stroke-width="2.4"/>`;
+            for (let k = 1; k < 4; k++) h += `<path d="${linePath([P(k / 4, DOOR_TOP), P(k / 4, DOOR_BOT)])}" stroke="#412c3d" stroke-opacity=".7" stroke-width="2.4" fill="none"/>`;
+            h += `<path d="${pathOf([P(0.11, 150), P(0.89, 150), P(0.89, 360), P(0.11, 360)])}" fill="none" stroke="#412c3d" stroke-opacity=".5" stroke-width="2.4"/>`;
             // handle on the free edge
             const hd = P(0.92, 450);
             h += `<circle cx="${f1(hd[0])}" cy="${f1(hd[1])}" r="${f1(4 * (1 - 0.4 * sn))}" fill="#ffd6e4"/>`;
             // light catching the free edge while it moves
             h += `<path d="${linePath([P(1, DOOR_TOP), P(1, DOOR_BOT)])}" stroke="#ffd6e4" stroke-opacity="${(0.4 * sn).toFixed(3)}" stroke-width="2" fill="none"/>`;
             // shadow that grows as the leaf turns away from the light
-            h += `<path d="${pathOf([P(0, DOOR_TOP), P(1, DOOR_TOP), P(1, DOOR_BOT), P(0, DOOR_BOT)])}" fill="#05030a" fill-opacity="${shade.toFixed(3)}"/>`;
+            h += `<path d="${pathOf([P(0, DOOR_TOP), P(1, DOOR_TOP), P(1, DOOR_BOT), P(0, DOOR_BOT)])}" fill="#0a0408" fill-opacity="${shade.toFixed(3)}"/>`;
             return h;
         };
         doorL.innerHTML = leaf(300, 1);

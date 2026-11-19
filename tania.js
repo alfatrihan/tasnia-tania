@@ -95,8 +95,8 @@
        --------------------------------------------------------------------------- */
     function cameraAt(k, W, H) {
         const sc = Math.max(W / SCENE_W, H / SCENE_H);                       // slice fit
-        // where map.js's walk-in leaves the camera (scale 1.65, shifted up 80): k = 0 starts exactly there
-        const S0 = sc * 1.65, Cy0 = 300 + 80 / 1.65;
+        // where map.js's walk-in leaves the camera (scale 1.3, shifted up 80): k = 0 starts exactly there
+        const S0 = sc * 1.3, Cy0 = 300 + 80 / 1.3;
         // at the end she is 80% of the screen tall, or as wide as the screen allows
         const sEnd = Math.max(S0 * 1.2, Math.min(0.8 * H / (ANCHOR.vw * RATIO), 1.4 * W / ANCHOR.vw));
         const S = Math.exp(lerp(Math.log(S0), Math.log(sEnd), k));          // zoom in log steps
@@ -160,7 +160,7 @@
     for (let i = 0; i < TANIA_CONFIG.totalFrames; i++) {
         const im = new Image();
         im.decoding = 'async';
-        im.addEventListener('load', () => { if (i === wantIdx && ready) { lastIdx = -1; renderFrame(i); } }, { once: true });
+        im.addEventListener('load', () => { lastBlend = ''; lastIdx = -1; if (i === wantIdx && ready) renderFrame(i); }, { once: true });
         im.src = frameURL(i);
         frames[i] = im;
     }
@@ -168,9 +168,22 @@
     poster.decoding = 'async';
     poster.src = TANIA_CONFIG.posterImage;
 
+    // the frame itself if it has loaded; otherwise the nearest loaded frame (same size and framing),
+    // so the figure never jumps to a different picture while the rest are still loading
+    function loadedFrameAt(idx) {
+        const c = clamp(idx, 0, LAST);
+        for (let d = 0; d <= LAST; d++) {
+            for (const j of (d === 0 ? [c] : [c - d, c + d])) {
+                if (j < 0 || j > LAST) continue;
+                const im = frames[j];
+                if (im && im.complete && im.naturalWidth) return { im, exact: d === 0 };
+            }
+        }
+        return null;
+    }
     function frameImgFor(idx) {
-        const im = frames[clamp(idx, 0, LAST)];
-        if (im && im.complete && im.naturalWidth) return im;
+        const f = loadedFrameAt(idx);
+        if (f) return f.im;
         if (poster.complete && poster.naturalWidth) return poster;
         return null;
     }
@@ -237,6 +250,7 @@
         canvas.width = Math.max(1, Math.round(fin.w * dpr));
         canvas.height = Math.max(1, Math.round(fin.h * dpr));
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        lastBlend = '';
         flyCanvas.width = Math.max(1, Math.round(W * dpr));
         flyCanvas.height = Math.max(1, Math.round(H * dpr));
         flyCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -293,10 +307,11 @@
     function renderFrame(idx) {
         wantIdx = idx; lastBlend = '';
         if (!cache || idx === lastIdx) return;
-        const im = frameImgFor(idx);
+        const f = loadedFrameAt(idx);
         ctx.clearRect(0, 0, cache.finalW, cache.finalH);
-        if (im) drawImageFit(im, cache.finalW, cache.finalH);
-        lastIdx = idx;
+        if (f) drawImageFit(f.im, cache.finalW, cache.finalH);
+        else if (poster.complete && poster.naturalWidth) drawImageFit(poster, cache.finalW, cache.finalH);
+        lastIdx = (f && f.exact) ? idx : -1;
     }
 
     /* ---------------------------------------------------------------------------
@@ -641,8 +656,8 @@
 
         // the room is sharp when the gate opens, and gradually goes out of focus as the camera moves in
         // quarter-pixel steps only: re-setting a filter on the big room layer on every frame is costly
-        const blurQ = Math.round(2.5 * k * 4) / 4;
-        if (artEl && blurQ !== lastBlurQ) { lastBlurQ = blurQ; artEl.style.filter = blurQ > 0 ? 'blur(' + blurQ + 'px)' : 'none'; }
+        // (no blur: the room stays sharp while the camera moves in)
+        if (artEl && lastBlurQ !== 0) { lastBlurQ = 0; artEl.style.filter = 'none'; }
 
         // frames: the extra scroll after the zoom plays the 12 frames one at a time, in order, forwards and backwards
         const full = t >= TL.zoom[1];

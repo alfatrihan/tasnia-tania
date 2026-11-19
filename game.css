@@ -2475,3 +2475,155 @@ html[lang="bn"] .runner-angry-text .lang-en { display: none }
     fill: var(--rose) !important;
     stroke: var(--rose) !important;
 }
+
+/* =====================================================================
+   Games carousel: each game sits on a stack of paper cards, like the quiz,
+   and the next game peeks in from the side, so you can see there is more to swipe to.
+   ===================================================================== */
+.play-slide {
+    position: relative;
+    isolation: isolate
+}
+
+.play-slide::before,
+.play-slide::after {
+    content: "";
+    position: absolute;
+    left: 6%;
+    right: 6%;
+    top: 4%;
+    bottom: 4%;
+    z-index: -1;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: #1a1224;
+    pointer-events: none
+}
+
+.play-slide::before {
+    transform: translate(10px, 10px) rotate(2.2deg)
+}
+
+.play-slide::after {
+    background: #140e1c;
+    transform: translate(-8px, 14px) rotate(-1.8deg)
+}
+
+@media (min-width: 701px) {
+    .play-track {
+        gap: 28px;
+        padding: 8px calc(50% - min(320px, 32vw)) 0
+    }
+
+    .play-slide {
+        flex: 0 0 min(640px, 64vw)
+    }
+}
+
+
+/* =====================================================================
+   Games carousel v2: the pages stacked behind each game are the SAME as the photo cards
+   (Her Vibe / Why She Is Special): two sheets the exact size of the card, tilted and shifted,
+   so the stack is clearly visible. The old narrow stack on the slide is switched off.
+   ===================================================================== */
+.play-slide::before,
+.play-slide::after {
+    content: none !important
+}
+
+.play-stack {
+    position: relative;
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    z-index: 0
+}
+
+.play-stack::before,
+.play-stack::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 18px;
+    border: 1px solid rgba(238, 143, 181, .22);
+    background: linear-gradient(160deg, #3a2142, #26172e);
+    box-shadow: 0 10px 26px rgba(6, 2, 10, .55);
+    pointer-events: none;
+    transition: transform .5s cubic-bezier(.3, .8, .3, 1)
+}
+
+.play-stack::before {
+    transform: translate(10px, 10px) rotate(3deg)
+}
+
+.play-stack::after {
+    background: linear-gradient(160deg, #2c1a35, #1d1226);
+    transform: translate(-8px, 14px) rotate(-2.5deg)
+}
+
+/* a gentle lift of the stack when you look at it, like the photo cards */
+@media (hover: hover) {
+    .play-stack:hover::before { transform: translate(13px, 12px) rotate(3.6deg) }
+    .play-stack:hover::after { transform: translate(-11px, 17px) rotate(-3deg) }
+}
+
+/* desktop: same card size as before, so the pages show on the sides and below */
+@media (min-width: 701px) {
+    .play-slide {
+        flex: 0 0 min(640px, 64vw)
+    }
+
+    .play-track {
+        padding-top: 20px;
+        padding-bottom: 8px
+    }
+
+    .play-slide {
+        padding-bottom: 60px
+    }
+}
+
+/* phone: the sheets show at the sides, so keep some air around the card */
+@media (max-width: 700px) {
+    .play-track {
+        padding: 12px 26px 22px;
+        scroll-padding: 0 26px
+    }
+
+    .play-slide {
+        flex: 0 0 calc(100% - 52px);
+        width: calc(100% - 52px);
+        overflow: visible
+    }
+
+    .play-stack {
+        max-width: none
+    }
+
+    /* Straighten Tania: the stack wraps the card, so it keeps the card's own height */
+    #play-slide-puzzle .play-stack {
+        flex: 0 1 auto;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        max-height: 100%
+    }
+
+    #play-slide-puzzle .play-stack > .pz-card:not(.pz-full) {
+        flex: 1 1 auto
+    }
+}
+
+/* full screen: no sheets behind the game */
+.play-stack:has(.fake-full)::before,
+.play-stack:has(.fake-full)::after,
+.play-stack:has(.pz-full)::before,
+.play-stack:has(.pz-full)::after {
+    display: none
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .play-stack::before,
+    .play-stack::after { transition: none }
+}
