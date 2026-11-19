@@ -94,8 +94,9 @@
 /* names: light for districts; bold and larger for Bogura and the two places in it */
 #map-svg text {
     font-family: 'Hind Siliguri', 'Cormorant Garamond', sans-serif;
-    paint-order: stroke;
-    stroke: #0e0a14;
+    stroke: #0e0a14;             /* the dark outline the map had at the start */
+    stroke-opacity: 1;
+    paint-order: stroke;         /* the outline sits behind the letters, so only its edge shows */
     stroke-linejoin: round;
     pointer-events: none;
 }
@@ -234,7 +235,9 @@ html[lang="bn"] .lang-en { display: none !important; }
 /* v5: the department and the city around it are one real 3D scene, drawn by map.js on a canvas
    (a single perspective camera, depth-sorted far to near, with haze). The flat SVG map sits underneath and
    cross-fades into it while the view is still top-down, so the hand-over is invisible. */
-.map-frame { contain: layout paint; }
+/* no paint containment here: it clipped the 3D canvas and the vignette to a box, which showed as a hard
+   horizontal edge across the screen. The frame simply fills the sticky area. */
+.map-frame { position: relative; height: 100%; }
 #map-3d {
     position: absolute;
     inset: 0;
@@ -252,4 +255,7 @@ html[lang="bn"] .lang-en { display: none !important; }
     inset: 0;
     pointer-events: none;
     background: radial-gradient(ellipse at 50% 55%, transparent 55%, rgba(8, 4, 14, .38) 100%);
+    /* the shade fades in gradually from the top edge down, so there is no visible line where the map starts */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 45%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 45%);
 }

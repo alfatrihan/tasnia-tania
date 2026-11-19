@@ -3,7 +3,7 @@
    Every round uses a random picture from window.PUZZLE_PICTURES (media/puzzle/pictures.js) and a
    random legal shuffle, so each round can be solved. Score is based on the time taken:
    (time limit - seconds) x 10. When solved, the score shows first and the result is revealed after it,
-   with a Play again button. Music: a random song from window.PUZZLE_SONGS (audio/puzzle/songs.js)
+   with a Play again button. Music: audio/puzzle-song.mp3
    plays from PLAY and stops when the visitor leaves the puzzle. Text follows the EN / BN button. */
 (() => {
     const board = document.getElementById('pz-board');
@@ -160,16 +160,15 @@
         return i;
     }
 
-    // ---------- music: a random song from audio/puzzle/songs.js loops while the puzzle is open ----------
-    const SONGS = (window.PUZZLE_SONGS && window.PUZZLE_SONGS.length) ? window.PUZZLE_SONGS : [];
+    // ---------- music: audio/puzzle-song.mp3 loops while the puzzle is open ----------
+    const PUZZLE_SONG = 'audio/puzzle-song.mp3';   // the game's music file
     let music = null;
     let musicFromSite = false;   // true when this game paused the site's music, so it comes back afterwards
 
     function startMusic() {
-        if (!SONGS.length || music) return;
+        if (music) return;
         if (window.siteMusic) { window.siteMusic.pause(); musicFromSite = true; }
-        const src = SONGS[Math.floor(Math.random() * SONGS.length)];
-        const a = new Audio(src);
+        const a = new Audio(PUZZLE_SONG);
         a.loop = true;
         a.volume = 0.2;
         a.onerror = () => stopMusic();     // file not added yet -> stay quiet, bring the site music back
@@ -177,7 +176,46 @@
         a.play().catch(() => stopMusic());
     }
 
+    // ---------- voice: a greeting in the site's language (English or Bangla), played when PLAY is pressed ----------
+    // Put the files here: audio/puzzle-voice-en.mp3 and audio/puzzle-voice-bn.mp3
+    // The music starts after the voice ends. If a file is missing, the music simply starts.
+    const VOICE_FILE = { en: 'audio/puzzle-voice-en.mp3', bn: 'audio/puzzle-voice-bn.mp3' };
+    let voice = null;
+
+    // the site's background music stops as soon as the game's PLAY is pressed (voice or game music is playing)
+    let tapArm = null;   // one-time listener: the first tap in the game starts the game music
+    function disarmTap() {
+        if (!tapArm) return;
+        document.removeEventListener('pointerdown', tapArm, true);
+        document.removeEventListener('keydown', tapArm, true);
+        tapArm = null;
+    }
+    function armTapForMusic() {
+        disarmTap();
+        tapArm = () => { disarmTap(); if (playing) startMusic(); };
+        document.addEventListener('pointerdown', tapArm, true);
+        document.addEventListener('keydown', tapArm, true);
+    }
+
+    function playVoice(onDone) {
+        if (window.siteMusic) { window.siteMusic.pause(); musicFromSite = true; }
+        if (voice) { voice.pause(); voice = null; }
+        let done = false;
+        const finish = () => { if (!done) { done = true; voice = null; onDone(); } };
+        const a = new Audio(VOICE_FILE[lang()]);
+        voice = a;
+        a.onended = finish;
+        a.onerror = finish;               // file not added yet -> go straight to the music
+        a.play().catch(finish);
+    }
+
+    function stopVoice() {
+        disarmTap();
+        if (voice) { voice.onended = null; voice.onerror = null; voice.pause(); voice = null; }
+    }
+
     function stopMusic() {
+        stopVoice();
         if (music) { music.pause(); music.onerror = null; music = null; }
         if (musicFromSite && window.siteMusic) window.siteMusic.resume();
         musicFromSite = false;
@@ -486,7 +524,7 @@
             overlay.classList.add('hidden');
             sizesWrap.classList.remove('hidden');
             sizesWrap.classList.add('pz-appear');
-            startMusic();
+            playVoice(() => { if (playing) armTapForMusic(); });   // voice first; the music starts on the first tap
         }, 380);
     });
 

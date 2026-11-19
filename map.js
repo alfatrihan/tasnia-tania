@@ -407,9 +407,15 @@
     }
 
     // scroll past the department-zoom start (q px) -> timeline t in 4..7 (4->5 one step, 5->6 and 6->7 two steps each)
+    // the speed eases smoothly from 1 (t 4-5) to 0.5 (t 5-7) over the first 2 units instead of changing at one point,
+    // so the zoom into the department and the walk into the room never speed up or jump between two frames.
+    // The total still reaches t = 7 at u = 5.
     function postT(q) {
         const u = clamp(q / POST_PX) * 5;
-        return u <= 1 ? 4 + u : u <= 3 ? 5 + (u - 1) / 2 : 6 + (u - 3) / 2;
+        if (u >= 2) return 4 + 0.5 * u + 0.5;
+        const z = u / 2;
+        const ease = u - 2 * (z * z * z - z * z * z * z / 2);   // integral of (1 - smoothstep) over [0, u]
+        return 4 + 0.5 * u + 0.5 * ease;
     }
 
     // the view that fits one stop on screen, with a little margin
@@ -497,7 +503,7 @@
             b += win(x, 244, 20, 32, j % 2 === 0);
             b += arch(x, 300, 20, 36, j !== 1);
         });
-        b += '<path d="M138 168L262 168L200 116Z" fill="#f6ebf2" stroke="#ee8fb5" stroke-width="2"/>';
+        b += '<path d="M140 152L260 152L200 116Z" fill="#f6ebf2" stroke="#ee8fb5" stroke-width="2" stroke-linejoin="round"/>';   // gable: its base sits exactly on the cornice
         b += '<rect x="130" y="160" width="140" height="8" fill="#ee8fb5"/><rect x="140" y="152" width="120" height="8" fill="#cdb4f0"/>';
         b += '<rect x="170" y="128" width="60" height="14" rx="2" fill="#3a2450" stroke="#ee8fb5" stroke-width="1"/>';
         b += bn
@@ -528,6 +534,9 @@
             fc.globalCompositeOperation = 'multiply';
             fc.fillStyle = '#d7a6c6';
             fc.fillRect(0, 0, facade.width, facade.height);
+            // the tint above also filled the transparent sky around the painting: keep only the painted pixels
+            fc.globalCompositeOperation = 'destination-in';
+            fc.drawImage(img, 0, 0, 1024, 928);
             fc.globalCompositeOperation = 'source-over';
             facadeReady = true; lastCamKey = '';
             wake();
@@ -767,24 +776,27 @@
         }
         if (kx < x0 || kx > x1) windows(kx < x0 ? x0 : x1, z0, 0, 1, HDEP, h, L, 91);
         if (!(kz < 0)) return;                                                     // eye behind the front plane: facade edge-on
-        // facade strips
+        // facade strips. The painted front is taller than the block: the triangular pediment (and the sign) rise
+        // above the roof line. The whole painting is drawn from its top edge (hF) down to the ground, and the roof
+        // line sits exactly where the painting's roof row is, so the pediment is no longer cut off.
+        const roofRow = facadeReady ? facade.height * (152 - 112) / 232 : 0;     // painting row that sits on the roof line
+        const hF = facadeReady ? h * facade.height / (facade.height - roofRow) : h;   // full height of the painting in world units
         let ok = true;
-        const approxH = Math.abs((khh - ((0 - ky) * kcs + (0 - kz) * ksn) * kf / Math.max(NEAR, -(0 - ky) * ksn + (0 - kz) * kcs)) - (khh - ((h - ky) * kcs + (0 - kz) * ksn) * kf / Math.max(NEAR, -(h - ky) * ksn + (0 - kz) * kcs)));
+        const approxH = Math.abs((khh - ((0 - ky) * kcs + (0 - kz) * ksn) * kf / Math.max(NEAR, -(0 - ky) * ksn + (0 - kz) * kcs)) - (khh - ((hF - ky) * kcs + (0 - kz) * ksn) * kf / Math.max(NEAR, -(hF - ky) * ksn + (0 - kz) * kcs)));
         const N = Math.max(4, Math.min(72, Math.round(approxH / 7)));   // ~7 px strips: the slanted edges stay smooth
         for (let b = 0; b <= N; b++) {
-            const y = h * (1 - b / N);
+            const y = hF * (1 - b / N);
             if (pj(x0, y, 0) < NEAR) { ok = false; break; } bXL[b] = sx; bY[b] = sy;
             if (pj(x1, y, 0) < NEAR) { ok = false; break; } bXR[b] = sx;
         }
         if (ok && facadeReady) {
-            // the painted front starts above the main block (sky + pediment); skip that empty band so the
-            // block's top edge is exactly the roof's front edge (no gap, roof and walls on the same line)
-            const top0 = facade.height * (152 - 112) / 232, sh = (facade.height - top0) / N;
+            // draw the whole painting, top to bottom, so the pediment and sign are visible
+            const sh = facade.height / N;
             for (let s = 0; s < N; s++) {
                 const xl = (bXL[s] + bXL[s + 1]) / 2, xr = (bXR[s] + bXR[s + 1]) / 2;
-                ctx.drawImage(facade, 0, top0 + s * sh, facade.width, sh, xl, bY[s], xr - xl, bY[s + 1] - bY[s] + 0.8);
+                ctx.drawImage(facade, 0, s * sh, facade.width, sh, xl, bY[s], xr - xl, bY[s + 1] - bY[s] + 0.8);
             }
-            if (L > 0) P4(FOG_RGBA[L], x0, 0, 0, x1, 0, 0, x1, h, 0, x0, h, 0);
+            if (L > 0) P4(FOG_RGBA[L], x0, 0, 0, x1, 0, 0, x1, h, 0, x0, h, 0);   // fog covers the block only (a full-height fog quad would show as a flat board)
         } else {
             P4(pal[0], x0, 0, 0, x1, 0, 0, x1, h, 0, x0, h, 0);
         }
@@ -1073,7 +1085,7 @@
                         x = Math.min(Math.max(x, cx - w / 2 + hw + 2 * u), cx + w / 2 - hw - 2 * u);
                     }
                     // thicker outline on bigger text so it keeps separating from busy buildings as it grows
-                    const halo = ((2.4 + px * 0.16) * u).toFixed(4);
+                    const halo = ((1.2 + px * 0.08) * u).toFixed(4);   // same outline as before, about half as thick, grows gently with the text
                     l.names.forEach((el, i) => {
                         POS_SET(el, x, y, pl.anchor);
                         el.setAttribute('font-size', sizes[i].toFixed(4));

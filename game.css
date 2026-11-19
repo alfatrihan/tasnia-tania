@@ -703,15 +703,6 @@ html[lang="bn"] .sb-cell small {
     padding: 0 16px
 }
 
-.play-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 600;
-    font-size: clamp(2.2rem, 6vw, 3.2rem);
-    color: var(--blush);
-    letter-spacing: 4px;
-    line-height: 1.2
-}
-
 .play-tag {
     margin-top: 10px;
     color: var(--mute);
@@ -773,10 +764,6 @@ html[lang="bn"] .play-tag .lang-en { display: none }
     .play-head {
         flex: 0 0 auto;
         margin-bottom: 6px
-    }
-
-    .play-title {
-        font-size: 2rem
     }
 
     .play-track {
@@ -1117,15 +1104,6 @@ body.pz-lock {
     position: relative
 }
 
-#game::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at 50% 25%, rgba(238, 143, 181, .16), transparent 62%);
-    pointer-events: none;
-    z-index: 0
-}
-
 .play-petals {
     position: absolute;
     inset: 0;
@@ -1208,28 +1186,10 @@ body.pz-lock {
    Game design (site theme): animated backgrounds, nicer HUD and scoreboards
    ===================================================================== */
 
-/* section title: rose gradient text with ornament lines on both sides */
-.play-title {
-    background: linear-gradient(90deg, #ffd6e4, #ee8fb5 50%, #ffd9e6);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-shadow: 0 0 30px rgba(238, 143, 181, .25)
-}
-
 .play-head {
     display: grid;
     justify-items: center;
     gap: 8px
-}
-
-.play-head::before,
-.play-head::after {
-    content: "";
-    display: block;
-    width: 120px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--rose), transparent)
 }
 
 .play-tag {
@@ -2063,10 +2023,7 @@ html[lang="bn"] .pz-fs {
 }
 
 /* solid site colour (blush) for every number and title in the two games */
-#runner-score,
-.sb-num,
-.play-title,
-.pz-score b,
+
 .pz-res-grade {
     background: none;
     -webkit-background-clip: border-box;
