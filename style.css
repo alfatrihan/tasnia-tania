@@ -3592,3 +3592,22 @@ html[lang="bn"] #outro .outro-tag {
     font-size: .88rem !important;
 }
 
+
+/* ===== Phones: the About paragraph after the map is bigger and uses the same font as the 'Her Vibe' title ===== */
+@media (max-width: 640px) {
+    #about .words {
+        font-size: clamp(1.45rem, 6.4vw, 1.8rem);
+        line-height: 1.7;
+        max-width: 92%;
+        letter-spacing: .01em;
+    }
+    html:not([lang="bn"]) #about .words {
+        font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
+        font-weight: 600;
+        font-style: normal;
+    }
+    html[lang="bn"] #about .words {
+        font-size: clamp(1.3rem, 5.8vw, 1.6rem);
+        line-height: 2;
+    }
+}

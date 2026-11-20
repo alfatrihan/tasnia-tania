@@ -436,8 +436,8 @@
             // per stage interval: Bangladesh->...->department (t 0-4) uses the same scroll step everywhere,
             // and the college->department step (t 4-5) now matches it; the room and Tania (t 5-7) keep their step
             const STEP = span / 14;
-            PRE_PX = STEP * 4;
-            POST_PX = STEP * 5;   // weights: 4->5 = 1 step, 5->6 = 2 steps, 6->7 = 2 steps
+            PRE_PX = STEP * 2.0;   // was 4: the zoom from Bangladesh to the department now needs less scroll, so it moves faster
+            POST_PX = STEP * 1.8;   // was 2.8: after the name appears, the zoom into the building covers less scroll, so it comes sooner   // was 5: the college -> department -> building part also moves faster   // weights: 4->5 = 1 step, 5->6 = 2 steps, 6->7 = 2 steps
             EXTRA_PX = BASE_H * FRAME_SCROLL_VH;
             track.style.height = (BASE_H + lead0 + PRE_PX + POST_PX + EXTRA_PX) + 'px';
         }
@@ -643,13 +643,18 @@
     let kx = 0, ky = 0, kz = 0, ksn = 1, kcs = 0, kf = 600, khw = 0, khh = 0;   // eye, sin/cos of the pitch, focal length, half size
     let fogS = 0, fogL = 1, maxD = 1;
     let sx = 0, sy = 0;
+    // Safari drops a canvas path that has a point far outside the canvas (a near-camera corner projects to
+    // tens of thousands of pixels). Such points are pulled back to a limit that is still well off screen,
+    // so the rest of the building stays drawn and the shape is unchanged on screen.
+    const SLIM = 8000;
+    const clampS = v => v > SLIM ? SLIM : v < -SLIM ? -SLIM : v;
     // view depth of a world point; sets sx, sy (screen) - the pitch rotates about the x axis, yaw is fixed (north up)
     function pj(x, y, z) {
         const vy = y - ky, vz = z - kz;
         const cz = -vy * ksn + vz * kcs;
         const k = kf / (cz > 0.001 ? cz : 0.001);
-        sx = khw + (x - kx) * k;
-        sy = khh - (vy * kcs + vz * ksn) * k;
+        sx = clampS(khw + (x - kx) * k);
+        sy = clampS(khh - (vy * kcs + vz * ksn) * k);
         return cz;
     }
     const lvl = d => { const q = (d - fogS) / fogL; return q <= 0 ? 0 : q >= 1 ? LV - 1 : Math.round(q * (LV - 1)); };
@@ -680,7 +685,7 @@
         let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
         ctx.beginPath();
         for (let i = 0; i < sn; i++) {
-            const k = kf / src[3 * i + 2], px = khw + src[3 * i] * k, py = khh - src[3 * i + 1] * k;
+            const k = kf / src[3 * i + 2], px = clampS(khw + src[3 * i] * k), py = clampS(khh - src[3 * i + 1] * k);
             if (px < x0) x0 = px; if (px > x1) x1 = px; if (py < y0) y0 = py; if (py > y1) y1 = py;
             i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
         }
@@ -1019,7 +1024,7 @@
         // ease toward the scroll position (frame-rate independent lerp), so zooming in AND out is gradual
         const dt = Math.min(64, now - lastNow || 16); lastNow = now;
         if (sp === null || reduceMotion) sp = target;
-        else { sp += (target - sp) * (1 - Math.exp(-dt / 95)); if (Math.abs(target - sp) < 0.00008) sp = target; }
+        else { /* was 95ms: the map catches up with the scroll sooner */ sp += (target - sp) * (1 - Math.exp(-dt / 70)); if (Math.abs(target - sp) < 0.00008) sp = target; }
         const p = sp;
         const N = STAGES.length, t = p * (N - 1);
         const i = Math.min(N - 2, Math.floor(t)), f = t - i;
