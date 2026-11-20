@@ -52,8 +52,8 @@
 
         // the speech bubble always shows this Bengali line
         // the bubble shows these two lines one after the other (line 1, a short pause, then line 2)
-        speechBn: ['হ্যালো, আমি তাসনিয়া আক্তার তানিয়া।', 'আমার পৃথিবীতে আপনাকে স্বাগতম।'],
-        speechEn: ['Hello, I am Tasnia Akhter Tania.', 'Welcome to my world.'],
+        speechBn: ['হ্যালো, আমি তাসনিয়া আক্তার<br><span class="tb-name">তানিয়া।</span>', '<span class="tb-soft">আমার পৃথিবীতে</span><span class="tb-welcome">আপনাকে স্বাগতম।</span>'],
+        speechEn: ['Hello, I am Tasnia Akhter<br><span class="tb-name">Tania.</span>', '<span class="tb-soft">Welcome to</span><span class="tb-welcome">my world.</span>'],
 
         restFrame: 0,        // neutral pose, before the scrub
         talkOpenFrame: 10,   // "mouth open" pose while she talks
@@ -478,12 +478,12 @@
     // second frame-tail step (about 1/3 of the tail), so welcome gets the longer part of the scroll.
     const WELCOME_AT = 0.32, HELLO_AGAIN_AT = 0.24;   // a small gap between the two, so it does not flicker
     let greetPart = 0, swapTimer = 0;
-    function showGreetPart(i) { greetPart = i; bubble.textContent = speechParts()[i]; }
+    function showGreetPart(i) { greetPart = i; bubble.innerHTML = speechParts()[i]; }
     function setGreeting(on) {
         if (on === greetOn) return;
         greetOn = on;
         if (on) {
-            bubble.textContent = speechParts()[greetPart];
+            bubble.innerHTML = speechParts()[greetPart];
             bubble.classList.add('show');
         } else {
             bubble.classList.remove('show');
@@ -497,7 +497,7 @@
         bubble.classList.remove('show');
         swapTimer = setTimeout(() => {
             swapTimer = 0;
-            bubble.textContent = speechParts()[greetPart];
+            bubble.innerHTML = speechParts()[greetPart];
             if (greetOn) bubble.classList.add('show');
         }, 300);
     }
@@ -684,7 +684,7 @@
     addEventListener('resize', () => { sceneBox = null; navBottomCache = -1; }, { passive: true });
 
     // language switched while she is talking: update the bubble text straight away
-    new MutationObserver(() => { if (greetOn && bubble) bubble.textContent = speechParts()[greetPart]; })
+    new MutationObserver(() => { if (greetOn && bubble) bubble.innerHTML = speechParts()[greetPart]; })
         .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 
     window.TaniaRoom = { update };

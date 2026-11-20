@@ -35,7 +35,7 @@
     right: 16px;
     display: flex;
     justify-content: space-between;
-    font: 500 .78rem 'DM Sans', sans-serif;
+    font: 500 .78rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: 2px;
     color: var(--mute);
     z-index: 2;
@@ -66,7 +66,7 @@
 }
 
 #runner-title {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-weight: 600;
     font-size: 2rem;
     color: var(--blush)
@@ -88,7 +88,7 @@
     border: 1px solid rgba(255, 214, 228, .35);
     background: rgba(23, 16, 32, .85);
     color: var(--blush);
-    font: 500 .85rem 'DM Sans', sans-serif;
+    font: 500 .85rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     cursor: pointer;
     transition: transform .3s, border-color .3s
 }
@@ -126,7 +126,7 @@
     border: 1px solid rgba(255, 214, 228, .35);
     background: rgba(23, 16, 32, .8);
     color: var(--blush);
-    font: 500 .75rem 'DM Sans', sans-serif;
+    font: 500 .75rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     cursor: pointer
 }
 
@@ -185,7 +185,7 @@ body.runner-lock {
     border: 0;
     background: linear-gradient(135deg, #ee8fb5, #c2467f);
     color: #2b0f1e;
-    font: 600 1rem 'DM Sans', sans-serif;
+    font: 600 1rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: 3px;
     cursor: pointer;
     box-shadow: 0 10px 30px #ee8fb566;
@@ -295,7 +295,7 @@ body.runner-lock>*:not(#runner-wrap) {
     background: rgba(23, 16, 32, .9);
     color: var(--blush);
     text-align: center;
-    font: 500 .85rem 'DM Sans', sans-serif;
+    font: 500 .85rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     line-height: 1.4;
     margin-right: 10%
 }
@@ -315,7 +315,7 @@ body.runner-lock>*:not(#runner-wrap) {
 }
 
 .pz-help-bubble b {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: 1.05rem;
     font-weight: 600
 }
@@ -410,7 +410,7 @@ html[lang="bn"] .pz-help-bubble .lang-en { display: none }
     border-radius: 99px;
     background: var(--blush);
     color: #17101f;
-    font: 600 .7rem 'DM Sans', sans-serif;
+    font: 600 .7rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     pointer-events: none
 }
 
@@ -471,7 +471,7 @@ html[lang="bn"] .pz-help-bubble .lang-en { display: none }
 }
 
 .runner-bubble b {
-    font: 600 1.05rem 'Cormorant Garamond', serif
+    font: 600 1.05rem 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif
 }
 
 .runner-bubble .lang-bn b {
@@ -482,7 +482,7 @@ html[lang="en"] .runner-bubble .lang-bn { display: none }
 html[lang="bn"] .runner-bubble .lang-en { display: none }
 
 .runner-bubble span {
-    font: 500 .8rem 'DM Sans', sans-serif;
+    font: 500 .8rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     color: var(--mute)
 }
 
@@ -527,7 +527,7 @@ html[lang="bn"] .runner-bubble .lang-en { display: none }
 }
 
 .hud-coins {
-    font: 600 .95rem 'DM Sans', sans-serif;
+    font: 600 .95rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     color: #ffd36b
 }
 
@@ -541,7 +541,7 @@ html[lang="bn"] .runner-bubble .lang-en { display: none }
 }
 
 #runner-score {
-    font: 700 1.2rem 'DM Sans', sans-serif;
+    font: 700 1.2rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-variant-numeric: tabular-nums;
     background: linear-gradient(90deg, #ffd6e4, #ee8fb5 55%, #ffd36b);
     -webkit-background-clip: text;
@@ -554,7 +554,7 @@ html[lang="bn"] .runner-bubble .lang-en { display: none }
     padding: 3px 12px;
     border-radius: 99px;
     background: rgba(23, 16, 32, .5);
-    font: 500 .7rem 'DM Sans', sans-serif;
+    font: 500 .7rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: 2px;
     color: var(--mute)
 }
@@ -580,7 +580,7 @@ html[lang="bn"] .runner-bubble .lang-en { display: none }
     left: 50%;
     top: 4px;
     opacity: 0;
-    font: 700 .85rem 'DM Sans', sans-serif;
+    font: 700 .85rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     color: #ffd36b;
     text-shadow: 0 0 8px #ffd36b;
     pointer-events: none
@@ -631,14 +631,14 @@ html[lang="bn"] .runner-bubble .lang-en { display: none }
 }
 
 .sb-label {
-    font: 500 .7rem 'DM Sans', sans-serif;
+    font: 500 .7rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: var(--mute)
 }
 
 .sb-num {
-    font: 700 3rem 'Cormorant Garamond', serif;
+    font: 700 3rem 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     line-height: 1;
     font-variant-numeric: tabular-nums;
     background: linear-gradient(90deg, #ffd6e4, #ee8fb5, #ffd36b);
@@ -661,7 +661,7 @@ html[lang="bn"] .runner-bubble .lang-en { display: none }
 }
 
 .sb-cell small {
-    font: 500 .65rem 'DM Sans', sans-serif;
+    font: 500 .65rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--mute)
@@ -671,7 +671,7 @@ html[lang="bn"] .runner-bubble .lang-en { display: none }
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font: 600 1.05rem 'DM Sans', sans-serif;
+    font: 600 1.05rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     color: var(--blush);
     font-variant-numeric: tabular-nums
 }
@@ -685,7 +685,7 @@ html[lang="bn"] .runner-bubble .lang-en { display: none }
     margin-top: 2px;
     padding: 4px 14px;
     border-radius: 99px;
-    font: 600 .8rem 'DM Sans', sans-serif;
+    font: 600 .8rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     color: #2b0f1e;
     background: linear-gradient(135deg, #ffd36b, #ee8fb5);
     animation: newPulse 1s ease-in-out infinite alternate
@@ -873,7 +873,7 @@ html[lang="bn"] .play-tag .lang-en { display: none }
     justify-content: space-between;
     gap: 10px;
     padding: 10px 14px;
-    font: 500 .78rem 'DM Sans', sans-serif;
+    font: 500 .78rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: 1.5px;
     color: var(--mute);
     background: #140e1c;
@@ -973,7 +973,7 @@ html[lang="bn"] .play-tag .lang-en { display: none }
 
 /* the start / PLAY screen and the result screen reuse the Tania's Run overlay */
 .pz-ov-title {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-weight: 600;
     font-size: 2rem;
     color: var(--blush);
@@ -1012,7 +1012,7 @@ html[lang="bn"] .play-tag .lang-en { display: none }
 }
 
 .pz-res-label {
-    font: 500 .8rem 'DM Sans', sans-serif;
+    font: 500 .8rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: var(--mute);
@@ -1020,7 +1020,7 @@ html[lang="bn"] .play-tag .lang-en { display: none }
 }
 
 .pz-res-grade {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-weight: 600;
     font-size: 2.2rem;
     color: var(--blush);
@@ -1061,7 +1061,7 @@ html[lang="bn"] .play-tag .lang-en { display: none }
 }
 
 .pz-size {
-    font: 500 .78rem 'DM Sans', sans-serif;
+    font: 500 .78rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: 1px;
     padding: 6px 14px;
     border-radius: 99px;
@@ -1281,7 +1281,7 @@ body.pz-lock {
     border-radius: 99px;
     background: rgba(255, 214, 228, .06);
     border: 1px solid rgba(255, 214, 228, .18);
-    font: 600 .8rem 'DM Sans', sans-serif;
+    font: 600 .8rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: 1px;
     color: var(--mute);
     font-variant-numeric: tabular-nums
@@ -1360,7 +1360,7 @@ body.pz-lock {
     border: 1px solid rgba(255, 214, 228, .35);
     background: rgba(23, 16, 32, .8);
     color: var(--blush);
-    font: 500 .75rem 'DM Sans', sans-serif;
+    font: 500 .75rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: .5px;
     cursor: pointer;
     white-space: nowrap
@@ -1555,7 +1555,7 @@ body.pz-lock {
     border-radius: 99px;
     background: rgba(255, 214, 228, .07);
     border: 1px solid rgba(255, 214, 228, .16);
-    font: 600 .72rem 'DM Sans', sans-serif;
+    font: 600 .72rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     color: var(--blush);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
@@ -1644,7 +1644,7 @@ body.pz-lock {
     padding: 6px 12px;
     gap: 6px;
     border-radius: 99px;
-    font: 500 .75rem 'DM Sans', sans-serif;
+    font: 500 .75rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: .5px;
     white-space: nowrap
 }
@@ -1689,7 +1689,7 @@ html[lang="bn"] .pz-fs {
     box-shadow: 0 0 14px rgba(238, 143, 181, .25);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
-    font: 600 .95rem 'DM Sans', sans-serif;
+    font: 600 .95rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: 0
 }
 
@@ -1707,7 +1707,7 @@ html[lang="bn"] .pz-fs {
 }
 
 .pz-score b {
-    font: 700 1.2rem 'DM Sans', sans-serif;
+    font: 700 1.2rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-variant-numeric: tabular-nums;
     background: linear-gradient(90deg, #ffd6e4, #ee8fb5 55%, #ffd36b);
     -webkit-background-clip: text;
@@ -1732,7 +1732,7 @@ html[lang="bn"] .pz-fs {
     background: linear-gradient(135deg, rgba(238, 143, 181, .3), rgba(194, 70, 127, .3));
     box-shadow: 0 8px 24px rgba(238, 143, 181, .25);
     color: var(--blush);
-    font: 500 .8rem 'DM Sans', sans-serif;
+    font: 500 .8rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: .5px;
     white-space: nowrap
 }
@@ -1889,7 +1889,7 @@ html[lang="bn"] .pz-fs {
     bottom: 12px;
     padding: 8px 20px;
     gap: 0;
-    font: 500 .8rem 'DM Sans', sans-serif;
+    font: 500 .8rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: .5px;
     background: linear-gradient(135deg, rgba(238, 143, 181, .3), rgba(194, 70, 127, .3));
     border: 1px solid rgba(238, 143, 181, .55);
@@ -2002,7 +2002,7 @@ html[lang="bn"] .pz-fs {
 
 /* size choice: lilac-edged glass pills, the picked one glows */
 .pz-size {
-    font: 600 .78rem 'DM Sans', sans-serif;
+    font: 600 .78rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: 1px;
     padding: 6px 16px;
     color: var(--mute);
@@ -2150,7 +2150,7 @@ html[lang="bn"] .pz-fs {
 #pz-score-n,
 .sb-num,
 .pz-res-grade {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-weight: 600;
     font-variant-numeric: lining-nums;
     letter-spacing: .5px
@@ -2339,7 +2339,7 @@ html[lang="bn"] .pz-fs {
     text-align: left
 }
 .runner-angry-text .lang-en {
-    font: 600 .9rem 'Cormorant Garamond', serif;
+    font: 600 .9rem 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     color: var(--blush)
 }
 .runner-angry-text .lang-bn {

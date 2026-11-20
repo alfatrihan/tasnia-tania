@@ -328,11 +328,14 @@
     // painted once and never re-touched on scroll - so the count can stay generous without bringing
     // back the hang; it was the per-frame 3D growth/flatten work on thousands of them that was slow,
     // not the number of shapes on screen
+    // on a phone, fewer shapes means less to paint/composite every frame - the picture is still full,
+    // just a little less dense, and this is the single biggest lever for the lag reported near Bogura/the college
+    const MOBILE = innerWidth < 760;
     const distG = mk('g', {}, 'far-city');   // the distant district silhouettes: hidden once the zoom is inside Bogura
     cityG.appendChild(distG);
-    DISTRICTS.forEach(([, , lon, lat]) => buildCity(lon, lat, 0.035, 36, 0, false, 0, distG));
-    buildCity(boguraLabel.lon, boguraLabel.lat, 0.07, 150, 0, true, 60);   // Bogura: denser, the city centre
-    buildCity(89.3566, 24.8464, 0.012, 52, 0, true, 40);   // the college campus: a fuller cluster of its own
+    DISTRICTS.forEach(([, , lon, lat]) => buildCity(lon, lat, 0.035, MOBILE ? 24 : 36, 0, false, 0, distG));
+    buildCity(boguraLabel.lon, boguraLabel.lat, 0.07, MOBILE ? 100 : 150, 0, true, MOBILE ? 40 : 60);   // Bogura: denser, the city centre
+    buildCity(89.3566, 24.8464, 0.012, MOBILE ? 36 : 52, 0, true, MOBILE ? 26 : 40);   // the college campus: a fuller cluster of its own
 
     // ---------- the economics department ----------
     // top-down plan (seen from above at the start of the zoom). Units: 0.00001 degree, centred on the building.
@@ -372,7 +375,7 @@
     const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ease01 = v => { v = clamp(v); return 1 - Math.pow(1 - v, 3); };
     // rises with a small overshoot, so the buildings feel like they spring up
-    const easeBack = v => { v = clamp(v); const c1 = 1.25, c3 = c1 + 1; return 1 + c3 * Math.pow(v - 1, 3) + c1 * Math.pow(v - 1, 2); };
+    const easeBack = v => { v = clamp(v); const c1 = 0.65, c3 = c1 + 1; return 1 + c3 * Math.pow(v - 1, 3) + c1 * Math.pow(v - 1, 2); };
     const life = (from, to) => t => clamp((t - from) / (to - from));
 
     DISTRICTS.forEach(([en, bn, lon, lat, pos]) => addLabel({
@@ -406,7 +409,7 @@
     });
 
     // 3D canvas resolution: baseDpr is set on each measure; cvScale drops below 1 while frames are too slow to keep up
-    let baseDpr = 1, cvScale = 1, r3Quick = 0;
+    let baseDpr = 1, cvScale = 1, r3Quick = 0, r3Slow = 0;
     const R3_BUDGET = 12;   // ms: a 3D frame that takes longer than this lowers the canvas resolution a step
     function applyCanvasSize() {
         const dpr = baseDpr * cvScale;
@@ -447,7 +450,7 @@
         if (r.width) {
             ratio = r.height / r.width; pxW = r.width;
             // the 3D canvas: backing store capped at 1x on phones / 1.25x on desktop (fill-rate is the limit, not sharpness)
-            baseDpr = Math.min(window.devicePixelRatio || 1, innerWidth < 760 ? 1 : 1.25);
+            baseDpr = Math.min(window.devicePixelRatio || 1, innerWidth < 420 ? 0.85 : innerWidth < 760 ? 1 : 1.25);
             cW = r.width; cH = r.height;
             applyCanvasSize();
             lastCamKey = ''; svgDirty = true;
@@ -492,7 +495,7 @@
     function fitName(el, want, viewW) {
         const cur = parseFloat(el.getAttribute('font-size'));
         if (el._k === undefined && cur > 0) { const L = el.getComputedTextLength(); if (L > 0) el._k = L / cur; }
-        return el._k ? Math.min(want, 0.9 * viewW / el._k) : want;
+        return el._k ? Math.min(want, (innerWidth < 760 ? 0.6 : 0.9) * viewW / el._k) : want;   // phones: names stay narrower, so they do not cover the buildings
     }
 
     const POS_SET = (el, x, y, anchor) => {
@@ -566,7 +569,7 @@
         b += '<rect x="130" y="160" width="140" height="8" fill="#ee8fb5"/><rect x="140" y="152" width="120" height="8" fill="#cdb4f0"/>';
         b += '<rect x="170" y="128" width="60" height="14" rx="2" fill="#3a2450" stroke="#ee8fb5" stroke-width="1"/>';
         b += bn
-            ? '<text x="200" y="138.5" text-anchor="middle" font-size="9" font-family="Hind Siliguri, Noto Sans Bengali, sans-serif" font-weight="700" fill="#ffd6e4">অর্থনীতি</text>'
+            ? '<text x="200" y="138.5" text-anchor="middle" font-size="9" font-family="Hind Siliguri, Noto Serif Bengali, Noto Sans Bengali, Nirmala UI, Vrinda, sans-serif" font-weight="700" fill="#ffd6e4">অর্থনীতি</text>'
             : '<text x="200" y="138" text-anchor="middle" font-size="8" font-family="Georgia, serif" font-weight="700" fill="#ffd6e4">Economics</text>';
         [148, 172, 228, 252].forEach(xc => {
             b += `<rect x="${xc - 6}" y="168" width="12" height="4" fill="#f6ebf2"/><rect x="${xc - 4}" y="172" width="8" height="118" fill="url(#c)"/><rect x="${xc - 6}" y="290" width="12" height="4" fill="#efe3fa"/>`;
@@ -1009,7 +1012,7 @@
             const bn = document.documentElement.lang === 'bn';
             const txt = bn ? 'অর্থনীতি বিভাগ' : 'Economics Department';
             ctx.globalAlpha = la;
-            ctx.font = '700 15px "Hind Siliguri","Cormorant Garamond",Georgia,sans-serif';
+            ctx.font = '600 15px "Hind Siliguri","Noto Serif Bengali","Noto Sans Bengali","Nirmala UI","Cormorant Garamond",Georgia,sans-serif';
             ctx.textAlign = 'center'; ctx.lineJoin = 'round'; ctx.lineWidth = 4;
             ctx.strokeStyle = '#0e0a14'; ctx.strokeText(txt, sx, sy - 8);
             ctx.fillStyle = '#ffd6e4'; ctx.fillText(txt, sx, sy - 8);
@@ -1024,7 +1027,7 @@
     // what actually changed is touched: the SVG map (stages 0-4) or the 3D canvas (stages 4-5), never both.
     const smooth = v => { v = clamp(v); return v * v * (3 - 2 * v); };
     const wake = () => { if (!raf && visible) raf = requestAnimationFrame(frame); };
-    let lastLit = 0, svgHidden = false, lastCa = -1, svgDirty = true, lastDir = 0, lastDistOn = true;
+    let lastLit = 0, svgHidden = false, lastCa = -1, svgDirty = true, lastDir = 0, lastDistOn = true, lastSvgFade = '1';
 
     function frame(now) {
         raf = 0;
@@ -1056,7 +1059,7 @@
             // is written again from the current position instead of trusting a stale cache
             lastDir = dir;
             lastCa = -1; lastCamKey = ''; lastCityFade = ''; lastCityShown = null;
-            lastHero = ''; lastFlatten = -1; lastInside = -1; svgDirty = true; lastCityShown = null;
+            lastHero = ''; lastFlatten = -1; lastInside = -1; svgDirty = true; lastCityShown = null; lastSvgFade = '';
         }
         lastT = t;
 
@@ -1069,6 +1072,13 @@
             if (!cvOn) { cv.style.display = 'block'; cvOn = true; lastCamKey = ''; }
             const cs = ca.toFixed(3);
             if (cs !== lastCa) { cv.style.opacity = cs; lastCa = cs; }
+            // only fade the flat map out on the way IN (t 4.05-4.35): on the way back toward the gate (t > 5.0)
+            // the camG block below takes over the flat map's opacity on its own slower curve, and always runs
+            // after this, so it wins there - this just stops the two pictures double-exposing on the way in
+            if (t <= 5.0) {
+                const svgFade = (1 - ca).toFixed(3);
+                if (svgFade !== lastSvgFade) { svg.style.opacity = svgFade; lastSvgFade = svgFade; }
+            }
             // camera distance: identical to the SVG's zoom while the two cross-fade (same ground footprint), then it
             // keeps flying in at a slower pace than the flat map did, so there is time to pass through the blocks
             const fpx = Math.min(0.9 * cH, 0.95 * cW);
@@ -1085,10 +1095,15 @@
                 // adaptive resolution: a slow 3D frame draws at a lower resolution for a while (the canvas is stretched
                 // to the same size, so the layout does not change); when frames are fast again, sharpness comes back
                 const cost = performance.now() - t0;
-                if (cost > R3_BUDGET && cvScale > 0.5) { cvScale = Math.max(0.5, cvScale - 0.125); r3Quick = 0; applyCanvasSize(); lastCamKey = ''; }
-                else if (cost < R3_BUDGET * 0.5 && cvScale < 1 && ++r3Quick > 30) { cvScale = Math.min(1, cvScale + 0.125); r3Quick = 0; applyCanvasSize(); lastCamKey = ''; }
+                if (cost > R3_BUDGET && cvScale > 0.5) {
+                    if (r3Slow) { cvScale = Math.max(0.5, cvScale - 0.125); r3Quick = 0; r3Slow = 0; applyCanvasSize(); lastCamKey = ''; }
+                    else r3Slow = 1;
+                } else {
+                    r3Slow = 0;
+                    if (cost < R3_BUDGET * 0.5 && cvScale < 1 && ++r3Quick > 30) { cvScale = Math.min(1, cvScale + 0.125); r3Quick = 0; applyCanvasSize(); lastCamKey = ''; }
+                }
             }
-        } else if (cvOn) { cv.style.display = 'none'; cvOn = false; lastCa = -1; }
+        } else if (cvOn) { cv.style.display = 'none'; cvOn = false; lastCa = -1; if (lastSvgFade !== '1') { svg.style.opacity = ''; lastSvgFade = '1'; } }
 
         // ----- flat SVG map (hidden, and not updated at all, once the 3D city has fully taken over) -----
         if (svgOn) {
@@ -1106,22 +1121,18 @@
                 if (cityShown !== lastCityShown) { cityG.style.display = cityShown ? '' : 'none'; lastCityShown = cityShown; }
                 const distOn = t < 1.3;
                 if (distOn !== lastDistOn) { distG.style.display = distOn ? '' : 'none'; lastDistOn = distOn; }
+                // the college-area buildings follow the zoom itself: each one rises as the camera comes in
+                // (nearer ones first). They stay standing as the camera goes on in, so they leave the screen
+                // with the zoom instead of shrinking away. Driven by the scroll position, so zooming back and forth
+                // shows the same picture every time.
                 const cityOn = t > 0.7;
-                if (cityOn && cityStart === null) cityStart = now;
-                if (!cityOn && cityStart !== null) {
-                    cityStart = null;
-                    cityBuildNear.forEach(resetBuilding);
-                }
-                if (cityOn) {
-                    const age = now - cityStart;
-                    cityBuildNear.forEach(bd => {
-                        if (bd.done) return;                       // already fully grown: no more DOM writes
-                        const raw = clamp((age - bd.d * 450) / 600);
-                        if (raw <= 0) return;
-                        paintBuilding(bd, easeBack(raw));
-                        if (raw >= 1) bd.done = true;
-                    });
-                }
+                cityBuildNear.forEach(bd => {
+                    const raw = cityOn ? clamp((t - 0.7 - bd.d * 0.55) / 0.2) : 0;
+                    const g = raw <= 0 ? 0 : easeBack(raw);
+                    if (g === bd.g) return;
+                    bd.g = g;
+                    paintBuilding(bd, g);
+                });
                 boguraG.style.setProperty('--bf', (0.2 * clamp((t - 0.4) / 0.6) * clamp(1 - (t - 1.8) / 0.6)).toFixed(3));
 
                 // labels: viewport-culled - a name outside the view (or invisible) is display:none and costs nothing
@@ -1144,7 +1155,7 @@
                         l.descs.forEach(el => { el.style.display = ''; });
                         if (l.dot) l.dot.style.display = '';
                     }
-                    const px = l.px(t);
+                    const px = l.px(t) * (innerWidth < 760 ? 0.72 : 1);   // smaller names on phones, so they do not cover the buildings
                     const pl = POS[l.pos];
                     const x0 = l.lon, y0 = -l.lat;
                     const sizes = l.names.map(el => fitName(el, px * u, w));
@@ -1181,14 +1192,6 @@
                 const planO = (clamp((t - 2.3) / 0.5) * (1 - clamp((t - 3.4) / 0.35))).toFixed(2);
                 if (planO !== lastHero) { heroG.style.opacity = planO; lastHero = planO; }
 
-                // the campus buildings settle flat into the ground as the camera tips toward the horizon (reversible)
-                const flattenT = clamp((t - 3.1) / 1.2);
-                const flattenKey = Math.round(flattenT * 40);
-                if (flattenKey !== lastFlatten) {
-                    lastFlatten = flattenKey;
-                    const keep = Math.max(0.06, 1 - flattenT * 0.94);
-                    cityBuildNear.forEach(bd => { if (bd.done) paintBuilding(bd, keep); });
-                }
             }
             // pins pulse every frame while visible (two circles each - trivial)
             if (t > 0.5 && t < 4.4) {

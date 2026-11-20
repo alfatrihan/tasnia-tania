@@ -125,3 +125,44 @@
 #tania-canvas {
     /* no CSS filter: the shadow is the soft #tania-glow behind her */
 }
+
+
+/* ===== Speech bubble: nicer intro, name on its own bold line ===== */
+#tania-bubble {
+    font-weight: 500;
+    line-height: 1.55;
+    padding: .75rem 1.15rem .8rem;
+    border-radius: 22px;
+}
+#tania-bubble .tb-name {
+    display: inline-block;
+    white-space: nowrap;
+    margin-top: .35em;
+    padding: .1em .85em .18em;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #f6b3d0, #e07aa3);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.12em;
+    line-height: 1.4;
+    box-shadow: 0 4px 12px rgba(194, 70, 127, .28);
+}
+
+
+/* ===== Welcome line: softer and more elegant than the name line ===== */
+#tania-bubble .tb-soft {
+    display: block;
+    font-size: .8em;
+    font-weight: 500;
+    letter-spacing: .02em;
+    color: #8a5a84;
+    margin-top: .35em;
+}
+#tania-bubble .tb-welcome {
+    display: block;
+    font-size: 1.05em;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #51254e;
+    margin-top: .1em;
+}

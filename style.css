@@ -28,7 +28,7 @@ html {
 body {
     background: var(--bg);
     color: var(--ink);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     line-height: 1.7;
     overflow-x: hidden
 }
@@ -38,7 +38,7 @@ h2,
 h3,
 blockquote,
 .brand {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-weight: 600
 }
 
@@ -197,8 +197,14 @@ section {
 }
 
 .cap1 {
-    font-family: 'Great Vibes', cursive;
-    font-size: clamp(2rem, 7vw, 3.4rem);
+    font-family: 'Sacramento', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', cursive;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: 0;
+    word-spacing: 0;
+    line-height: 1.25;
+    white-space: nowrap;
+    font-size: clamp(1.5rem, 5.6vw, 2.8rem);
     color: var(--blush)
 }
 
@@ -216,7 +222,7 @@ h1 {
 }
 
 h1 em {
-    font-family: 'Great Vibes', cursive;
+    font-family: 'Sacramento', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', cursive;
     font-style: normal;
     font-weight: 400;
     color: var(--rose);
@@ -450,7 +456,7 @@ h2 {
 .fr b,
 .bk p {
     position: relative;
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: 1.3rem;
     font-style: italic;
     font-weight: 500
@@ -535,7 +541,7 @@ h2 {
     display: grid;
     place-items: center;
     text-align: center;
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: 1.5rem;
     font-style: italic;
     color: var(--blush);
@@ -623,7 +629,7 @@ input[type=range] {
 .tl b {
     display: block;
     color: var(--rose);
-    font-family: 'Playfair Display', serif;
+    font-family: 'Playfair Display', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-weight: 500;
     font-size: 2rem;
     letter-spacing: .02em;
@@ -721,7 +727,7 @@ footer {
 
 /* the thank-you message: every word starts blurred and dim, then clears as you scroll */
 .fw {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: clamp(1.2rem, 4.8vw, 2rem);
     font-weight: 500;
     line-height: 1.42;
@@ -769,7 +775,7 @@ html[lang="bn"] .fw {
     gap: 8px;
     padding: 8px 18px;
     border-radius: 99px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-size: 0.82rem;
     font-weight: 500;
     letter-spacing: 0.5px;
@@ -1054,7 +1060,7 @@ html[lang="bn"] .fw {
 }
 
 .dev-avatar-initials {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: 1.6rem;
     color: var(--blush);
 }
@@ -1069,7 +1075,7 @@ html[lang="bn"] .fw {
 }
 
 .dev-name {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: 1.6rem;
     font-weight: 500;
     color: var(--blush);
@@ -1119,7 +1125,7 @@ html[lang="bn"] .fw {
 }
 
 .dev-quote {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: 1.05rem;
     font-style: italic;
     color: var(--lil);
@@ -1147,7 +1153,7 @@ html[lang="bn"] .fw {
 #langBtn {
   position: fixed; left: 18px; bottom: 18px; z-index: 150; height: 46px; padding: 0 18px;
   border-radius: 99px; border: 1px solid rgba(255, 255, 255, .2); background: rgba(23, 16, 32, .8);
-  color: #f7ecf3; font: 500 .95rem 'DM Sans', sans-serif; cursor: pointer; transition: transform .3s;
+  color: #f7ecf3; font: 500 .95rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif; cursor: pointer; transition: transform .3s;
 }
 #langBtn:hover { transform: scale(1.05); }
 
@@ -1278,7 +1284,7 @@ html {
 
 /* ===== Bengali text: no clipping, softer and easier to read ===== */
 :root {
-    --bn-font: 'Hind Siliguri', sans-serif
+    --bn-font: 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif
 }
 
 html[lang="bn"] *,
@@ -1370,7 +1376,7 @@ html[lang="bn"] #qbox {
 }
 
 #quiz-box .qz-title {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: clamp(1.7rem, 5vw, 2.2rem);
     color: var(--blush);
     margin: 0 0 18px;
@@ -1465,7 +1471,7 @@ html[lang="bn"] #quiz-box .qz-title {
     border: 0;
     background: linear-gradient(135deg, #ee8fb5, #c2467f);
     color: #2b0f1e;
-    font: 600 .92rem 'DM Sans', sans-serif;
+    font: 600 .92rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: 2px;
     cursor: pointer;
     transition: transform .3s, opacity .3s
@@ -1489,7 +1495,7 @@ html[lang="bn"] #quiz-box .qz-title {
 }
 
 .qz-count {
-    font: 600 1rem 'DM Sans', sans-serif;
+    font: 600 1rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     color: var(--blush);
     letter-spacing: 1px;
     font-variant-numeric: tabular-nums
@@ -1511,7 +1517,7 @@ html[lang="bn"] #quiz-box .qz-title {
 }
 
 .qz-q {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-style: italic;
     font-weight: 500;
     font-size: clamp(1.25rem, 4vw, 1.5rem);
@@ -1542,7 +1548,7 @@ html[lang="bn"] .qz-q {
     border: 1px solid var(--line);
     background: #1c1226;
     color: var(--ink);
-    font: 500 .98rem 'DM Sans', sans-serif;
+    font: 500 .98rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     text-align: center;
     cursor: pointer;
     transition: border-color .2s, background .2s
@@ -1702,7 +1708,7 @@ html[lang="bn"] .qz-q {
 }
 
 .qz-pct {
-    font: 700 3rem 'Cormorant Garamond', serif;
+    font: 700 3rem 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     color: var(--blush);
     font-variant-numeric: tabular-nums
 }
@@ -1741,7 +1747,7 @@ html[lang="bn"] .qz-q {
     overflow: hidden;
     background: #fff;
     color: #1c1e21;
-    font-family: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family: "DM Sans", 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     box-shadow: 0 20px 40px #0009;
     text-align: center;
     transform: scale(.94);
@@ -2084,7 +2090,7 @@ body.dev-modal-open {
 }
 .jed-head h3 { margin: 0; text-align: left }
 .jed-val {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: 1.6rem;
     color: var(--blush, #ffd6e4);
     letter-spacing: .02em
@@ -2128,7 +2134,7 @@ body.dev-modal-open {
 }
 .jed-label {
     margin: 16px 0 6px;
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: 1.15rem;
     color: var(--blush, #ffd6e4)
 }
@@ -2153,7 +2159,7 @@ body.dev-modal-open {
 .mrow:last-child { border-bottom: 0 }
 .mstatus {
     margin-top: 8px;
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: 1rem;
     font-style: italic;
     color: var(--blush, #ffd6e4)
@@ -2176,7 +2182,7 @@ body.dev-modal-open {
 .mega-head { margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid rgba(255, 214, 228, .18) }
 .mega-head h3 {
     margin: 0;
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: 1.7rem;
     letter-spacing: .02em;
     color: var(--blush, #ffd6e4)
@@ -2194,7 +2200,7 @@ body.dev-modal-open {
 
 /* ===== Meter titles: light serif in gold, matching the section headings ===== */
 .mtop > span {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: 1.35rem;
     font-weight: 500;
     letter-spacing: .03em;
@@ -2262,7 +2268,7 @@ body.dev-modal-open {
 
 #outro .words {
     margin: 0 auto;
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: clamp(1.25rem, 4.6vw, 1.9rem);
     line-height: 1.5;
     max-width: 22em;
@@ -2312,7 +2318,7 @@ html[lang="bn"] #outro .words {
 
 .outro-eyebrow {
     margin: 0 0 16px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-size: .72rem;
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -2328,7 +2334,7 @@ html[lang="bn"] .outro-eyebrow {
 
 .outro-tag {
     margin: 26px 0 0;
-    font-family: 'Great Vibes', cursive;
+    font-family: 'Sacramento', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', cursive;
     font-size: clamp(1.35rem, 5vw, 1.8rem);
     line-height: 1.3;
     color: var(--blush, #ffd6e4)
@@ -2338,7 +2344,7 @@ html[lang="bn"] .outro-eyebrow {
     content: '\2726';
     display: block;
     margin-bottom: 10px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-size: .8rem;
     letter-spacing: 6px;
     color: var(--rose, #ee8fb5)
@@ -2541,17 +2547,17 @@ nav a.on {
 /* ===== TIMELINE: one merged line per year, word-by-word reveal kept, sans-serif, smaller, no bullet dot ===== */
 .tl .tl-pts li.tl-line {
     padding-left: 0;
-    font-family: 'Hind Siliguri', 'DM Sans', sans-serif;
+    font-family: 'Hind Siliguri', 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-style: normal;
     font-weight: 400;
-    font-size: .92rem;
+    font-size: 1.08rem;
     line-height: 1.6;
     color: var(--blush)
 }
 .tl .tl-pts li.tl-line::before { content: none; display: none }
 html[lang="bn"] .tl .tl-pts li.tl-line {
-    font-family: 'Hind Siliguri', 'DM Sans', sans-serif;
-    font-size: .9rem;
+    font-family: 'Hind Siliguri', 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
+    font-size: 1.06rem;
     line-height: 1.7
 }
 
@@ -2570,8 +2576,8 @@ html[lang="bn"] .tl .tl-pts li.tl-line {
 .tl .tl-pts .tl-words .w.lit { color: var(--blush) }
 
 /* timeline line size: a little bigger */
-.tl .tl-pts li.tl-line { font-size: 1.02rem }
-html[lang="bn"] .tl .tl-pts li.tl-line { font-size: .99rem }
+.tl .tl-pts li.tl-line { font-size: 1.08rem }
+html[lang="bn"] .tl .tl-pts li.tl-line { font-size: 1.06rem }
 
 html[lang="bn"] .note {
     font-style: normal
@@ -2701,10 +2707,10 @@ nav {
         line-height: 1.5;
     }
     .tl .tl-pts li.tl-line {
-        font-size: .92rem;
+        font-size: 1.08rem;
     }
     html[lang="bn"] .tl .tl-pts li.tl-line {
-        font-size: .9rem;
+        font-size: 1.06rem;
     }
 }
 
@@ -2734,11 +2740,11 @@ nav {
         line-height: 1.5;
     }
     .tl .tl-pts li.tl-line {
-        font-size: .88rem;
+        font-size: 1.02rem;
         line-height: 1.65;
     }
     html[lang="bn"] .tl .tl-pts li.tl-line {
-        font-size: .88rem;
+        font-size: 1.02rem;
     }
 }
 
@@ -2778,11 +2784,11 @@ nav {
     border: 1px solid rgba(238, 143, 181, .22);
     background: linear-gradient(160deg, rgba(42, 27, 58, .94), rgba(17, 11, 25, .97));
     box-shadow: 0 30px 80px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .06);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
 }
 
 #devModal .dev-modal-head h2 {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-size: 1.3rem;
     font-weight: 600;
     letter-spacing: -.01em;
@@ -2794,7 +2800,7 @@ nav {
 }
 
 #devModal .dev-modal-head .eyebrow {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-size: .66rem;
     font-weight: 500;
     letter-spacing: .26em;
@@ -2802,7 +2808,7 @@ nav {
 }
 
 #devModal .dev-purpose {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-size: .92rem;
     line-height: 1.65;
     color: var(--mute);
@@ -2816,7 +2822,7 @@ nav {
 }
 
 #devModal .dev-name {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-size: 1.2rem;
     font-weight: 600;
     letter-spacing: .005em;
@@ -2824,7 +2830,7 @@ nav {
 }
 
 #devModal .dev-edu {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-size: .8rem;
     color: var(--mute);
     letter-spacing: .01em;
@@ -2835,13 +2841,13 @@ nav {
     border-radius: 999px;
     background: rgba(255, 255, 255, .04);
     border: 1px solid rgba(255, 255, 255, .12);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-size: .8rem;
     font-weight: 500;
 }
 
 #devModal .dev-quote {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: 1.12rem;
     line-height: 1.5;
     color: var(--lil);
@@ -2851,7 +2857,7 @@ nav {
 
 html[lang="bn"] #devModal .dev-paper,
 html[lang="bn"] #devModal .dev-paper * {
-    font-family: 'Hind Siliguri', 'DM Sans', sans-serif !important;
+    font-family: 'Hind Siliguri', 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif !important;
     letter-spacing: 0 !important;
 }
 
@@ -2871,7 +2877,7 @@ html[lang="bn"] #devModal .dev-quote {
 }
 
 #devModal .dev-quote {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-style: normal;
     font-size: .92rem;
     font-weight: 400;
@@ -2917,7 +2923,7 @@ html[lang="bn"] #devModal .dev-quote {
 #outro .outro-tag {
     margin: 28px auto 0;
     max-width: 24em;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-size: .98rem;
     font-weight: 300;
     line-height: 1.7;
@@ -2950,7 +2956,7 @@ html[lang="bn"] #outro .outro-eyebrow {
 /* ===== SIGNATURE: the name written in a handwritten, signature style under the closing line ===== */
 #outro .outro-sign {
     margin: 22px 0 0;
-    font-family: 'Great Vibes', 'Hind Siliguri', cursive;
+    font-family: 'Sacramento', 'Hind Siliguri', cursive;
     font-size: clamp(2rem, 7vw, 2.6rem);
     font-weight: 400;
     line-height: 1.2;
@@ -2962,7 +2968,7 @@ html[lang="bn"] #outro .outro-eyebrow {
 #outro .outro-eyebrow,
 html[lang="bn"] #outro .outro-eyebrow {
     margin: 0 0 6px;
-    font-family: 'Great Vibes', 'Hind Siliguri', cursive;
+    font-family: 'Sacramento', 'Hind Siliguri', cursive;
     font-size: clamp(2.2rem, 8vw, 2.9rem);
     font-weight: 400;
     line-height: 1.15;
@@ -2974,7 +2980,7 @@ html[lang="bn"] #outro .outro-eyebrow {
 /* Why She Is Special: subtitle on the front, and a readable back that scrolls if the text is long */
 .why-sub {
     margin-top: 8px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-size: .85rem;
     font-style: normal;
     line-height: 1.5;
@@ -2989,7 +2995,7 @@ html[lang="bn"] #outro .outro-eyebrow {
 
 .why-gallery .bk p {
     margin: auto 0;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-size: .88rem;
     font-style: normal;
     line-height: 1.6;
@@ -3079,4 +3085,422 @@ html[lang="bn"] .why-gallery .bk p {
 /* the site logo (media/logo.png) keeps its proportions inside the size each spot already has */
 .logo-img {
     object-fit: contain
+}
+
+/* ===== A Little Moment of Magic (replaces "Things She Says") ===== */
+.magic-title { margin-bottom: 4px }
+.magic-sub {
+    margin: 0 auto 22px;
+    max-width: 520px;
+    padding: 0 18px;
+    text-align: center;
+    color: rgba(255, 233, 243, .72);
+    font-size: .95rem;
+    line-height: 1.6
+}
+.magic-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 0 16px
+}
+.magic-grid .magic-btn:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc(50% - 6px)
+}
+.magic-btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 10px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(238, 143, 181, .22);
+    background: linear-gradient(160deg, rgba(255, 255, 255, .11), rgba(255, 255, 255, .03));
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(10, 2, 16, .45), inset 0 1px 0 rgba(255, 255, 255, .08);
+    color: #fbe9f3;
+    font: inherit;
+    cursor: pointer;
+    transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease
+}
+.magic-btn:hover,
+.magic-btn:focus-visible {
+    transform: translateY(-4px);
+    border-color: rgba(238, 143, 181, .6);
+    box-shadow: 0 16px 36px rgba(10, 2, 16, .5), 0 0 26px rgba(247, 160, 200, .35);
+    outline: none
+}
+.magic-btn.pop { animation: magicPop .5s ease }
+@keyframes magicPop {
+    0% { transform: scale(1) }
+    40% { transform: scale(.94) }
+    100% { transform: scale(1) }
+}
+.magic-ico {
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: #f9d9e8;
+    background: none
+}
+.magic-ico svg { width: 26px; height: 26px }
+.magic-name {
+    font-size: .92rem;
+    font-weight: 500;
+    line-height: 1.3;
+    text-align: center
+}
+@media (min-width: 760px) {
+    .magic-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 880px }
+    .magic-grid .magic-btn:last-child:nth-child(odd) { grid-column: auto; width: auto }
+}
+
+/* popup */
+.mg-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(12, 4, 18, .55);
+    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(7px);
+    animation: mgFade .4s ease both
+}
+.mg-card {
+    position: relative;
+    width: min(88vw, 360px);
+    max-height: 88vh;
+    overflow: hidden;
+    padding: 46px 18px 20px;
+    border-radius: 26px;
+    border: 1px solid rgba(238, 143, 181, .35);
+    background: linear-gradient(165deg, rgba(74, 28, 86, .95), rgba(26, 8, 34, .97));
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .55), 0 0 40px rgba(238, 143, 181, .16), inset 0 1px 0 rgba(255, 255, 255, .08);
+    color: #fbe9f3;
+    text-align: center;
+    animation: mgCardIn .5s cubic-bezier(.2, .8, .2, 1) both
+}
+.mg-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 3;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, .18);
+    background: rgba(255, 255, 255, .08);
+    color: #fbe9f3;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer
+}
+.mg-close:hover, .mg-close:focus-visible { background: rgba(247, 160, 200, .28); outline: none }
+.mg-timer {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 3;
+    width: 44px;
+    height: 44px
+}
+.mg-timer svg { width: 100%; height: 100%; transform: rotate(-90deg) }
+.mg-ring-bg { fill: none; stroke: rgba(255, 255, 255, .14); stroke-width: 3 }
+.mg-ring { fill: none; stroke: #ee8fb5; stroke-width: 3; stroke-linecap: round; filter: drop-shadow(0 0 4px rgba(238, 143, 181, .6)) }
+.mg-sec {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: .85rem;
+    font-weight: 600;
+    color: #fbe9f3
+}
+.mg-img {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, #7a2f7e, #ee8fb5 60%, #cdb4f0);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .4), 0 0 24px rgba(238, 143, 181, .2)
+}
+.mg-img img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover }
+.mg-ph {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 12px;
+    font-size: .78rem;
+    color: rgba(255, 255, 255, .88);
+    word-break: break-all
+}
+.mg-msg {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    min-height: 3em;
+    padding: 0 4px;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #fbe9f3;
+    opacity: 1;
+    animation: mgMsg 1.1s ease .9s both
+}
+.mg-player { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none }
+.mg-cap {
+    margin: 10px 0 0;
+    text-align: center;
+    font-size: .8rem;
+    font-style: italic;
+    color: rgba(255, 233, 243, .72);
+    line-height: 1.5
+}
+.mg-cap:empty { display: none }
+
+/* particles */
+.mg-particles { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none }
+.mg-p {
+    position: absolute;
+    bottom: -20px;
+    width: var(--s);
+    height: var(--s);
+    opacity: 0;
+    filter: drop-shadow(0 0 6px rgba(238, 143, 181, .8));
+    animation: mgRise var(--d) ease-out forwards
+}
+.mg-p svg { display: block; width: 100%; height: 100%; fill: currentColor }
+.mg-p-heart { color: #f7a0c8 }
+.mg-p-spark { color: #ffd6e4 }
+.mg-burst { bottom: auto; animation: mgBurst var(--d) ease-out forwards }
+
+/* the five animations */
+.fx-fade .mg-img img { animation: mgFadeImg 1.4s ease both }
+.fx-zoom .mg-card { animation: mgCardZoom 1.2s ease both }
+.fx-zoom .mg-img img { animation: mgKen 10s ease-out both }
+.fx-glow .mg-img img { animation: mgLight 2.2s ease-out both }
+.fx-glow .mg-img::after {
+    content: '';
+    position: absolute;
+    inset: -30%;
+    z-index: 2;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(238, 143, 181, .7), transparent 60%);
+    animation: mgGlow 2.2s ease-out forwards
+}
+
+@keyframes mgFade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes mgCardIn { from { opacity: 0; transform: translateY(14px) scale(.96) } to { opacity: 1; transform: none } }
+@keyframes mgCardZoom { from { opacity: 0; transform: scale(1.12) } to { opacity: 1; transform: none } }
+@keyframes mgMsg { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
+@keyframes mgFadeImg { from { opacity: 0; transform: scale(1.04) } to { opacity: 1; transform: none } }
+@keyframes mgKen { from { transform: scale(1.12) } to { transform: scale(1) } }
+@keyframes mgLight { from { filter: brightness(.25) } to { filter: brightness(1) } }
+@keyframes mgGlow { from { opacity: .95; transform: scale(.4) } to { opacity: 0; transform: scale(1.3) } }
+@keyframes mgRise {
+    0% { transform: translate(0, 0) scale(.6); opacity: 0 }
+    15% { opacity: .95 }
+    100% { transform: translate(var(--dx), -460px) scale(1); opacity: 0 }
+}
+@keyframes mgBurst {
+    0% { transform: scale(0); opacity: 0 }
+    30% { opacity: 1 }
+    100% { transform: scale(1.2) translateY(-10px); opacity: 0 }
+}
+@media (prefers-reduced-motion: reduce) {
+    .mg-p { display: none }
+    .mg-overlay, .mg-card, .mg-msg, .mg-img img { animation-duration: .01s !important; animation-delay: 0s !important }
+}
+
+/* phone: the English magic title stays on one line */
+@media (max-width: 640px) {
+    html:not([lang="bn"]) .magic-title { white-space: nowrap; font-size: 7.4vw }
+}
+
+.magic-emo { font-size: 1.9rem; line-height: 1 }
+
+
+/* ===== FONT FIX: Bengali text that vanished after the fonts were added =====
+   Cormorant Garamond, Sacramento, DM Sans and Playfair Display have no Bengali letters, so Bengali text set in them
+   had nothing to draw with. Every stack now ends in a Bengali font (above), and the places below are made safe:
+   visible colour, no clipped matras/ukars, room for the taller Bengali line. */
+:root { --bn-font: 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif; }
+
+/* hero line: a little taller box and no clipping, so the Bengali shapes sit fully inside it */
+html[lang="bn"] .cap1 {
+    line-height: 1.7;
+    padding-top: .15em;
+    padding-bottom: .25em;
+    overflow: visible;
+    font-weight: 500;
+}
+
+/* header name and navigation */
+html[lang="bn"] .brand,
+html[lang="bn"] #nav a { line-height: 1.5; overflow: visible; }
+
+/* Tania's speech bubble ("হ্যালো, আমি তাসনিয়া আক্তার তানিয়া।"): always the Bengali font, dark text on the light bubble */
+#tania-bubble,
+html[lang="bn"] #tania-bubble {
+    font-family: 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif !important;
+    color: #51254e !important;
+    -webkit-text-fill-color: #51254e;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    white-space: normal;
+    overflow: visible;
+    min-width: 12ch;
+}
+html[lang="bn"] #tania-bubble { line-height: 1.75; padding: .7rem 1rem .75rem; font-weight: 500; }
+
+/* headings, card titles and captions that are clipped by overflow:hidden when the Bengali line is taller */
+html[lang="bn"] h1, html[lang="bn"] h2, html[lang="bn"] h3,
+html[lang="bn"] .fr b, html[lang="bn"] .tl b, html[lang="bn"] .eyebrow, html[lang="bn"] .sub {
+    overflow: visible;
+    padding-top: .08em;
+    padding-bottom: .12em;
+}
+
+/* gradient-clipped headings: keep a solid fallback colour so the letters never turn invisible */
+html[lang="bn"] [class*="title"],
+html[lang="bn"] [class*="name"] { -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+
+
+/* ===== Hero: name as the big website title, under the caption ===== */
+.cap-name {
+    display: block;
+    margin: 0 0 .25em;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 8.5vw, 4.4rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: .01em;
+    color: var(--ink);
+    text-wrap: balance;
+}
+.cap-tania {
+    font-family: 'Sacramento', cursive;
+    font-weight: 400;
+    font-size: 1.35em;
+    line-height: 1;
+    color: var(--rose);
+    margin-left: .08em;
+}
+html[lang="bn"] .cap-name { line-height: 1.3; }
+
+
+/* ===== Closing card: smaller text ===== */
+#outro .words {
+    font-size: clamp(.95rem, 3.2vw, 1.12rem) !important;
+    line-height: 1.6 !important;
+    max-width: 30em !important;
+}
+html[lang="bn"] #outro .words {
+    font-size: clamp(.95rem, 3.2vw, 1.08rem) !important;
+    line-height: 1.8 !important;
+}
+#outro .outro-tag {
+    font-size: .88rem !important;
+}
+html[lang="bn"] #outro .outro-tag {
+    font-size: .95rem !important;
+}
+
+/* ===== Bangla hero name: Bangla letters in the Bangla font ===== */
+html[lang="bn"] .cap-tania {
+    font-family: 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
+    font-size: .9em;
+    font-weight: 600;
+    line-height: 1.3;
+}
+html[lang="bn"] .cap-name { font-family: 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif; font-weight: 600; }
+
+
+/* ===== Closing card, round 2 ===== */
+/* top quote: a little larger again */
+#outro .words {
+    font-size: clamp(1.05rem, 3.6vw, 1.25rem) !important;
+    line-height: 1.6 !important;
+}
+html[lang="bn"] #outro .words {
+    font-size: clamp(1.05rem, 3.6vw, 1.2rem) !important;
+}
+/* bottom line (flowers keep blooming): back to its own size, it was fine */
+#outro .outro-tag {
+    font-size: .98rem !important;
+}
+html[lang="bn"] #outro .outro-tag {
+    font-size: 1rem !important;
+}
+/* the bottom line now sits below the box, not inside it: no inner divider needed, keep it centred */
+#outro .outro-tag {
+    margin: 22px auto 0 !important;
+    text-align: center;
+}
+
+/* Bangla hero name: "তাসনিয়া আক্তার" smaller, "তানিয়া" bigger */
+html[lang="bn"] .cap-first {
+    font-size: .62em;
+    font-weight: 600;
+}
+html[lang="bn"] .cap-tania {
+    font-size: 1.35em;
+    font-weight: 700;
+}
+
+
+/* ===== Closing card, round 3: everything inside the box, smaller top text ===== */
+#outro .words {
+    font-size: clamp(.9rem, 3vw, 1.05rem) !important;
+    line-height: 1.6 !important;
+}
+html[lang="bn"] #outro .words {
+    font-size: clamp(.9rem, 3vw, 1.02rem) !important;
+}
+#outro .outro-tag {
+    margin: 22px auto 0 !important;
+    font-size: .98rem !important;
+    text-align: center;
+}
+html[lang="bn"] #outro .outro-tag {
+    font-size: 1rem !important;
+}
+
+
+/* ===== Spacing: "A Measure of Tania" sits lower, away from the magic grid ===== */
+#says #magicGrid + h2 {
+    margin-top: 120px !important;
+}
+#says #magicGrid + h2 + .div + .measure-sub {
+    margin-top: 6px;
+}
+@media (max-width: 700px) {
+    #says #magicGrid + h2 { margin-top: 90px !important; }
+}
+
+
+/* ===== Opening name (after the flower blooms): "তানিয়া" a little bigger than "তাসনিয়া আক্তার", both smaller overall ===== */
+html[lang="bn"] .cap-name {
+    font-size: clamp(1.8rem, 7vw, 3.3rem);
+    line-height: 1.35;
+}
+html[lang="bn"] .cap-first {
+    font-size: .92em;
+    font-weight: 600;
+}
+html[lang="bn"] .cap-tania {
+    font-size: 1.12em;
+    font-weight: 700;
 }

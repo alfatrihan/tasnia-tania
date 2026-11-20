@@ -160,7 +160,7 @@ function draw(t) {
         const cs = R * .5 * seg(p, .45, .72); core.style.cssText = 'left:' + fx + 'px;top:' + fy + 'px;width:' + cs + 'px;height:' + cs + 'px;opacity:' + fade
     }
     c1.style.opacity = seg(p, .02, .12) * (1 - seg(p, .36, .46)); c1.style.transform = 'translateY(' + (1 - seg(p, .02, .12)) * 24 + 'px)';
-    const o2 = seg(p, .62, .8); c2.style.opacity = o2; c2.style.transform = 'translateY(' + (1 - o2) * 30 + 'px)'; cue.style.opacity = 1 - seg(p, 0, .04);
+    const o2 = seg(p, .5, .68); c2.style.opacity = o2; c2.style.transform = 'translateY(' + (1 - o2) * 30 + 'px)'; cue.style.opacity = 1 - seg(p, 0, .04);
     // ONE butterfly for the whole page. It crosses the screen (left->right, then right->left on the next pass)
     // and drifts down as it goes; it fades in, flies across, fades out, and comes back on a later scroll.
     {
@@ -215,11 +215,6 @@ const tabIO = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersec
 tabIO.observe(hero);
 $('main section').forEach(s => tabIO.observe(s));
 $('.flip').forEach(f => f.onclick = () => f.classList.toggle('on'));
-const Q = ['"I am not angry. I am just right, loudly."', '"Add something she always says."', '"Tears are just drops of something I feel deeply."', '"Add another of her sayings here."', '"Add her funniest line here."'];
-Q.forEach((q, i) => {
-    const b = document.createElement('button'); b.style.transform = 'rotate(' + (i - 2) * 14 + 'deg)'; b.dataset.r = (i - 2) * 14; b.innerHTML = '<svg viewBox="0 0 40 70"><use href="#pt"/></svg>';
-    b.onclick = () => { b.classList.add('used'); G('qbox').innerHTML = '<span>' + q + '</span>'; for (let k = 0; k < 8; k++) { const r = b.getBoundingClientRect(); spawn(r.left + 20, r.top + 30, 1, 0) } }; G('pet').appendChild(b)
-});
 const rng = G('rng'), ml = G('mlabel'), L = ['Calm as a lake', 'Slightly stubborn', 'Fully committed to being right', 'Immovable, like a mountain'];
 const jedVal = document.getElementById('jedval');
 const meter = () => { const v = +rng.value; jedVal.textContent = v + '%'; rng.style.setProperty('--p', v + '%'); }; meter();

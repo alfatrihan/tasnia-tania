@@ -93,7 +93,7 @@
 
 /* names: light for districts; bold and larger for Bogura and the two places in it */
 #map-svg text {
-    font-family: 'Hind Siliguri', 'Cormorant Garamond', sans-serif;
+    font-family: 'Hind Siliguri', 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     stroke: #0e0a14;             /* the dark outline the map had at the start */
     stroke-opacity: 1;
     paint-order: stroke;         /* the outline sits behind the letters, so only its edge shows */
@@ -119,7 +119,7 @@
 }
 
 #map-svg .nm.poi.lang-en {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
 }
 
 #map-svg .ds {

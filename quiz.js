@@ -90,14 +90,14 @@
               start: 'Start', submit: 'Submit', replay: 'Play again', right: 'correct answers',
               hi: 'Wow! You actually know me pretty well! I\'m impressed by how much you know about me. But hey, there are still one or two secrets left!',
               mid: 'Well, well! Looks like you know a thing or two about me! But there\'s still a lot left to discover. A little more investigation wouldn\'t hurt!',
-              lowmid: 'Well, well! Looks like you know a thing or two about me! But there\'s still a lot left to discover. A little more investigation wouldn\'t hurt!',
+              lowmid: 'Not bad at all! You know some things about me, but there is still a lot left to find out. Keep digging, you are on the way!',
               low: 'Oops! Looks like the mission of getting to know me hasn\'t even properly started! No worries, you can\'t know someone in a day. Give it another try!',
               full: 'What?! You got everything right! Have you secretly been doing research on me? Honestly, it feels really nice to know that you\'ve paid so much attention!' },
         bn: { title: 'তাকে তুমি কতটা চেনো?', intro: 'এলোমেলো ১০টি প্রশ্নের উত্তর দাও, দেখো তানিয়াকে তুমি কতটা চেনো।',
               start: 'শুরু করো', submit: 'সাবমিট', replay: 'আবার খেলো', right: 'সঠিক উত্তর',
               hi: 'ওয়াও! তুমি তো আমাকে বেশ ভালোই চেনো! আমার সম্পর্কে এত কিছু জানো দেখে একটু অবাকই হলাম। তবে একটা-দুটো তথ্য এখনো তোমার অজানা!',
               mid: 'বাহ! দেখছি আমার সম্পর্কে কিছু কিছু খবর রাখো! তবে এখনো অনেক কিছু অজানা রয়ে গেছে। আরেকটু খোঁজখবর নাও, মন্দ হবে না!',
-              lowmid: 'বাহ! দেখছি আমার সম্পর্কে কিছু কিছু খবর রাখো! তবে এখনো অনেক কিছু অজানা রয়ে গেছে। আরেকটু খোঁজখবর নাও, মন্দ হবে না!',
+              lowmid: 'মন্দ না! আমার কিছু কিছু কথা তুমি জানো, তবে এখনো অনেক কিছু খুঁজে বের করার বাকি। চালিয়ে যাও, পথে আছো!',
               low: 'আরে! আমাকে চেনার মিশনটা মনে হচ্ছে এখনো শুরুই হয়নি! সমস্যা নেই, পরিচয় তো আর একদিনে হয় না। আরেকবার চেষ্টা করো!',
               full: 'এ কী! সবগুলোই ঠিক! তুমি কি আমার ওপর গোপনে গবেষণা করেছো নাকি? সত্যি বলতে, এত মনোযোগ দিয়ে আমাকে চেনার জন্য অনেক ভালো লাগলো!' }
     };
@@ -137,6 +137,32 @@
         low:  { expr: 'gentle',  src: 'media/quiz/quiz-low-gentle.png' }
     };
 
+    // If a result PNG is missing or fails to load, a drawn character of the same tier takes its place,
+    // so every result always shows a character with its own expression.
+    const MOUTH = { full: 'M78 148 Q100 176 122 148', hi: 'M84 150 Q100 168 116 150', mid: 'M88 152 Q100 160 112 152', lowmid: 'M88 155 L112 155', low: 'M86 160 Q100 150 114 160' };
+    const DRESS = { full: '#ff9fbb', hi: '#f2a0c0', mid: '#d9a0d0', lowmid: '#b7a2d8', low: '#9fb3c8' };
+    function fallbackSvg(tier) {
+        const sparkles = tier === 'full'
+            ? '<circle cx="32" cy="70" r="4" fill="#ffe7a0"/><circle cx="170" cy="56" r="5" fill="#ffe7a0"/><circle cx="168" cy="110" r="3" fill="#ffe7a0"/>'
+            : '';
+        return '<svg class="qz-char" viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+            '<path d="M38 250 Q44 166 100 150 Q156 166 162 250 Z" fill="' + DRESS[tier] + '"/>' +
+            '<rect x="88" y="126" width="24" height="28" fill="#f5d2bf"/>' +
+            '<circle cx="100" cy="100" r="40" fill="#f5d2bf"/>' +
+            '<path d="M58 100 Q54 50 100 48 Q146 50 142 100 Q136 68 100 66 Q64 68 58 100 Z" fill="#2a1d2e"/>' +
+            '<circle cx="86" cy="104" r="4" fill="#2a1d2e"/><circle cx="114" cy="104" r="4" fill="#2a1d2e"/>' +
+            '<path d="' + MOUTH[tier] + '" stroke="#7a3550" stroke-width="3" fill="none" stroke-linecap="round"/>' +
+            sparkles + '</svg>';
+    }
+    let endTier = 'low';
+    function bindChar(tier) {
+        const img = box.querySelector('.qz-char');
+        if (!img) return;
+        const swap = () => img.outerHTML = fallbackSvg(tier);
+        if (img.complete && img.naturalWidth === 0) swap();
+        else img.addEventListener('error', swap, { once: true });
+    }
+
     // enter = true when a new question card should flip in
     function render(enter) {
         const L = T[lang()], n = qs.length;
@@ -164,12 +190,13 @@
             const msg = L[tier];
             // character for this result tier (see CHARACTER below)
             const ch = CHARACTER[tier];
+            endTier = tier;
             card = '<div class="qz-end">' +
                 '<div class="qz-stage">' +
                     '<div class="qz-bubble-wrap"><div class="qz-bubble">' + msg + '</div></div>' +
                     '<div class="qz-tania qz-' + tier + '">' +
                         '<img class="qz-lotus logo-img" src="media/logo.png" alt="" onerror="this.remove()">' +
-                        '<img class="qz-char" src="' + ch.src + '" alt="" onerror="this.remove()">' +
+                        '<img class="qz-char" src="' + ch.src + '" alt="">' +
                     '</div>' +
                 '</div>' +
                 '<div class="qz-side">' +
@@ -182,7 +209,7 @@
         box.innerHTML = '<h2 class="qz-title">' + L.title + '</h2>' +
             '<div class="qz-stack' + (hasNext ? ' more' : '') + '">' +
             '<div class="qz-card' + (enter ? ' enter' : '') + '">' + card + '</div></div>';
-        if (view === 'end') countPct(Math.round(score / n * 100));
+        if (view === 'end') { countPct(Math.round(score / n * 100)); bindChar(endTier); }
     }
 
     box.addEventListener('click', e => {
