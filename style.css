@@ -1729,7 +1729,7 @@ html[lang="bn"] .qz-q {
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
     gap: 16px;
-    padding: 24px calc(50% - min(38vw, 180px)) 0
+    padding: 24px calc(50% - min(38vw, 180px)) 46px   /* room under each card for the stacked pages */
 }
 .soc-track::-webkit-scrollbar { display: none }
 .soc-card {
@@ -3610,4 +3610,57 @@ html[lang="bn"] #outro .outro-tag {
         font-size: clamp(1.3rem, 5.8vw, 1.6rem);
         line-height: 2;
     }
+}
+
+/* ===== Social Platforms: the photo-card look (Her Vibe) =====
+   The card itself is a transparent frame. Two dark pages sit BEHIND it (same colours and offsets as the photo
+   cards), and the white profile sits on top as the main card. The active card floats gently up and down. */
+.soc-card {
+    position: relative;
+    z-index: 0;
+    background: none;
+    box-shadow: none;
+    overflow: visible;
+    border-radius: 14px;
+    transform: scale(.94);
+    transition: transform .9s cubic-bezier(.3, .8, .3, 1)
+}
+.soc-card.active { transform: scale(1); opacity: 1 }
+.soc-card:not(.active):active { transform: scale(.97) }
+.soc-card::before,
+.soc-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    pointer-events: none
+}
+.soc-card::before {
+    background: #1a1224;
+    transform: translate(10px, 10px) rotate(3deg)
+}
+.soc-card::after {
+    background: #140e1c;
+    transform: translate(-8px, 14px) rotate(-2.5deg)
+}
+.soc-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 20px 40px #0009;
+    transition: box-shadow .9s cubic-bezier(.3, .8, .3, 1)
+}
+.soc-card.active .soc-face {
+    box-shadow: 0 28px 50px #000b;
+    animation: socFloat 3.6s ease-in-out infinite
+}
+@keyframes socFloat {
+    0%, 100% { transform: translateY(0) }
+    50% { transform: translateY(-7px) }
 }
