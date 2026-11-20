@@ -333,7 +333,7 @@
     const MOBILE = innerWidth < 760;
     const distG = mk('g', {}, 'far-city');   // the distant district silhouettes: hidden once the zoom is inside Bogura
     cityG.appendChild(distG);
-    DISTRICTS.forEach(([, , lon, lat]) => buildCity(lon, lat, 0.035, MOBILE ? 24 : 36, 0, false, 0, distG));
+    DISTRICTS.forEach(([, , lon, lat]) => buildCity(lon, lat, 0.035, MOBILE ? 12 : 36, 0, false, 0, distG));
     buildCity(boguraLabel.lon, boguraLabel.lat, 0.07, MOBILE ? 100 : 150, 0, true, MOBILE ? 40 : 60);   // Bogura: denser, the city centre
     buildCity(89.3566, 24.8464, 0.012, MOBILE ? 36 : 52, 0, true, MOBILE ? 26 : 40);   // the college campus: a fuller cluster of its own
 
@@ -394,11 +394,6 @@
         op: t => clamp((t - 1.8) / 0.4) * (1 - clamp((t - 3.3) / 0.4)),
         px: t => lerp(6, 40, clamp((t - 1.8) / 1.5)),
         dpx: t => lerp(4, 12, clamp((t - 1.8) / 1.5)) });
-    addLabel({ en: 'Economics Department', bn: 'অর্থনীতি বিভাগ',
-        lon: 89.36, lat: 24.845, pos: 'b', cls: 'poi', withDot: false,
-        op: t => clamp((t - 3.0) / 0.4) * (1 - clamp((t - 3.9) / 0.35)),
-        px: t => lerp(6, 34, clamp((t - 3.0) / 1.0)),
-        dpx: t => lerp(4, 14, clamp((t - 3.0) / 1.0)) });
 
     // ---------- pins ----------
     const pinEls = PINS.map(pin => {
@@ -450,7 +445,7 @@
         if (r.width) {
             ratio = r.height / r.width; pxW = r.width;
             // the 3D canvas: backing store follows the screen's real pixel density (capped at 2.5x), so buildings stay sharp
-            baseDpr = Math.min(window.devicePixelRatio || 1, 2.5);   // full screen sharpness on phones and desktops (was capped at 0.85-1.25, which made the 3D city look blurry)
+            baseDpr = Math.min(window.devicePixelRatio || 1, MOBILE ? 2 : 2.5);   // full screen sharpness on phones and desktops (was capped at 0.85-1.25, which made the 3D city look blurry)
             cW = r.width; cH = r.height;
             applyCanvasSize();
             lastCamKey = ''; svgDirty = true;
@@ -567,10 +562,6 @@
         });
         b += '<path d="M140 152L260 152L200 116Z" fill="#f6ebf2" stroke="#ee8fb5" stroke-width="2" stroke-linejoin="round"/>';   // gable: its base sits exactly on the cornice
         b += '<rect x="130" y="160" width="140" height="8" fill="#ee8fb5"/><rect x="140" y="152" width="120" height="8" fill="#cdb4f0"/>';
-        b += '<rect x="170" y="128" width="60" height="14" rx="2" fill="#3a2450" stroke="#ee8fb5" stroke-width="1"/>';
-        b += bn
-            ? '<text x="200" y="138.5" text-anchor="middle" font-size="9" font-family="Hind Siliguri, Noto Serif Bengali, Noto Sans Bengali, Nirmala UI, Vrinda, sans-serif" font-weight="700" fill="#ffd6e4">অর্থনীতি</text>'
-            : '<text x="200" y="138" text-anchor="middle" font-size="8" font-family="Georgia, serif" font-weight="700" fill="#ffd6e4">Economics</text>';
         [148, 172, 228, 252].forEach(xc => {
             b += `<rect x="${xc - 6}" y="168" width="12" height="4" fill="#f6ebf2"/><rect x="${xc - 4}" y="172" width="8" height="118" fill="url(#c)"/><rect x="${xc - 6}" y="290" width="12" height="4" fill="#efe3fa"/>`;
         });
@@ -1006,19 +997,6 @@
         }
         if (!heroDone) heroGroup();
 
-        // --- one label that floats above the department while it is still small on screen ---
-        const la = clamp((D - 16) / 30) * clamp(1 - (D - 1500) / 600);
-        if (la > 0.02 && pj(0, HHT + 5, 0) >= NEAR) {
-            const bn = document.documentElement.lang === 'bn';
-            const txt = bn ? 'অর্থনীতি বিভাগ' : 'Economics Department';
-            ctx.globalAlpha = la;
-            ctx.font = '600 15px "Hind Siliguri","Noto Serif Bengali","Noto Sans Bengali","Nirmala UI","Cormorant Garamond",Georgia,sans-serif';
-            ctx.textAlign = 'center'; ctx.lineJoin = 'round'; ctx.lineWidth = 4;
-            ctx.strokeStyle = '#0e0a14'; ctx.strokeText(txt, sx, sy - 8);
-            ctx.fillStyle = '#ffd6e4'; ctx.fillText(txt, sx, sy - 8);
-            ctx.fillStyle = '#ee8fb5'; ctx.beginPath(); ctx.arc(sx, sy, 3.2, 0, 6.2832); ctx.fill();
-            ctx.globalAlpha = 1;
-        }
     }
 
     // ---------- frame loop ----------
