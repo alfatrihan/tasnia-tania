@@ -673,10 +673,11 @@
         if (state === 'ready') return;       // the game starts from the PLAY button
         if (state === 'intro') { reset(); return; }   // first tap starts the run
         if (state === 'running') { jump(); return; }
-        if (state === 'over' && performance.now() - overAt > 500) { reset(); jump(); }
+        if (state === 'over' && performance.now() - overAt > 500 && (inView || isFull())) { reset(); jump(); }
     }
     function gameOver() {
         state = 'over'; overAt = performance.now();
+        if (gameMusic) { gameMusic.pause(); gameMusic.currentTime = 0; }   // the run's music stops on the game over screen
         const best = Math.floor(score);
         finalScore = best; finalCoins = coins;
         isNewBest = best > hi && best > 0;
@@ -958,6 +959,7 @@
     }
     function startGameMusic() {
         if (state !== 'intro' && state !== 'running' && state !== 'over') return;   // the game was closed meanwhile
+        if (!inView && !isFull()) return;                                            // game not on screen: no music
         if (!gameMusic) {
             gameMusic = new Audio(GAME_MUSIC);
             gameMusic.loop = true;
@@ -1046,7 +1048,10 @@
     document.addEventListener('keyup', e => {
         if (e.code === 'Space' || e.code === 'ArrowUp') release();
     });
-    new IntersectionObserver(es => es.forEach(en => { inView = en.isIntersecting; }), { threshold: 0.5 }).observe(wrap);
+    new IntersectionObserver(es => es.forEach(en => {
+        inView = en.isIntersecting;
+        if (!en.isIntersecting && (greetAudio || (gameMusic && !gameMusic.paused))) leaveGameAudio();   // scrolled away: game music stops
+    }), { threshold: 0.5 }).observe(wrap);
     new MutationObserver(updateTexts).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
     window.addEventListener('resize', layout);
     window.addEventListener('orientationchange', () => setTimeout(layout, 250));
