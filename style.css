@@ -704,23 +704,20 @@ footer {
 
 /* ---------- Footer: pinned panel, words light up on scroll, then the Developer button ---------- */
 .footer-track {
-    position: relative;
-    height: 135vh;   /* was 230vh: the words and the button now arrive after much less scrolling */
+    position: relative;   /* normal page flow: the footer scrolls with the rest of the site, no pinned screen */
     --fp: 0;
 }
 
 .footer-stick {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    height: 100dvh;
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
     padding: 60px 26px;
-    overflow: hidden;
+    min-height: 100vh;      /* the footer fills the whole screen, like a full page */
+    min-height: 100dvh;
 }
 
 .footer-stick > * { position: relative; }
@@ -763,8 +760,7 @@ html[lang="bn"] .fw {
     display: flex;
     justify-content: center;
     margin-top: 44px;
-    opacity: 0;
-    will-change: opacity, transform;
+    opacity: 1;
 }
 
 /* Developer button: the original pill; only a ring keeps rippling outward around it */
@@ -1977,7 +1973,7 @@ body.dev-modal-open {
 
     #devModal .dev-paper {
         max-height: calc(100svh - 24px);
-        padding: 22px 17px 18px;
+        padding: 16px 14px 14px;
     }
 
     #devModal .dev-modal-head h2 {
@@ -2779,7 +2775,7 @@ nav {
 
 /* ===== DEVELOPER INFO CARD: modern typography and a cleaner surface (the paper is now a clean glass card) ===== */
 #devModal .dev-paper {
-    padding: 30px 26px 24px;
+    padding: 16px 16px 14px;
     border-radius: 24px;
     border: 1px solid rgba(238, 143, 181, .22);
     background: linear-gradient(160deg, rgba(42, 27, 58, .94), rgba(17, 11, 25, .97));
@@ -2813,6 +2809,8 @@ nav {
     line-height: 1.65;
     color: var(--mute);
     margin-bottom: 18px;
+    /* fixed space for four lines, the same in both languages, so the card size does not change with the language */
+    height: 4.6rem;
 }
 
 #devModal .dev-profile-box {
@@ -2835,6 +2833,11 @@ nav {
     color: var(--mute);
     letter-spacing: .01em;
     line-height: 1.5;
+    /* fixed space for three lines, so a longer or shorter line in one language does not resize the card */
+    height: 3.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #devModal .dev-social-btn {
@@ -2867,9 +2870,15 @@ html[lang="bn"] #devModal .dev-quote {
     font-size: 1rem;
 }
 
-/* ===== DEVELOPER INFO CARD: no logo icons, and a plain, easy-to-read quote (no fancy script or italic) ===== */
+/* ===== DEVELOPER INFO CARD: social icons in the site's theme colour, and a plain, smaller quote (no fancy script or italic) ===== */
 #devModal .dev-social-btn svg {
-    display: none;
+    display: inline-block;
+    color: var(--rose);
+    transition: color 0.25s ease;
+}
+
+#devModal .dev-social-btn:hover svg {
+    color: var(--blush);
 }
 
 #devModal .dev-social-btn {
@@ -2879,18 +2888,26 @@ html[lang="bn"] #devModal .dev-quote {
 #devModal .dev-quote {
     font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     font-style: normal;
-    font-size: .92rem;
+    font-size: .72rem;
     font-weight: 400;
     line-height: 1.6;
     letter-spacing: .01em;
     color: var(--mute);
-    max-width: 34ch;
+    /* a fixed box, the same in both languages, so the card keeps one size when the language changes.
+       The text sits in the middle of it. */
+    width: 100%;
+    max-width: 36ch;
+    height: 5.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 0 auto;
 }
 
 html[lang="bn"] #devModal .dev-quote {
     font-family: 'Hind Siliguri', sans-serif !important;
-    font-size: .95rem;
+    font-size: .8rem;
+    line-height: 1.7;
 }
 
 /* ===== CLOSING LINE: minimal redesign. The pink script line becomes a clean, light sans-serif line ===== */
@@ -3236,17 +3253,8 @@ html[lang="bn"] .why-gallery .bk p {
     background: linear-gradient(135deg, #7a2f7e, #ee8fb5 60%, #cdb4f0);
     box-shadow: 0 10px 30px rgba(0, 0, 0, .4), 0 0 24px rgba(238, 143, 181, .2)
 }
-.mg-img img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover }
-.mg-ph {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    padding: 12px;
-    font-size: .78rem;
-    color: rgba(255, 255, 255, .88);
-    word-break: break-all
-}
+.mg-img img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; opacity: 0 }
+.mg-img img.is-ready { opacity: 1 }
 .mg-msg {
     position: relative;
     z-index: 2;
@@ -3287,10 +3295,10 @@ html[lang="bn"] .why-gallery .bk p {
 .mg-burst { bottom: auto; animation: mgBurst var(--d) ease-out forwards }
 
 /* the five animations */
-.fx-fade .mg-img img { animation: mgFadeImg 1.4s ease both }
+.fx-fade .mg-img img.is-ready { animation: mgFadeImg 1.4s ease both }
 .fx-zoom .mg-card { animation: mgCardZoom 1.2s ease both }
-.fx-zoom .mg-img img { animation: mgKen 10s ease-out both }
-.fx-glow .mg-img img { animation: mgLight 2.2s ease-out both }
+.fx-zoom .mg-img img.is-ready { animation: mgKen 10s ease-out both }
+.fx-glow .mg-img img.is-ready { animation: mgLight 2.2s ease-out both }
 .fx-glow .mg-img::after {
     content: '';
     position: absolute;
@@ -3463,11 +3471,11 @@ html[lang="bn"] .cap-tania {
 
 /* ===== Closing card, round 3: everything inside the box, smaller top text ===== */
 #outro .words {
-    font-size: clamp(.9rem, 3vw, 1.05rem) !important;
+    font-size: clamp(1.08rem, 3.8vw, 1.3rem) !important;
     line-height: 1.6 !important;
 }
 html[lang="bn"] #outro .words {
-    font-size: clamp(.9rem, 3vw, 1.02rem) !important;
+    font-size: clamp(1.08rem, 3.8vw, 1.22rem) !important;
 }
 #outro .outro-tag {
     margin: 22px auto 0 !important;
@@ -3504,3 +3512,83 @@ html[lang="bn"] .cap-tania {
     font-size: 1.12em;
     font-weight: 700;
 }
+
+/* ===== Phone fixes (round 4) ===== */
+
+/* Bangla game hint under the game card: one single line on phones (no letter-spacing, no wrap) */
+@media (max-width: 760px) {
+    html[lang="bn"] #runner-hint {
+        white-space: nowrap;
+        letter-spacing: 0;
+        text-transform: none;
+        font-size: 3.4vw;
+    }
+}
+
+/* English closing card: white text, both lines in the same font, the top line a little bigger */
+html:not([lang="bn"]) #outro .words .w.lit {
+    color: var(--blush, #ffd6e4) !important;   /* same pink as the Bangla version */
+}
+html:not([lang="bn"]) #outro .words {
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif !important;
+    font-size: clamp(1.25rem, 4.6vw, 1.6rem) !important;
+}
+html:not([lang="bn"]) #outro .outro-tag {
+    color: var(--blush, #ffd6e4) !important;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif !important;
+}
+
+/* ===== Puzzle title ("Straighten Tania"): one single line on phones ===== */
+@media (max-width: 760px) {
+    #puzzle-title {
+        white-space: nowrap;
+        font-size: 8.6vw;
+        letter-spacing: 0;
+    }
+}
+
+/* ===== Closing paragraph (above the footer): white text, a new font in each language ===== */
+html #outro .words .w.lit {
+    color: #ffffff !important;   /* words that have lit up are white; the unlit words keep their dim colour, so the light-up shows */
+}
+html:not([lang="bn"]) #outro .words {
+    font-family: 'DM Sans', 'Hind Siliguri', sans-serif !important;
+    font-size: clamp(.95rem, 3.4vw, 1.12rem) !important;
+    line-height: 1.6 !important;
+}
+html[lang="bn"] #outro .words {
+    font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif !important;
+    font-size: clamp(.95rem, 3.4vw, 1.1rem) !important;
+    line-height: 1.8 !important;
+}
+
+/* the last line of the closing card uses the same font as the paragraph above it */
+html:not([lang="bn"]) #outro .outro-tag {
+    font-family: 'DM Sans', 'Hind Siliguri', sans-serif !important;
+}
+html[lang="bn"] #outro .outro-tag {
+    font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif !important;
+}
+
+/* final: the paragraph and the last line share one font (and one style) in each language */
+html:not([lang="bn"]) #outro .words,
+html:not([lang="bn"]) #outro .outro-tag {
+    font-family: 'DM Sans', 'Hind Siliguri', sans-serif !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+}
+html[lang="bn"] #outro .words,
+html[lang="bn"] #outro .outro-tag {
+    font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+}
+
+/* the last line ("someone whose presence...") is a little smaller, in both languages */
+html:not([lang="bn"]) #outro .outro-tag {
+    font-size: .8rem !important;
+}
+html[lang="bn"] #outro .outro-tag {
+    font-size: .88rem !important;
+}
+

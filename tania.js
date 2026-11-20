@@ -52,8 +52,8 @@
 
         // the speech bubble always shows this Bengali line
         // the bubble shows these two lines one after the other (line 1, a short pause, then line 2)
-        speechBn: ['হ্যালো, আমি তাসনিয়া আক্তার<br><span class="tb-name">তানিয়া।</span>', '<span class="tb-soft">আমার পৃথিবীতে</span><span class="tb-welcome">আপনাকে স্বাগতম।</span>'],
-        speechEn: ['Hello, I am Tasnia Akhter<br><span class="tb-name">Tania.</span>', '<span class="tb-soft">Welcome to</span><span class="tb-welcome">my world.</span>'],
+        speechBn: ['হ্যালো, আমি তাসনিয়া আক্তার<br><span class="tb-name">তানিয়া</span>', '<span class="tb-soft">আমার পৃথিবীতে</span><span class="tb-welcome">আপনাকে স্বাগতম।</span>'],
+        speechEn: ['Hello, I am Tasnia Akter<br><span class="tb-name">Tania</span>', '<span class="tb-soft">Welcome to</span><span class="tb-welcome">my world.</span>'],
 
         restFrame: 0,        // neutral pose, before the scrub
         talkOpenFrame: 10,   // "mouth open" pose while she talks
@@ -361,7 +361,7 @@
         if (a <= 0.01) return;
         const sc = .2 + .8 * Math.abs(Math.sin(flap));
         ctx.save(); ctx.globalAlpha = a; ctx.translate(x, y); ctx.rotate(heading + Math.PI / 2);
-        
+
         const g = ctx.createLinearGradient(0, 0, s * 1.4, 0);
         g.addColorStop(0, FLY_PAL[0]); g.addColorStop(.55, FLY_PAL[1]); g.addColorStop(1, FLY_PAL[2]);
         for (const side of [1, -1]) {
@@ -375,7 +375,7 @@
             ctx.beginPath(); ctx.arc(s * .5, s * .78, s * .14, 0, Math.PI * 2); ctx.fillStyle = '#3f2f56'; ctx.fill();
             ctx.beginPath(); ctx.arc(s * .5, s * .78, s * .07, 0, Math.PI * 2); ctx.fillStyle = '#ffd6e4'; ctx.fill();
             ctx.restore();
-            
+
         }
         ctx.shadowBlur = 0; ctx.globalAlpha = a;
         ctx.beginPath(); ctx.ellipse(0, 0, s * .13, s * .72, 0, 0, Math.PI * 2); ctx.fillStyle = '#3f2f56'; ctx.fill();

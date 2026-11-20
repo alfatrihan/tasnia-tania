@@ -93,13 +93,20 @@ const MAGIC_SURPRISES = [
           '<circle class="mg-ring" cx="26" cy="26" r="' + RING_R + '" stroke-dasharray="' + RING_C.toFixed(2) + '" stroke-dashoffset="0"/></svg>' +
           '<span class="mg-sec">10</span>' +
         '</div>' +
-        '<div class="mg-img"><span class="mg-ph">Photo placeholder: ' + s.image + '</span>' +
+        '<div class="mg-img">' +
           '<img src="' + s.image + '" alt="" onerror="this.remove()"></div>' +
         '<p class="mg-msg"></p>' +
         '<p class="mg-cap"></p>' +
         '<div class="mg-player"></div>' +
         '<div class="mg-particles" aria-hidden="true"></div>' +
       '</div>';
+    // the photo stays hidden until it has actually loaded, so no empty box or text ever shows behind it
+    const photo = overlay.querySelector('.mg-img img');
+    if (photo) {
+      const reveal = () => photo.classList.add('is-ready');
+      if (photo.complete && photo.naturalWidth) reveal();
+      else photo.addEventListener('load', reveal);
+    }
     overlay.querySelector('.mg-msg').textContent = isBn() ? s.message.bn : s.message.en;
     overlay.querySelector('.mg-cap').textContent = isBn() ? s.caption.bn : s.caption.en;
     document.body.appendChild(overlay);
