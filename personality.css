@@ -1,0 +1,207 @@
+/* =====================================================================================
+   Personality Meter ("A Measure of Tania"): compact circular meters, click-to-reveal captions.
+   Colours, type and card surface are the site's own (style.css). personality.js builds the
+   grid from the existing markup and adds the .pm-on class, which hides the old horizontal layout.
+   ===================================================================================== */
+
+/* the old horizontal layout is hidden only once the circles exist (no script = old layout stays) */
+.mega.pm-on .jed.mrow,
+.mega.pm-on .mbox-all {
+    display: none
+}
+
+.pm-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden
+}
+
+/* ----- the grid: three circles per row on phones, all six in one row from tablet up ----- */
+.pm-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px 12px;
+    justify-items: center;
+    margin: 4px 0 0
+}
+
+.pm-item {
+    appearance: none;
+    -webkit-appearance: none;
+    background: none;
+    border: 0;
+    padding: 6px 4px 4px;
+    margin: 0;
+    width: 100%;
+    max-width: 118px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink, #f6ebf2);
+    font: inherit;
+    cursor: pointer;
+    border-radius: 16px;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: transform .3s cubic-bezier(.2, .7, .2, 1)
+}
+
+.pm-item:focus-visible {
+    box-shadow: 0 0 0 2px rgba(238, 143, 181, .6)
+}
+
+.pm-item:active {
+    transform: scale(.96)
+}
+
+/* ----- the circle: soft glow behind, gradient ring, percentage in the centre ----- */
+.pm-ring {
+    position: relative;
+    width: clamp(70px, 14vw, 80px);
+    aspect-ratio: 1 / 1;
+    border-radius: 50%
+}
+
+.pm-ring::before {
+    content: "";
+    position: absolute;
+    inset: -8%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(238, 143, 181, .22), rgba(205, 180, 240, .08) 65%, transparent 100%);
+    opacity: .7;
+    transition: opacity .4s ease, transform .4s ease;
+    pointer-events: none
+}
+
+.pm-ring svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible
+}
+
+.pm-bg {
+    fill: rgba(23, 16, 32, .6);
+    stroke: rgba(255, 214, 228, .16);
+    stroke-width: 6
+}
+
+.pm-fg {
+    fill: none;
+    stroke: url(#pmGrad);
+    stroke-width: 6;
+    stroke-linecap: round
+}
+
+.pm-pct {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-family: 'Playfair Display', 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', serif;
+    font-weight: 500;
+    font-size: clamp(1.05rem, 4.2vw, 1.35rem);
+    line-height: 1;
+    color: var(--blush, #ffd6e4);
+    font-variant-numeric: lining-nums tabular-nums;
+    text-shadow: 0 0 14px rgba(238, 143, 181, .35)
+}
+
+/* ----- the name under the circle ----- */
+.pm-name {
+    display: block;
+    max-width: 100%;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
+    font-size: clamp(.95rem, 2.9vw, 1.12rem);
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--ink, #f6ebf2);
+    text-align: center;
+    overflow-wrap: anywhere;
+    transition: color .35s ease
+}
+
+/* hover and focus feedback: only where there is a real pointer */
+@media (hover: hover) {
+    .pm-item:hover { transform: translateY(-3px) }
+    .pm-item:hover .pm-ring::before { opacity: 1; transform: scale(1.06) }
+    .pm-item:hover .pm-name { color: var(--blush, #ffd6e4) }
+}
+
+/* the open meter keeps its glow and its name lights up */
+.pm-item.active .pm-ring::before {
+    opacity: 1;
+    transform: scale(1.08)
+}
+
+.pm-item.active .pm-name {
+    color: var(--blush, #ffd6e4)
+}
+
+/* ----- the caption panel: expands under the grid, one caption at a time ----- */
+.pm-caption {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows .55s cubic-bezier(.2, .7, .2, 1), opacity .45s ease, margin .55s ease;
+    margin-top: 0
+}
+
+.pm-caption.open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    margin-top: 18px
+}
+
+.pm-caption-in {
+    min-height: 0;
+    overflow: hidden
+}
+
+.pm-caption-text {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 16px 20px;
+    border-radius: 16px;
+    background: linear-gradient(160deg, rgba(40, 26, 56, .7), rgba(23, 16, 32, .6));
+    border: 1px solid rgba(255, 214, 228, .22);
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
+    font-size: clamp(1.05rem, 3.2vw, 1.2rem);
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--blush, #ffd6e4);
+    text-align: center
+}
+
+/* the caption text fades in whenever a different meter is opened */
+.pm-caption-text.pm-swap {
+    animation: pmFade .45s ease both
+}
+
+@keyframes pmFade {
+    from { opacity: 0; transform: translateY(4px) }
+    to { opacity: 1; transform: none }
+}
+
+/* ----- small phones: a little tighter, nothing touches the edges ----- */
+@media (max-width: 640px) {
+    .pm-grid { gap: 14px 8px }
+    .pm-caption.open { margin-top: 14px }
+    .pm-caption-text { padding: 14px 16px }
+}
+
+@media (min-width: 641px) {
+    .pm-grid { grid-template-columns: repeat(6, minmax(0, 1fr)) }
+}
+
+/* ----- reduced motion: no slides, fades or lifts; the state still changes ----- */
+@media (prefers-reduced-motion: reduce) {
+    .pm-item,
+    .pm-ring::before,
+    .pm-name,
+    .pm-caption,
+    .pm-caption-text.pm-swap { transition: none !important; animation: none !important }
+}

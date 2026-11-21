@@ -218,7 +218,6 @@ $('.flip').forEach(f => f.onclick = () => f.classList.toggle('on'));
 const rng = G('rng'), ml = G('mlabel'), L = ['Calm as a lake', 'Slightly stubborn', 'Fully committed to being right', 'Immovable, like a mountain'];
 const jedVal = document.getElementById('jedval');
 const meter = () => { const v = +rng.value; jedVal.textContent = v + '%'; rng.style.setProperty('--p', v + '%'); }; meter();
-let ran = 0; new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting && !ran) { ran = 1; const t0 = performance.now(); (function f(t) { const k = clamp((t - t0) / 2200); rng.value = Math.round(72 * ease(k)); meter(); if (k < 1) requestAnimationFrame(f) })(t0) } }), { threshold: .6 }).observe(rng);
 
 // ---------- Developer Info modal: opens straight away ----------
 (() => {
@@ -332,38 +331,4 @@ $('.gallery').forEach(g => {
 })();
 
 
-/* ===== Trait meters: same slider design as the stubborn meter. Each one rises to its set value when its row comes into view, and the user can drag any of them ===== */
-(() => {
-    const rows = [...document.querySelectorAll('.mbox-all .mrow')];
-    if (!rows.length) return;
-    const setVal = (row, v) => {
-        const rng = row.querySelector('.trait-rng'), num = row.querySelector('.mtop b');
-        rng.value = v;
-        rng.style.setProperty('--p', v + '%');
-        num.textContent = v + '%';
-    };
-    const items = rows.map(row => {
-        const rng = row.querySelector('.trait-rng');
-        const target = parseInt(rng.value, 10) || 0;
-        rng.setAttribute('aria-label', row.querySelector('.mtop span').textContent.trim());
-        setVal(row, 0);
-        return { row, target, done: false };
-    });
-    const run = (it) => {
-        const t0 = performance.now(), dur = 1800;
-        (function step(t) {
-            const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
-            setVal(it.row, Math.round(it.target * e));
-            if (k < 1) requestAnimationFrame(step);
-        })(t0);
-    };
-    const io = new IntersectionObserver(entries => {
-        entries.forEach(en => {
-            if (!en.isIntersecting) return;
-            const it = items.find(x => x.row === en.target);
-            if (it && !it.done) { it.done = true; setTimeout(() => run(it), items.indexOf(it) * 150); }
-        });
-    }, { threshold: 0.6 });
-    rows.forEach(r => io.observe(r));
-})();
 
