@@ -72,7 +72,7 @@
             tie: "It's a tie. Lovely play!",
             finalScore: 'Final score', movesTaken: 'Moves',
             playAgain: 'Play again', changeMode: 'Change mode',
-            pairsWord: 'pairs'
+            pairsWord: 'pairs', exitFull: 'Exit full screen'
         },
         bn: {
             title: 'তানিয়ার স্মৃতি মেলাও',
@@ -95,7 +95,7 @@
             tie: 'সমান সমান! চমৎকার খেলা হলো।',
             finalScore: 'চূড়ান্ত স্কোর', movesTaken: 'চাল',
             playAgain: 'আবার খেলো', changeMode: 'খেলার ধরন বদলাও',
-            pairsWord: 'জোড়া'
+            pairsWord: 'জোড়া', exitFull: 'ফুল স্ক্রিন থেকে বের হও'
         }
     };
 
@@ -550,18 +550,44 @@
         renderEnd();
     }
 
+    /* ---------- full screen, like Tania's Run and Straighten Tania ----------
+       Choosing a mode (the PLAY step) makes the card fill the whole screen; leaving the game
+       (Back, Change mode, Exit, Escape or leaving full screen) brings the normal card back. */
+    const exitBtn = $('mm-exit');
+    const isFull = () => root.classList.contains('mm-full');
+
+    function enterFull() {
+        if (isFull()) return;
+        root.classList.add('mm-full');
+        document.body.classList.add('mm-lock');
+        if (root.requestFullscreen) root.requestFullscreen({ navigationUI: 'hide' }).catch(() => {});
+        if (screen.orientation && screen.orientation.lock) screen.orientation.lock('portrait').catch(() => {});
+    }
+
+    function exitFull() {
+        if (!isFull()) return;
+        root.classList.remove('mm-full');
+        document.body.classList.remove('mm-lock');
+        if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+        backToMenu();
+    }
+
     /* ---------- wiring ---------- */
     diffBtns.forEach(b => b.addEventListener('click', () => setDiff(b.dataset.diff)));
-    modeBtns.forEach(b => b.addEventListener('click', () => newGame(b.dataset.mode, diffKey)));
+    modeBtns.forEach(b => b.addEventListener('click', () => { enterFull(); newGame(b.dataset.mode, diffKey); }));
     boardEl.addEventListener('click', e => {
         const card = e.target.closest ? e.target.closest('.mm-card') : null;
         if (!card || !boardEl.contains(card)) return;
         onPick(parseInt(card.dataset.i, 10));
     });
     $('mm-restart').addEventListener('click', () => newGame(mode, diffKey));
-    $('mm-back').addEventListener('click', backToMenu);
+    $('mm-back').addEventListener('click', exitFull);
+    exitBtn.addEventListener('click', exitFull);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') exitFull(); });
+    document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && isFull()) exitFull(); });
     $('mm-end-again').addEventListener('click', () => newGame(mode, diffKey));
-    $('mm-end-change').addEventListener('click', backToMenu);
+    $('mm-end-change').addEventListener('click', exitFull);
 
     new MutationObserver(renderAll).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 

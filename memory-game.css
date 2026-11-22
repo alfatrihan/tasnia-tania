@@ -544,3 +544,94 @@
         display: none
     }
 }
+
+/* ===== Full screen (PLAY / choosing a mode fills the screen, like Tania's Run and Straighten Tania) ===== */
+body.mm-lock {
+    overflow: hidden
+}
+
+/* the slide must not create its own stacking layer while the game is full screen, so the card sits above the site nav */
+#play-slide-memory:has(.mm-full) {
+    isolation: auto
+}
+
+#play-slide-memory .mm-exit {
+    display: none;
+    position: absolute;
+    top: calc(12px + env(safe-area-inset-top, 0px));
+    right: 12px;
+    z-index: 6;
+    padding: 6px 13px;
+    border-radius: 99px;
+    border: 1px solid rgba(255, 214, 228, .35);
+    background: #1f162b;
+    color: var(--blush);
+    font: 500 .8rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
+    letter-spacing: .5px;
+    cursor: pointer
+}
+
+#play-slide-memory .mm-card-wrap.mm-full {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    width: 100vw;
+    max-width: none;
+    height: 100vh;
+    height: 100dvh;
+    aspect-ratio: auto;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden
+}
+
+#play-slide-memory .mm-card-wrap.mm-full .mm-exit {
+    display: inline-block
+}
+
+#play-slide-memory .mm-card-wrap.mm-full .mm-screen {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow-y: auto;
+    padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px))
+}
+
+#play-slide-memory .mm-card-wrap.mm-full #mm-game {
+    justify-content: space-between
+}
+
+#play-slide-memory .mm-card-wrap.mm-full .mm-stage {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    padding: 10px 16px
+}
+
+#play-slide-memory .mm-card-wrap.mm-full .mm-board {
+    max-width: min(520px, calc(100dvh - 300px))
+}
+
+#play-slide-memory .mm-card-wrap.mm-full .mm-title {
+    margin-top: 28px
+}
+
+/* phones, normal size: the game card is the same tall shape as Tania's Run (5 : 7) */
+@media (max-width: 700px) {
+    #play-slide-memory .mm-fold {
+        width: 90%
+    }
+
+    #play-slide-memory .mm-card-wrap:not(.mm-full) {
+        aspect-ratio: 5 / 7;
+        overflow-y: auto
+    }
+}
