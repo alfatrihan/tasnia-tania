@@ -857,16 +857,47 @@
   <script src="data/bogura.js"></script>
   <script src="map.js"></script>
   <script src="tania.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // Load the heavy 3D game engine only when the runner is close to the screen.
+    (function () {
+      const runner = document.getElementById('runner-wrap');
+      if (!runner) return;
+      let loaded = false;
+      function loadRunner() {
+        if (loaded) return;
+        loaded = true;
+        const three = document.createElement('script');
+        three.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+        three.onload = function () {
+          const game = document.createElement('script');
+          game.src = 'game.js';
+          document.body.appendChild(game);
+        };
+        document.body.appendChild(three);
+      }
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(entries => {
+          if (entries.some(entry => entry.isIntersecting)) {
+            observer.disconnect();
+            loadRunner();
+          }
+        }, { rootMargin: '500px 0px' });
+        observer.observe(runner);
+      } else {
+        window.addEventListener('load', loadRunner, { once: true });
+      }
+    })();
+  </script>
   <script src="quiz.js"></script>
-  <script src="game.js"></script>
   <script src="audio/puzzle/songs.js"></script>
   <script src="media/puzzle/pictures.js"></script>
   <script src="puzzle.js"></script>
   <script src="memory-game.js"></script>
   <script>
     (function () {
-      const audio = new Audio('audio/song.mp3');
+      const audio = new Audio();
+      audio.src = 'audio/song.mp3';
+      audio.preload = 'none';
       audio.loop = true;
       audio.volume = 0.35;
 
@@ -897,7 +928,8 @@
         events.forEach(ev => addEventListener(ev, go, { capture: true, passive: true }));
       }
 
-      start().then(ok => { if (!ok) armFirstInteraction(); });
+      // Do not fetch the 3 MB soundtrack on page load; fetch it after the first user interaction.
+      armFirstInteraction();
 
       // Round button: play or pause at any time
       let userPaused = false;     // the visitor paused it with the button, so do not bring it back by itself

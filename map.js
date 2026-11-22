@@ -404,7 +404,7 @@
     });
 
     // 3D canvas resolution: baseDpr is set on each measure; cvScale drops below 1 while frames are too slow to keep up
-    let baseDpr = 1, cvScale = 1, r3Quick = 0, r3Slow = 0;
+    let baseDpr = 1, cvScale = 0.9, r3Quick = 0, r3Slow = 0;
     const R3_BUDGET = 12;   // ms: a 3D frame that takes longer than this lowers the canvas resolution a step
     function applyCanvasSize() {
         const dpr = baseDpr * cvScale;
@@ -445,7 +445,7 @@
         if (r.width) {
             ratio = r.height / r.width; pxW = r.width;
             // the 3D canvas: backing store follows the screen's real pixel density (capped at 2.5x), so buildings stay sharp
-            baseDpr = Math.min(window.devicePixelRatio || 1, MOBILE ? 2 : 2.5);   // full screen sharpness on phones and desktops (was capped at 0.85-1.25, which made the 3D city look blurry)
+            baseDpr = Math.min(window.devicePixelRatio || 1, MOBILE ? 1.15 : 1.75);   // full screen sharpness on phones and desktops (was capped at 0.85-1.25, which made the 3D city look blurry)
             cW = r.width; cH = r.height;
             applyCanvasSize();
             lastCamKey = ''; svgDirty = true;
@@ -1078,8 +1078,8 @@
                 // adaptive resolution: a slow 3D frame draws at a lower resolution for a while (the canvas is stretched
                 // to the same size, so the layout does not change); when frames are fast again, sharpness comes back
                 const cost = performance.now() - t0;
-                if (cost > R3_BUDGET && cvScale > 0.75) {
-                    if (r3Slow) { cvScale = Math.max(0.75, cvScale - 0.125); r3Quick = 0; r3Slow = 0; applyCanvasSize(); lastCamKey = ''; }
+                if (cost > R3_BUDGET && cvScale > 0.65) {
+                    if (r3Slow) { cvScale = Math.max(0.65, cvScale - 0.125); r3Quick = 0; r3Slow = 0; applyCanvasSize(); lastCamKey = ''; }
                     else r3Slow = 1;
                 } else {
                     r3Slow = 0;
