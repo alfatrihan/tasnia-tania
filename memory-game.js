@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Tania's Pair Hunt (Tania's Memory Match) - a photo memory game for the Play section (third game in the carousel).
+=======
+/* Tania's Memory Match - a photo memory game for the Play section (third game in the carousel).
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
    Two ways to play: Play with Friend (two players take turns on this device) and Play with Bot
    (the bot remembers revealed cards depending on the difficulty).
    Difficulty: Easy 4x3 (6 pairs), Medium 4x4 (8 pairs), Hard 6x4 (12 pairs).
@@ -16,11 +20,14 @@
 
     const $ = id => document.getElementById(id);
     const startEl = $('mm-start');
+<<<<<<< HEAD
     const landingEl = $('mm-landing');
     const playEl = $('mm-play');
     const goEl = $('mm-go');
     const nameBox = $('mm-names');
     const nameEls = [$('mm-name0'), $('mm-name1')];
+=======
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     const gameEl = $('mm-game');
     const boardEl = $('mm-board');
     const stageEl = $('mm-stage');
@@ -38,12 +45,15 @@
     const pScoreEls = [$('mm-p0-score'), $('mm-p1-score')];
     const diffBtns = Array.from(root.querySelectorAll('.mm-diff'));
     const modeBtns = Array.from(root.querySelectorAll('.mm-mode'));
+<<<<<<< HEAD
     // Play with Bot sits above Play with Friend
     (() => {
         const box = root.querySelector('.mm-modes');
         const bot = box && box.querySelector('[data-mode="bot"]');
         if (box && bot) box.insertBefore(bot, box.firstChild);
     })();
+=======
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
 
     /* ---------- settings ---------- */
     // skill = chance the bot uses what it remembers (otherwise it guesses); recall = chance it notices a card
@@ -57,13 +67,22 @@
     const CANDIDATES = [
         'media/photo1.jpg', 'media/photo2.jpg', 'media/photo3.jpg', 'media/photo4.jpg', 'media/photo5.jpg',
         'media/photo6.jpg', 'media/photo7.jpg', 'media/photo8.jpg', 'media/photo9.jpg', 'media/photo10.jpg',
+<<<<<<< HEAD
         'media/photo11.jpg', 'media/photo12.jpg', 'media/photo13.jpg',
         'media/fb-profile.jpg', 'media/insta-profile.jpg'
+=======
+        'media/main.jpg',
+        'media/post1.jpg', 'media/post2.jpg', 'media/post3.jpg', 'media/post4.jpg', 'media/post5.jpg', 'media/post6.jpg'
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     ];
 
     const TEXT = {
         en: {
+<<<<<<< HEAD
             title: "Tania's Pair Hunt",
+=======
+            title: "Tania's Memory Match",
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
             intro: 'Tania has so many lovely moments to remember. Flip the cards, find every matching pair and see how good your memory really is!',
             chooseDiff: 'Choose a difficulty',
             chooseMode: 'Choose how to play',
@@ -83,6 +102,7 @@
             tie: "It's a tie. Lovely play!",
             finalScore: 'Final score', movesTaken: 'Moves',
             playAgain: 'Play again', changeMode: 'Change mode',
+<<<<<<< HEAD
             pairsWord: 'pairs', exitFull: 'Exit game',
             play: 'PLAY', start: 'START', enterNames: 'Write your names', pressPlay: 'Press PLAY to start',
             turnOf: "{n}'s turn", winName: '{n} wins!',
@@ -90,6 +110,12 @@
         },
         bn: {
             title: 'তানিয়ার জোড়া খোঁজো',
+=======
+            pairsWord: 'pairs', exitFull: 'Exit full screen'
+        },
+        bn: {
+            title: 'তানিয়ার স্মৃতি মেলাও',
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
             intro: 'তানিয়ার কত সুন্দর মুহূর্ত! কার্ড উল্টে একই ছবির জোড়া মেলাও, দেখি তোমার স্মৃতিশক্তি কতটা ভালো!',
             chooseDiff: 'কঠিনতা বেছে নাও',
             chooseMode: 'কীভাবে খেলবে বেছে নাও',
@@ -109,16 +135,24 @@
             tie: 'সমান সমান! চমৎকার খেলা হলো।',
             finalScore: 'চূড়ান্ত স্কোর', movesTaken: 'চাল',
             playAgain: 'আবার খেলো', changeMode: 'খেলার ধরন বদলাও',
+<<<<<<< HEAD
             pairsWord: 'জোড়া', exitFull: 'গেম থেকে বের হও',
             play: 'প্লে করুন', start: 'শুরু করো', enterNames: 'বন্ধুদের নাম লেখো', pressPlay: 'খেলা শুরু করতে প্লে চাপুন',
             turnOf: '{n}-এর পালা', winName: '{n} জিতেছে!',
             combo: 'কম্বো', bestCombo: 'সেরা কম্বো', newBest: 'নতুন সেরা সময়!', bestTime: 'সেরা সময়'
+=======
+            pairsWord: 'জোড়া', exitFull: 'ফুল স্ক্রিন থেকে বের হও'
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         }
     };
 
     /* ---------- state ---------- */
     let diffKey = 'medium';
+<<<<<<< HEAD
     let mode = 'bot';             // 'friend' | 'bot'  (Play with Bot is the default)
+=======
+    let mode = 'friend';          // 'friend' | 'bot'
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     let phase = 'menu';           // 'menu' | 'preview' | 'play' | 'done'
     let pics = [];                // picture URL per card index
     let els = [];                 // card buttons per index
@@ -140,6 +174,7 @@
     let keepImgs = [];            // hold references so preloaded images stay cached
     let game = 0;                 // token: stale async work is ignored
     let endInfo = null;
+<<<<<<< HEAD
     let typed = ['', ''];         // names typed for the two friends
     let total = 0;                // pairs in this game
     let streak = 0;               // matches in a row by the same player
@@ -152,6 +187,8 @@
     const pTurnEls = [];
     let endMirror = null;
     const calm = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+=======
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
 
     /* ---------- helpers ---------- */
     const lang = () => (document.documentElement.lang === 'bn' ? 'bn' : 'en');
@@ -170,6 +207,7 @@
         if (pendTimer) { clearTimeout(pendTimer); pendTimer = null; }
     }
 
+<<<<<<< HEAD
     // show a screen with a soft fade-and-rise
     function show(el) {
         el.classList.remove('hidden');
@@ -450,6 +488,8 @@
 
     function buzz(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* ignore */ } }
 
+=======
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     /* ---------- photos: check each one and keep the working ones ---------- */
     function loadPool() {
         if (poolP) return poolP;
@@ -508,6 +548,7 @@
         return n;
     }
 
+<<<<<<< HEAD
     // the start card and the setup screen show one of Tania's photos behind them, softly blurred,
     // like the scene behind the other games' PLAY screens
     function setScene() {
@@ -515,13 +556,19 @@
         root.style.setProperty('--mm-scene', 'url("' + pick(pool) + '")');
     }
 
+=======
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     function renderLoading() {
         const ready = !!pool && pool.length >= 2;
         if (!pool) { loadingEl.textContent = T('loading'); loadingEl.classList.remove('hidden'); }
         else if (!ready) { loadingEl.textContent = T('noPhotos'); loadingEl.classList.remove('hidden'); }
         else loadingEl.classList.add('hidden');
+<<<<<<< HEAD
         playEl.disabled = !ready;
         goEl.disabled = !ready;
+=======
+        modeBtns.forEach(b => { b.disabled = !ready; });
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     }
 
     /* ---------- board ---------- */
@@ -549,6 +596,7 @@
         pics = deck;
         boardEl.textContent = '';
         boardEl.style.setProperty('--cols', String(Math.min(d.cols, pics.length)));
+<<<<<<< HEAD
         total = n;
         const dealt = !calm;
         els = pics.map((src, i) => {
@@ -556,6 +604,12 @@
             b.type = 'button';
             b.className = 'mm-card' + (dealt ? ' deal' : '');
             b.style.setProperty('--i', String(i));
+=======
+        els = pics.map((src, i) => {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'mm-card';
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
             b.dataset.i = String(i);
             b.setAttribute('aria-label', T('hiddenCard'));
             b.innerHTML = '<span class="mm-inner"><span class="mm-face mm-back"></span>'
@@ -565,27 +619,36 @@
             return b;
         });
         remaining = n;
+<<<<<<< HEAD
         if (dealt) {
             const span = pics.length * 30 + 600;
             dealUntil = Date.now() + span;
             setTimeout(() => els.forEach(e => e && e.classList.remove('deal')), span);
         } else dealUntil = 0;
+=======
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     }
 
     function reveal(i) {
         open.push(i);
         els[i].classList.add('open');
+<<<<<<< HEAD
         // a little lift while the card turns, like a real card being picked up
         els[i].classList.add('lift');
         if (mode === 'bot' && turn === 1) els[i].classList.add('bot-pick');
         const el = els[i];
         setTimeout(() => { if (el) el.classList.remove('lift'); }, 740);
+=======
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         botLearn(i);
     }
 
     function close(i) {
         els[i].classList.remove('open');
+<<<<<<< HEAD
         els[i].classList.remove('bot-pick');
+=======
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     }
 
     function botLearn(i) {
@@ -597,6 +660,7 @@
 
     /* ---------- names, scores, HUD ---------- */
     function names() {
+<<<<<<< HEAD
         if (mode !== 'friend') return [T('you'), T('botName')];
         return [typed[0] || T('p1'), typed[1] || T('p2')];
     }
@@ -608,6 +672,9 @@
             el.classList.add('mm-bump');
         }
         el.dataset.v = v;
+=======
+        return mode === 'friend' ? [T('p1'), T('p2')] : [T('you'), T('botName')];
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     }
 
     function updateHud() {
@@ -616,6 +683,7 @@
         pNameEls[1].textContent = nm[1];
         pScoreEls[0].textContent = String(scores[0]);
         pScoreEls[1].textContent = String(scores[1]);
+<<<<<<< HEAD
         bump(pScoreEls[0], String(scores[0]));
         bump(pScoreEls[1], String(scores[1]));
         pEls.forEach((el, i) => el.classList.toggle('on', phase === 'play' && turn === i));
@@ -644,6 +712,16 @@
         bump(movesEl, String(moves));
         movesEl.textContent = String(moves);
         if (progEl) progEl.style.width = (total ? ((total - remaining) / total) * 100 : 0).toFixed(1) + '%';
+=======
+        pEls.forEach((el, i) => el.classList.toggle('on', phase === 'play' && turn === i));
+        if (phase === 'preview') turnEl.textContent = T('memorize');
+        else if (phase === 'play') {
+            if (mode === 'friend') turnEl.textContent = turn === 0 ? T('turnP1') : T('turnP2');
+            else turnEl.textContent = turn === 0 ? T('turnYou') : T('botThink');
+        } else turnEl.textContent = '';
+        leftEl.textContent = String(remaining);
+        movesEl.textContent = String(moves);
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     }
 
     /* ---------- preview (memorize) ---------- */
@@ -660,6 +738,7 @@
         countEl.classList.add('hidden');
         turn = 0;
         updateHud();
+<<<<<<< HEAD
         announceTurn(null);
     }
 
@@ -702,6 +781,13 @@
             announceTurn(() => { if (mode === 'bot' && turn === 1) later(botStep, 500 + rnd(400)); });
             return;
         }
+=======
+    }
+
+    /* ---------- turn flow ---------- */
+    function advance() {
+        if (paused || phase !== 'play' || busy) return;
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         if (mode === 'bot' && turn === 1) later(botStep, 700 + rnd(500));
     }
 
@@ -709,7 +795,11 @@
         busy = true;
         moves++;
         updateHud();
+<<<<<<< HEAD
         later(() => resolve(false), 600);
+=======
+        later(() => resolve(false), 850);
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     }
 
     function resolve(immediate) {
@@ -722,6 +812,7 @@
             els[a].setAttribute('aria-label', T('hiddenCard'));
             scores[turn]++;
             remaining--;
+<<<<<<< HEAD
             streak++;
             if (streak > bestStreak) bestStreak = streak;
             open = [];
@@ -741,24 +832,46 @@
         }
         const flipBack = () => {
             els[a].classList.remove('shake'); els[b].classList.remove('shake');
+=======
+            open = [];
+            busy = false;
+            updateHud();
+            if (remaining === 0) { finish(); return; }
+            advance();                       // a match keeps the same player going
+            return;
+        }
+        const flipBack = () => {
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
             close(a); close(b);
             open = [];
             busy = false;
             turn = 1 - turn;
             updateHud();
+<<<<<<< HEAD
             advance(true);
         };
         if (immediate) flipBack(); else later(flipBack, 700);
+=======
+            advance();
+        };
+        if (immediate) flipBack(); else later(flipBack, 950);
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     }
 
     function onPick(i) {
         if (phase !== 'play' || paused || busy) return;
+<<<<<<< HEAD
         if (Date.now() < dealUntil) return;            // still dealing the cards
         if (mode === 'bot' && turn === 1) return;
         if (announcing) return;
         if (matched.has(i) || open.indexOf(i) !== -1) return;
         if (open.length >= 2) return;
         if (!timing) { timing = true; startTimer(); }
+=======
+        if (mode === 'bot' && turn === 1) return;
+        if (matched.has(i) || open.indexOf(i) !== -1) return;
+        if (open.length >= 2) return;
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         reveal(i);
         if (open.length === 2) lockAndResolve();
     }
@@ -819,6 +932,7 @@
         busy = false;
         open = [];
         const s0 = scores[0], s1 = scores[1];
+<<<<<<< HEAD
         const winner = s0 > s1 ? 0 : (s1 > s0 ? 1 : -1);
         const ms = elapsed();
         stopTimer();
@@ -827,6 +941,12 @@
         const isNew = !prev || ms < prev.ms;
         if (isNew) writeBest(ms);
         endInfo = { winner, s0, s1, mv: moves, ms, best: isNew ? ms : prev.ms, isNew, combo: bestStreak };
+=======
+        let winKey;
+        if (mode === 'friend') winKey = s0 > s1 ? 'winP1' : (s1 > s0 ? 'winP2' : 'tie');
+        else winKey = s0 > s1 ? 'winYou' : (s1 > s0 ? 'winBot' : 'tie');
+        endInfo = { winKey, s0, s1, mv: moves };
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         renderEnd();
         endEl.classList.remove('hidden');
         celebrate();
@@ -836,6 +956,7 @@
     function renderEnd() {
         if (!endInfo) return;
         const nm = names();
+<<<<<<< HEAD
         // no "Wonderful!" title and no "who wins" line on the end screen: only the scores and stats
         endTitle.textContent = '';
         endWin.textContent = '';
@@ -847,10 +968,17 @@
             endBest.textContent = line;
             endBest.classList.toggle('new', !!endInfo.isNew);
         }
+=======
+        endTitle.textContent = T('wonderful');
+        endWin.textContent = T(endInfo.winKey);
+        endStats.textContent = T('finalScore') + ': ' + nm[0] + ' ' + endInfo.s0 + '  ·  ' + nm[1] + ' ' + endInfo.s1
+            + '  ·  ' + T('movesTaken') + ' ' + endInfo.mv;
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     }
 
     function celebrate() {
         endEl.querySelectorAll('.mm-petal').forEach(n => n.remove());
+<<<<<<< HEAD
         for (let i = 0; i < 40; i++) {
             const s = document.createElement('span');
             // roughly one piece in four falls as a small gold coin instead of a petal/star
@@ -865,6 +993,17 @@
             s.style.setProperty('--cel-dx', ((Math.random() - 0.5) * 60).toFixed(0) + 'px');
             s.style.animationDuration = (2.8 + Math.random() * 2.2).toFixed(2) + 's';
             s.style.animationDelay    = (Math.random() * 1.5).toFixed(2) + 's';
+=======
+        const glyphs = ['♥', '✿', '❀', '♥', '✿'];
+        for (let i = 0; i < 16; i++) {
+            const s = document.createElement('span');
+            s.className = 'mm-petal';
+            s.textContent = glyphs[i % glyphs.length];
+            s.style.left = (Math.random() * 100).toFixed(1) + '%';
+            s.style.fontSize = (12 + Math.random() * 10).toFixed(0) + 'px';
+            s.style.animationDuration = (3.2 + Math.random() * 1.8).toFixed(2) + 's';
+            s.style.animationDelay = (Math.random() * 1.2).toFixed(2) + 's';
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
             endEl.appendChild(s);
         }
     }
@@ -874,7 +1013,10 @@
         const token = ++game;
         mode = m;
         diffKey = d;
+<<<<<<< HEAD
         syncDuel();
+=======
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         await loadPool();
         if (token !== game) return;
         renderLoading();
@@ -893,6 +1035,7 @@
         autoPaused = false;
         endInfo = null;
         endEl.classList.add('hidden');
+<<<<<<< HEAD
         resetTimer();
         streak = 0;
         bestStreak = 0;
@@ -915,6 +1058,24 @@
         game++;
         clearPend();
         hideAnnounce();                       // the turn card never stays on the menu
+=======
+
+        startEl.classList.add('hidden');
+        gameEl.classList.remove('hidden');
+
+        phase = 'preview';
+        previewLeft = DIFFS[diffKey].memorize;
+        els.forEach(e => e.classList.add('open'));
+        pics.forEach((_, i) => botLearn(i));
+        countEl.classList.remove('hidden');
+        updateHud();
+        previewTick();
+    }
+
+    function backToMenu() {
+        game++;
+        clearPend();
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         phase = 'menu';
         paused = false;
         autoPaused = false;
@@ -923,6 +1084,7 @@
         endEl.classList.add('hidden');
         countEl.classList.add('hidden');
         gameEl.classList.add('hidden');
+<<<<<<< HEAD
         resetTimer();
         streak = 0;
         bestStreak = 0;
@@ -930,10 +1092,14 @@
         startEl.classList.add('hidden');
         landingEl.classList.add('hidden');
         show(toLanding ? landingEl : startEl);
+=======
+        startEl.classList.remove('hidden');
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         boardEl.textContent = '';
         renderLoading();
     }
 
+<<<<<<< HEAD
     /* ---------- mode choice and names (on the setup screen) ---------- */
     // both players now stay the same way up, side by side, instead of player 2's panel,
     // name and board being turned 180 degrees to face them from the opposite side
@@ -957,15 +1123,20 @@
         newGame(mode, diffKey);
     }
 
+=======
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     /* ---------- leaving the game: pause everything, resume when back ---------- */
     function pause() {
         if (paused || phase === 'menu' || phase === 'done') return;
         paused = true;
         autoPaused = true;
         clearPend();
+<<<<<<< HEAD
         hideAnnounce();                       // leaving the game cancels the turn card
         stopTimer();
         root.classList.add('mm-paused');
+=======
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         if (phase === 'preview') {
             endPreview();                     // the memorize time is not kept when leaving
         } else if (open.length === 2) {
@@ -982,9 +1153,12 @@
         if (!paused) return;
         paused = false;
         autoPaused = false;
+<<<<<<< HEAD
         root.classList.remove('mm-paused');
         hideAnnounce();
         if (timing && phase === 'play') startTimer();
+=======
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         advance();
     }
 
@@ -1013,10 +1187,14 @@
     }
 
     function renderAll() {
+<<<<<<< HEAD
         slide.querySelectorAll('[data-k]').forEach(el => { el.textContent = T(el.dataset.k); });
         labelIcons();
         nameEls[0].placeholder = T('p1');
         nameEls[1].placeholder = T('p2');
+=======
+        root.querySelectorAll('[data-k]').forEach(el => { el.textContent = T(el.dataset.k); });
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         renderDiffInfo();
         renderLoading();
         updateHud();
@@ -1027,6 +1205,7 @@
        Choosing a mode (the PLAY step) makes the card fill the whole screen; leaving the game
        (Back, Change mode, Exit, Escape or leaving full screen) brings the normal card back. */
     const exitBtn = $('mm-exit');
+<<<<<<< HEAD
     if (exitBtn) exitBtn.setAttribute('aria-label', 'Exit game');
     const isFull = () => root.classList.contains('mm-full');
     let mmHolder = null, mmSavedY = 0;
@@ -1043,6 +1222,12 @@
         mmHolder.style.height = root.offsetHeight + 'px';
         root.parentNode.insertBefore(mmHolder, root);
         document.body.appendChild(root);
+=======
+    const isFull = () => root.classList.contains('mm-full');
+
+    function enterFull() {
+        if (isFull()) return;
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         root.classList.add('mm-full');
         document.body.classList.add('mm-lock');
         if (root.requestFullscreen) root.requestFullscreen({ navigationUI: 'hide' }).catch(() => {});
@@ -1051,6 +1236,7 @@
 
     function exitFull() {
         if (!isFull()) return;
+<<<<<<< HEAD
         hideAnnounce();
         root.classList.remove('mm-full');
         document.body.classList.remove('mm-lock');
@@ -1059,27 +1245,46 @@
         if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
         window.scrollTo({ top: mmSavedY, behavior: 'instant' });
         backToMenu(true);
+=======
+        root.classList.remove('mm-full');
+        document.body.classList.remove('mm-lock');
+        if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+        backToMenu();
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     }
 
     /* ---------- wiring ---------- */
     diffBtns.forEach(b => b.addEventListener('click', () => setDiff(b.dataset.diff)));
+<<<<<<< HEAD
     modeBtns.forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
     playEl.addEventListener('click', () => { enterFull(); backToMenu(false); });   // PLAY opens the full-screen setup
     goEl.addEventListener('click', startGame);
+=======
+    modeBtns.forEach(b => b.addEventListener('click', () => { enterFull(); newGame(b.dataset.mode, diffKey); }));
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     boardEl.addEventListener('click', e => {
         const card = e.target.closest ? e.target.closest('.mm-card') : null;
         if (!card || !boardEl.contains(card)) return;
         onPick(parseInt(card.dataset.i, 10));
     });
     $('mm-restart').addEventListener('click', () => newGame(mode, diffKey));
+<<<<<<< HEAD
     // the menu button goes to the game's own main menu (mode, difficulty, names, PLAY),
     // and stays in full screen instead of leaving the game
     $('mm-back').addEventListener('click', () => { if (!isFull()) enterFull(); backToMenu(false); });
+=======
+    $('mm-back').addEventListener('click', exitFull);
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     exitBtn.addEventListener('click', exitFull);
     document.addEventListener('keydown', e => { if (e.key === 'Escape') exitFull(); });
     document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && isFull()) exitFull(); });
     $('mm-end-again').addEventListener('click', () => newGame(mode, diffKey));
+<<<<<<< HEAD
     $('mm-end-change').addEventListener('click', () => { enterFull(); backToMenu(false); });
+=======
+    $('mm-end-change').addEventListener('click', exitFull);
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
 
     new MutationObserver(renderAll).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 
@@ -1095,9 +1300,13 @@
     }
     document.addEventListener('visibilitychange', sync);
 
+<<<<<<< HEAD
     if (phoneMQ.addEventListener) phoneMQ.addEventListener('change', syncDuel);
     decorate();
     setDiff(diffKey);
     setMode(mode);
+=======
+    setDiff(diffKey);
+>>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     renderAll();
 })();
