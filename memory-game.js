@@ -150,20 +150,53 @@
         poolP = Promise.all(unique.map(src => new Promise(resolve => {
             const im = new Image();
             let done = false;
-            const finish = ok => { if (!done) { done = true; resolve(ok ? src : null); } };
+            const finish = ok => { if (!done) { done = true; resolve(ok ? { src, im } : null); } };
             im.onload = () => finish(true);
             im.onerror = () => finish(false);
             setTimeout(() => finish(false), 12000);
             keepImgs.push(im);
             im.src = src;
         }))).then(results => {
-            pool = results.filter(Boolean);
-            const missing = unique.filter(s => !pool.includes(s));
+            const loaded = results.filter(Boolean);
+            // the same picture saved under two file names must not appear twice in the game
+            const kept = [], hashes = [], dupes = [];
+            loaded.forEach(r => {
+                const h = pictureHash(r.im);
+                if (h && hashes.some(x => hamming(x, h) <= DUP_DISTANCE)) { dupes.push(r.src); return; }
+                if (h) hashes.push(h);
+                kept.push(r.src);
+            });
+            pool = kept;
+            const missing = unique.filter(s => !loaded.some(r => r.src === s));
             if (missing.length) console.info('Tania\'s Memory Match: skipped photos that could not be loaded:', missing);
+            if (dupes.length) console.info('Tania\'s Memory Match: skipped photos that repeat another photo:', dupes);
             renderLoading();
             return pool;
         });
         return poolP;
+    }
+
+    // Fingerprint of a picture: a small grey thumbnail, one bit per pixel comparison.
+    // The same photo gives the same bits even if the file is saved again or resized slightly.
+    const DUP_DISTANCE = 5;     // out of 64 bits: this many differences or fewer = same picture
+    function pictureHash(im) {
+        try {
+            const c = document.createElement('canvas');
+            c.width = 9; c.height = 8;
+            const ctx = c.getContext('2d');
+            if (!ctx) return null;
+            ctx.drawImage(im, 0, 0, 9, 8);
+            const d = ctx.getImageData(0, 0, 9, 8).data;
+            const g = (x, y) => { const k = (y * 9 + x) * 4; return 0.299 * d[k] + 0.587 * d[k + 1] + 0.114 * d[k + 2]; };
+            const bits = [];
+            for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) bits.push(g(x, y) > g(x + 1, y) ? 1 : 0);
+            return bits;
+        } catch (e) { return null; }
+    }
+    function hamming(a, b) {
+        let n = 0;
+        for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) n++;
+        return n;
     }
 
     function renderLoading() {
@@ -175,11 +208,28 @@
     }
 
     /* ---------- board ---------- */
+    // true when two cards of the same picture are side by side (left/right or up/down)
+    function twinsTouch(deck, cols) {
+        for (let i = 0; i < deck.length; i++) {
+            const right = (i % cols !== cols - 1) ? i + 1 : -1;
+            const down = i + cols;
+            if (right < deck.length && deck[right] === deck[i]) return true;
+            if (down < deck.length && deck[down] === deck[i]) return true;
+        }
+        return false;
+    }
+
     function buildBoard() {
         const d = DIFFS[diffKey];
         const n = Math.min(d.pairs, pool.length);
         const chosen = shuffle(pool.slice()).slice(0, n);
-        pics = shuffle(chosen.concat(chosen));
+        const cols = Math.min(d.cols, chosen.length * 2);
+        let deck = null;
+        for (let tries = 0; tries < 300; tries++) {
+            deck = shuffle(chosen.concat(chosen));
+            if (!twinsTouch(deck, cols)) break;
+        }
+        pics = deck;
         boardEl.textContent = '';
         boardEl.style.setProperty('--cols', String(Math.min(d.cols, pics.length)));
         els = pics.map((src, i) => {
