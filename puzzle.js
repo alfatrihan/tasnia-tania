@@ -29,7 +29,7 @@
 
     const PICS = (window.PUZZLE_PICTURES && window.PUZZLE_PICTURES.length)
         ? window.PUZZLE_PICTURES
-        : ['media/Avater/tania_circular_3d_logo.png'];
+        : ['media/puzzle/pic01.webp'];
     const SHUFFLE_STEPS = 500;
     const TIME_LIMIT = { 3: 180, 4: 420 };    // seconds: a solve at the limit scores 0
 

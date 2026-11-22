@@ -15,7 +15,7 @@ const MAGIC_SURPRISES = [
   {
     id: 'wish', fx: 'fade',
     title: { en: 'Little Escape', bn: 'ছোট্ট এক প্রশান্তির ঠিকানা' },
-    image: 'media/magic/magic1.jpg',
+    image: 'media/photo11.webp',
     message: { en: 'Standing by the waves, letting my thoughts drift away.', bn: 'ঢেউয়ের পাশে দাঁড়িয়ে, মনটা একটু দূরে হারিয়ে যায়।' },
     caption: { en: '', bn: '' },
     music: { type: 'audio', src: 'media/magic/magic1.mp3' },
@@ -24,7 +24,7 @@ const MAGIC_SURPRISES = [
   {
     id: 'note', fx: 'hearts',
     title: { en: 'Quiet Grace', bn: 'নীরব সৌন্দর্য' },
-    image: 'media/magic/magic2.jpg',
+    image: 'media/photo12.webp',
     message: { en: 'Even familiar paths can hold new stories.', bn: 'চেনা পথেও কখনো নতুন গল্প খুঁজে পাওয়া যায়।' },
     caption: { en: '', bn: '' },
     music: { type: 'audio', src: 'media/magic/magic2.mp3' },
@@ -33,7 +33,7 @@ const MAGIC_SURPRISES = [
   {
     id: 'you', fx: 'sparkle',
     title: { en: 'Blush Hour', bn: 'গোলাপি আভায় কোমল মুহূর্ত' },
-    image: 'media/magic/magic3.jpg',
+    image: 'media/photo13.webp',
     message: { en: 'Under the open sky, finding a little peace of my own.', bn: 'আকাশের নিচে, নিজের মতো করে একটু শান্তি।' },
     caption: { en: '', bn: '' },
     music: { type: 'audio', src: 'media/magic/magic3.mp3' },
@@ -42,7 +42,7 @@ const MAGIC_SURPRISES = [
   {
     id: 'memory', fx: 'zoom',
     title: { en: 'Golden Bond', bn: 'মায়ায় বাঁধা স্মৃতি' },
-    image: 'media/magic/magic4.jpg',
+    image: 'media/magic/magic4.webp',
     message: { en: 'Some moments are meant to stay as smiles.', bn: 'কিছু মুহূর্ত শুধু হাসির জন্যই থেকে যায়।' },
     caption: { en: '', bn: '' },
     music: { type: 'audio', src: 'media/magic/magic4.mp3' },

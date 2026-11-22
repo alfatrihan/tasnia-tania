@@ -128,13 +128,13 @@
     }
 
     // Result characters: one PNG per result tier.
-    // Files go in media/quiz/ next to index.html. If a file is missing, the logo shows instead (media/logo.png).
+    // Files go in media/quiz/ next to index.html. If a file is missing, the logo shows instead (media/logo.webp).
     const CHARACTER = {
-        full: { expr: 'excited', src: 'media/quiz/quiz-full-excited.png' },
-        hi:   { expr: 'happy',   src: 'media/quiz/quiz-hi-happy.png' },
-        mid:  { expr: 'encouraging', src: 'media/quiz/quiz-mid-encouraging.png' },
-        lowmid: { expr: 'hopeful', src: 'media/quiz/quiz-lowmid-hopeful.png' },
-        low:  { expr: 'gentle',  src: 'media/quiz/quiz-low-gentle.png' }
+        full: { expr: 'excited', src: 'media/quiz/quiz-full-excited.webp' },
+        hi:   { expr: 'happy',   src: 'media/quiz/quiz-hi-happy.webp' },
+        mid:  { expr: 'encouraging', src: 'media/quiz/quiz-mid-encouraging.webp' },
+        lowmid: { expr: 'hopeful', src: 'media/quiz/quiz-lowmid-hopeful.webp' },
+        low:  { expr: 'gentle',  src: 'media/quiz/quiz-low-gentle.webp' }
     };
 
     // If a result PNG is missing or fails to load, a drawn character of the same tier takes its place,
@@ -195,7 +195,7 @@
                 '<div class="qz-stage">' +
                     '<div class="qz-bubble-wrap"><div class="qz-bubble">' + msg + '</div></div>' +
                     '<div class="qz-tania qz-' + tier + '">' +
-                        '<img class="qz-lotus logo-img" src="media/logo.png" alt="" onerror="this.remove()">' +
+                        '<img class="qz-lotus logo-img" src="media/logo.webp" alt="" onerror="this.remove()">' +
                         '<img class="qz-char" src="' + ch.src + '" alt="">' +
                     '</div>' +
                 '</div>' +

@@ -43,9 +43,9 @@
         folderPath: 'media/frames/',
         framePrefix: 'frame-',
         frameDigits: 3,
-        frameExt: '.png',
+        frameExt: '.webp',
         totalFrames: 12,
-        posterImage: 'media/frames/tania-poster.png',
+        posterImage: 'media/frames/frame-000.webp',
 
         // Optional voice file. null = no audio request (no 404 in the console).
         audioSrc: null,

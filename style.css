@@ -3099,7 +3099,7 @@ html[lang="bn"] .why-gallery .bk p {
     .gallery .flip.centre.arrive { animation: none }
 }
 
-/* the site logo (media/logo.png) keeps its proportions inside the size each spot already has */
+/* the site logo (media/logo.webp) keeps its proportions inside the size each spot already has */
 .logo-img {
     object-fit: contain
 }

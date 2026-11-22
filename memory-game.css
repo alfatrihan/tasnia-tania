@@ -1,11 +1,7 @@
 /* ===== Tania's Memory Match (third game in the Play carousel) =====
    Uses the same colours, fonts, rounded cards, shadows and PLAY-button gradient as the other games. */
 
-<<<<<<< HEAD
 .hidden {
-=======
-#play-slide-memory .hidden {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     display: none !important
 }
 
@@ -16,11 +12,7 @@
     margin: 0 auto
 }
 
-<<<<<<< HEAD
 .mm-card-wrap {
-=======
-#play-slide-memory .mm-card-wrap {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     position: relative;
     width: 100%;
     border-radius: 18px;
@@ -31,20 +23,12 @@
 }
 
 /* ----- start screen ----- */
-<<<<<<< HEAD
 .mm-screen {
-=======
-#play-slide-memory .mm-screen {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     padding: 26px 22px 22px;
     text-align: center
 }
 
-<<<<<<< HEAD
 .mm-title {
-=======
-#play-slide-memory .mm-title {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-weight: 600;
     font-size: clamp(1.7rem, 4vw, 2.2rem);
@@ -53,22 +37,14 @@
     letter-spacing: .5px
 }
 
-<<<<<<< HEAD
 .mm-intro {
-=======
-#play-slide-memory .mm-intro {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     color: var(--mute);
     font-size: .95rem;
     max-width: 520px;
     margin: 8px auto 4px
 }
 
-<<<<<<< HEAD
 .mm-label {
-=======
-#play-slide-memory .mm-label {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     margin-top: 18px;
     font: 500 .72rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
     letter-spacing: 2px;
@@ -76,11 +52,7 @@
     color: var(--mute)
 }
 
-<<<<<<< HEAD
 .mm-diffs {
-=======
-#play-slide-memory .mm-diffs {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -88,11 +60,7 @@
     margin-top: 10px
 }
 
-<<<<<<< HEAD
 .mm-diff {
-=======
-#play-slide-memory .mm-diff {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -108,50 +76,29 @@
     transition: transform .25s, border-color .25s, background .25s, box-shadow .25s
 }
 
-<<<<<<< HEAD
 .mm-diff-name {
-=======
-#play-slide-memory .mm-diff-name {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     font-weight: 600;
     color: var(--ink);
     font-size: .95rem
 }
 
-<<<<<<< HEAD
 .mm-diff-sub {
-=======
-#play-slide-memory .mm-diff-sub {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     font-size: .72rem;
     opacity: .9
 }
 
-<<<<<<< HEAD
 .mm-diff.on {
-=======
-#play-slide-memory .mm-diff.on {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     background: linear-gradient(135deg, #ee8fb5, #c2467f);
     border-color: transparent;
     box-shadow: 0 8px 22px #ee8fb555
 }
 
-<<<<<<< HEAD
 .mm-diff.on .mm-diff-name,
 .mm-diff.on .mm-diff-sub {
     color: #2b0f1e
 }
 
 .mm-modes {
-=======
-#play-slide-memory .mm-diff.on .mm-diff-name,
-#play-slide-memory .mm-diff.on .mm-diff-sub {
-    color: #2b0f1e
-}
-
-#play-slide-memory .mm-modes {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -159,11 +106,7 @@
     margin-top: 10px
 }
 
-<<<<<<< HEAD
 .mm-mode {
-=======
-#play-slide-memory .mm-mode {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -181,49 +124,29 @@
     transition: transform .3s, opacity .3s
 }
 
-<<<<<<< HEAD
 .mm-mode small {
-=======
-#play-slide-memory .mm-mode small {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     font-weight: 400;
     font-size: .72rem;
     letter-spacing: .3px;
     opacity: .85
 }
 
-<<<<<<< HEAD
 .mm-mode-alt {
-=======
-#play-slide-memory .mm-mode-alt {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     background: linear-gradient(135deg, #cdb4f0, #9a7fd1);
     box-shadow: 0 10px 30px #cdb4f055;
     color: #1d1430
 }
 
-<<<<<<< HEAD
 .mm-mode:hover:not(:disabled) {
     transform: translateY(-2px)
 }
 
 .mm-mode:disabled {
-=======
-#play-slide-memory .mm-mode:hover:not(:disabled) {
-    transform: translateY(-2px)
-}
-
-#play-slide-memory .mm-mode:disabled {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     opacity: .45;
     cursor: default
 }
 
-<<<<<<< HEAD
 .mm-loading {
-=======
-#play-slide-memory .mm-loading {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     margin-top: 16px;
     color: var(--mute);
     font-size: .9rem;
@@ -231,19 +154,11 @@
 }
 
 /* ----- game screen ----- */
-<<<<<<< HEAD
 #mm-game {
     padding: 0
 }
 
 .mm-hud {
-=======
-#play-slide-memory #mm-game {
-    padding: 0
-}
-
-#play-slide-memory .mm-hud {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -252,21 +167,13 @@
     border-bottom: 1px solid var(--line)
 }
 
-<<<<<<< HEAD
 .mm-players {
-=======
-#play-slide-memory .mm-players {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     display: flex;
     align-items: center;
     gap: 8px
 }
 
-<<<<<<< HEAD
 .mm-player {
-=======
-#play-slide-memory .mm-player {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     flex: 1;
     min-width: 0;
     display: flex;
@@ -283,42 +190,26 @@
     transition: border-color .3s, box-shadow .3s, color .3s
 }
 
-<<<<<<< HEAD
 .mm-pname {
-=======
-#play-slide-memory .mm-pname {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis
 }
 
-<<<<<<< HEAD
 .mm-player b {
-=======
-#play-slide-memory .mm-player b {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--blush)
 }
 
-<<<<<<< HEAD
 .mm-player.on {
-=======
-#play-slide-memory .mm-player.on {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     border-color: var(--rose);
     color: var(--ink);
     box-shadow: 0 0 0 1px var(--rose) inset, 0 0 16px #ee8fb533
 }
 
-<<<<<<< HEAD
 .mm-turn {
-=======
-#play-slide-memory .mm-turn {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     flex: 0 0 auto;
     min-width: 92px;
     text-align: center;
@@ -328,22 +219,14 @@
     color: var(--rose)
 }
 
-<<<<<<< HEAD
 .mm-stats {
-=======
-#play-slide-memory .mm-stats {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     gap: 8px
 }
 
-<<<<<<< HEAD
 .mm-chip {
-=======
-#play-slide-memory .mm-chip {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     padding: 4px 11px;
     border-radius: 99px;
     border: 1px solid var(--line);
@@ -354,31 +237,19 @@
     text-transform: uppercase
 }
 
-<<<<<<< HEAD
 .mm-chip b {
-=======
-#play-slide-memory .mm-chip b {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     margin-left: 4px;
     color: var(--ink);
     font-weight: 600;
     letter-spacing: 0
 }
 
-<<<<<<< HEAD
 .mm-stage {
-=======
-#play-slide-memory .mm-stage {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     position: relative;
     padding: 14px 16px 6px
 }
 
-<<<<<<< HEAD
 .mm-board {
-=======
-#play-slide-memory .mm-board {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     display: grid;
     grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
     gap: 10px;
@@ -388,11 +259,7 @@
 }
 
 /* ----- cards ----- */
-<<<<<<< HEAD
 .mm-card {
-=======
-#play-slide-memory .mm-card {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     position: relative;
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -406,17 +273,12 @@
     transition: transform .25s
 }
 
-<<<<<<< HEAD
 .mm-card:focus-visible {
-=======
-#play-slide-memory .mm-card:focus-visible {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     outline: 2px solid var(--rose);
     outline-offset: 3px;
     border-radius: 12px
 }
 
-<<<<<<< HEAD
 .mm-card:active {
     transform: scale(.96)
 }
@@ -434,23 +296,10 @@
 
 @media (hover: hover) {
     .mm-card:not(.open):not(.matched):hover {
-=======
-#play-slide-memory .mm-card:active {
-    transform: scale(.96)
-}
-
-#play-slide-memory .mm-card.matched {
-    cursor: default
-}
-
-@media (hover: hover) {
-    #play-slide-memory .mm-card:not(.open):not(.matched):hover {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         transform: translateY(-2px)
     }
 }
 
-<<<<<<< HEAD
 .mm-inner {
     position: absolute;
     inset: 0;
@@ -464,21 +313,6 @@
 }
 
 .mm-face {
-=======
-#play-slide-memory .mm-inner {
-    position: absolute;
-    inset: 0;
-    transform-style: preserve-3d;
-    transition: transform .55s cubic-bezier(.3, .7, .2, 1);
-    border-radius: 12px
-}
-
-#play-slide-memory .mm-card.open .mm-inner {
-    transform: rotateY(180deg)
-}
-
-#play-slide-memory .mm-face {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     position: absolute;
     inset: 0;
     border-radius: 12px;
@@ -488,7 +322,6 @@
     box-shadow: 0 8px 20px #0007
 }
 
-<<<<<<< HEAD
 /* card back: a plain night-blush surface, no pattern */
 .mm-back {
     border: 1px solid rgba(238, 143, 181, .4);
@@ -497,17 +330,6 @@
 }
 
 .mm-back::after {
-=======
-/* card back: a soft night-blush pattern of flowers and hearts */
-#play-slide-memory .mm-back {
-    border: 1px solid rgba(238, 143, 181, .35);
-    background-color: #241a33;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46' viewBox='0 0 46 46'%3E%3Cg fill='%23ee8fb5' fill-opacity='.22'%3E%3Ccircle cx='11' cy='11' r='3'/%3E%3Ccircle cx='7.5' cy='9' r='3'/%3E%3Ccircle cx='14.5' cy='9' r='3'/%3E%3Ccircle cx='8' cy='14.5' r='3'/%3E%3Ccircle cx='14' cy='14.5' r='3'/%3E%3C/g%3E%3Cpath d='M33 27c-2.6-3.5-7-2.2-7 1.3 0 2.6 7 6.5 7 6.5s7-3.9 7-6.5c0-3.5-4.4-4.8-7-1.3z' fill='%23cdb4f0' fill-opacity='.22'/%3E%3Ccircle cx='34' cy='6' r='1.5' fill='%23ffd6e4' fill-opacity='.35'/%3E%3C/svg%3E"), radial-gradient(circle at 30% 20%, #3a2750, #1b1229 75%);
-    background-size: 46px 46px, cover
-}
-
-#play-slide-memory .mm-back::after {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     content: "";
     position: absolute;
     inset: 5px;
@@ -515,21 +337,13 @@
     border-radius: 8px
 }
 
-<<<<<<< HEAD
 .mm-front {
-=======
-#play-slide-memory .mm-front {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     transform: rotateY(180deg);
     background: var(--bg2);
     border: 1px solid var(--line)
 }
 
-<<<<<<< HEAD
 .mm-front img {
-=======
-#play-slide-memory .mm-front img {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     display: block;
     width: 100%;
     height: 100%;
@@ -539,7 +353,6 @@
     pointer-events: none
 }
 
-<<<<<<< HEAD
 .mm-card.matched .mm-front {
     box-shadow: 0 0 0 2px var(--rose), 0 0 22px #ee8fb5aa, 0 0 50px #ee8fb544;
     animation: mmMatchPop .55s cubic-bezier(.2,1.4,.4,1) both
@@ -581,21 +394,6 @@
 
 /* ----- memorize countdown ----- */
 .mm-count {
-=======
-#play-slide-memory .mm-card.matched .mm-front {
-    box-shadow: 0 0 0 2px var(--rose), 0 0 18px #ee8fb588;
-    animation: mm-pop .5s ease
-}
-
-@keyframes mm-pop {
-    0% { transform: rotateY(180deg) scale(1) }
-    50% { transform: rotateY(180deg) scale(1.06) }
-    100% { transform: rotateY(180deg) scale(1) }
-}
-
-/* ----- memorize countdown ----- */
-#play-slide-memory .mm-count {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     position: absolute;
     top: 4px;
     left: 50%;
@@ -613,11 +411,7 @@
 }
 
 /* ----- completion screen ----- */
-<<<<<<< HEAD
 .mm-end {
-=======
-#play-slide-memory .mm-end {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     position: absolute;
     inset: 0;
     z-index: 5;
@@ -632,11 +426,7 @@
     background: radial-gradient(ellipse at center, #0e0a14e6, #0e0a14f5)
 }
 
-<<<<<<< HEAD
 .mm-end-title {
-=======
-#play-slide-memory .mm-end-title {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     max-width: 420px;
     font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
     font-size: clamp(1.4rem, 4vw, 1.9rem);
@@ -646,11 +436,7 @@
     z-index: 1
 }
 
-<<<<<<< HEAD
 .mm-end-win {
-=======
-#play-slide-memory .mm-end-win {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     color: var(--rose);
     font-size: 1.05rem;
     letter-spacing: .5px;
@@ -658,22 +444,14 @@
     z-index: 1
 }
 
-<<<<<<< HEAD
 .mm-end-stats {
-=======
-#play-slide-memory .mm-end-stats {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     color: var(--mute);
     font-size: .86rem;
     position: relative;
     z-index: 1
 }
 
-<<<<<<< HEAD
 .mm-end-btns {
-=======
-#play-slide-memory .mm-end-btns {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -683,7 +461,6 @@
     z-index: 1
 }
 
-<<<<<<< HEAD
 .mm-petal {
     position: absolute;
     top: -32px;
@@ -701,25 +478,6 @@
 
 /* ----- buttons under the game ----- */
 .mm-actions {
-=======
-#play-slide-memory .mm-petal {
-    position: absolute;
-    top: -30px;
-    z-index: 0;
-    color: var(--rose);
-    pointer-events: none;
-    opacity: .9;
-    animation: mm-fall linear forwards
-}
-
-@keyframes mm-fall {
-    from { transform: translate3d(0, 0, 0) rotate(0deg) }
-    to { transform: translate3d(28px, 125%, 0) rotate(260deg) }
-}
-
-/* ----- buttons under the game ----- */
-#play-slide-memory .mm-actions {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -727,11 +485,7 @@
     padding: 12px 16px 16px
 }
 
-<<<<<<< HEAD
 .mm-btn {
-=======
-#play-slide-memory .mm-btn {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     padding: 10px 20px;
     border-radius: 99px;
     border: 0;
@@ -744,19 +498,11 @@
     transition: transform .25s
 }
 
-<<<<<<< HEAD
 .mm-btn:hover {
     transform: translateY(-1px)
 }
 
 .mm-ghost {
-=======
-#play-slide-memory .mm-btn:hover {
-    transform: translateY(-1px)
-}
-
-#play-slide-memory .mm-ghost {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     color: var(--blush);
     background: #1f162b;
     border: 1px solid var(--line);
@@ -769,7 +515,6 @@
         margin: auto 0
     }
 
-<<<<<<< HEAD
     .mm-screen {
         padding: 18px 14px 16px
     }
@@ -779,23 +524,11 @@
     }
 
     .mm-mode {
-=======
-    #play-slide-memory .mm-screen {
-        padding: 18px 14px 16px
-    }
-
-    #play-slide-memory .mm-title {
-        font-size: 1.6rem
-    }
-
-    #play-slide-memory .mm-mode {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         min-width: 0;
         width: 100%;
         max-width: 280px
     }
 
-<<<<<<< HEAD
     .mm-hud {
         padding: 8px 10px
     }
@@ -805,22 +538,10 @@
     }
 
     .mm-turn {
-=======
-    #play-slide-memory .mm-hud {
-        padding: 8px 10px
-    }
-
-    #play-slide-memory .mm-player {
-        padding: 5px 8px
-    }
-
-    #play-slide-memory .mm-turn {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         min-width: 66px;
         font-size: .7rem
     }
 
-<<<<<<< HEAD
     .mm-stage {
         padding: 10px 10px 4px
     }
@@ -834,28 +555,12 @@
     }
 
     .mm-btn {
-=======
-    #play-slide-memory .mm-stage {
-        padding: 10px 10px 4px
-    }
-
-    #play-slide-memory .mm-board {
-        gap: 6px
-    }
-
-    #play-slide-memory .mm-actions {
-        padding: 8px 10px 12px
-    }
-
-    #play-slide-memory .mm-btn {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         padding: 9px 14px;
         font-size: .8rem
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-<<<<<<< HEAD
     .mm-inner,
     .mm-card,
     .mm-diff,
@@ -871,22 +576,6 @@
     }
 
     .mm-petal {
-=======
-    #play-slide-memory .mm-inner,
-    #play-slide-memory .mm-card,
-    #play-slide-memory .mm-diff,
-    #play-slide-memory .mm-mode,
-    #play-slide-memory .mm-btn {
-        transition: none !important
-    }
-
-    #play-slide-memory .mm-card.matched .mm-front,
-    #play-slide-memory .mm-petal {
-        animation: none !important
-    }
-
-    #play-slide-memory .mm-petal {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         display: none
     }
 }
@@ -901,11 +590,7 @@ body.mm-lock {
     isolation: auto
 }
 
-<<<<<<< HEAD
 .mm-exit {
-=======
-#play-slide-memory .mm-exit {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     display: none;
     position: absolute;
     top: calc(12px + env(safe-area-inset-top, 0px));
@@ -921,11 +606,7 @@ body.mm-lock {
     cursor: pointer
 }
 
-<<<<<<< HEAD
 .mm-card-wrap.mm-full {
-=======
-#play-slide-memory .mm-card-wrap.mm-full {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     position: fixed;
     inset: 0;
     z-index: 300;
@@ -943,19 +624,11 @@ body.mm-lock {
     overflow: hidden
 }
 
-<<<<<<< HEAD
 .mm-card-wrap.mm-full .mm-exit {
     display: inline-block
 }
 
 .mm-card-wrap.mm-full .mm-screen {
-=======
-#play-slide-memory .mm-card-wrap.mm-full .mm-exit {
-    display: inline-block
-}
-
-#play-slide-memory .mm-card-wrap.mm-full .mm-screen {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     flex: 1 1 auto;
     min-height: 0;
     display: flex;
@@ -965,19 +638,11 @@ body.mm-lock {
     padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px))
 }
 
-<<<<<<< HEAD
 .mm-card-wrap.mm-full #mm-game {
     justify-content: space-between
 }
 
 .mm-card-wrap.mm-full .mm-stage {
-=======
-#play-slide-memory .mm-card-wrap.mm-full #mm-game {
-    justify-content: space-between
-}
-
-#play-slide-memory .mm-card-wrap.mm-full .mm-stage {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     flex: 1 1 auto;
     display: flex;
     align-items: center;
@@ -986,19 +651,11 @@ body.mm-lock {
     padding: 10px 16px
 }
 
-<<<<<<< HEAD
 .mm-card-wrap.mm-full .mm-board {
     max-width: min(520px, calc(100dvh - 300px))
 }
 
 .mm-card-wrap.mm-full .mm-title {
-=======
-#play-slide-memory .mm-card-wrap.mm-full .mm-board {
-    max-width: min(520px, calc(100dvh - 300px))
-}
-
-#play-slide-memory .mm-card-wrap.mm-full .mm-title {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
     margin-top: 28px
 }
 
@@ -1008,16 +665,11 @@ body.mm-lock {
         width: 90%
     }
 
-<<<<<<< HEAD
     .mm-card-wrap:not(.mm-full) {
-=======
-    #play-slide-memory .mm-card-wrap:not(.mm-full) {
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
         aspect-ratio: 5 / 7;
         overflow-y: auto
     }
 }
-<<<<<<< HEAD
 
 /* ===== PLAY button (outside the game) and the full-screen setup: names and START ===== */
 .mm-play {
@@ -2271,5 +1923,3 @@ html[lang="bn"] #mm-landing .mm-loading {
 .mm-card-wrap.mm-full .mm-screen {
     padding-bottom: calc(50px + env(safe-area-inset-bottom, 0px))
 }
-=======
->>>>>>> 99cbcc3141acd4fe4eadb7cb9f46c79cb238f193
