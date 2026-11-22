@@ -37,9 +37,15 @@
 
     const isBirthdayToday = now => now.getMonth() === FEB && now.getDate() === BDAY;
 
+    /* Bangla version of the page: write the digits as Bangla digits (০-৯) */
+    const BN_DIGITS = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+    const isBn = () => document.documentElement.lang === 'bn';
+    const digits = s => (isBn() ? s.replace(/[0-9]/g, d => BN_DIGITS[d]) : s);
+
     /* only write a number when it changed, and restart its small ease-in animation */
     const shown = {};
-    function setNum(key, text) {
+    function setNum(key, raw) {
+        const text = digits(raw);
         if (shown[key] === text) return;
         shown[key] = text;
         const node = el[key];
@@ -54,6 +60,7 @@
     let target = 0;                         // timestamp of the date the date line shows
     let inView = false;
     let lastBurst = 0;
+    let dateDirty = false;
 
     /* ----- confetti ----- */
     const COLORS = ['#ee8fb5', '#ffd6e4', '#cdb4f0', '#9bb89a', '#f6b3d0', '#ffffff'];
@@ -83,11 +90,17 @@
 
     /* ----- date line, shown in the visitor's own timezone ----- */
     function updateDateLine(t) {
-        if (t.getTime() === target) return;
+        if (t.getTime() === target && !dateDirty) return;
+        dateDirty = false;
         target = t.getTime();
         const opts = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
         el.dateEn.textContent = 'Next birthday: ' + t.toLocaleDateString('en-GB', opts);
-        el.dateBn.textContent = 'পরবর্তী জন্মদিন: ' + t.toLocaleDateString('bn-BD', opts);
+        // Bangla date built from Bangla names only, so no English word can slip into the Bangla line
+        // (some browsers do not have Bangla date names and fall back to English)
+        const BN_WEEK = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
+        const BN_MONTH = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+        const bnDate = BN_WEEK[t.getDay()] + ', ' + digits(String(t.getDate())) + ' ' + BN_MONTH[t.getMonth()] + ' ' + digits(String(t.getFullYear()));
+        el.dateBn.textContent = 'পরবর্তী জন্মদিন: ' + bnDate;
     }
 
     function tick() {
@@ -145,7 +158,15 @@
         reveal.addEventListener('keydown', e => {
             if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
         });
+
     }
+
+    /* switching English / Bangla: redraw the numbers in the new digits straight away */
+    new MutationObserver(() => {
+        Object.keys(shown).forEach(k => delete shown[k]);
+        dateDirty = true;
+        tick();
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 
     tick();
     setInterval(tick, 1000);

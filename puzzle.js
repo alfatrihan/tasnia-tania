@@ -473,7 +473,7 @@
     // browser's back closes it: the page comes back where it was, and the game goes back to its start screen.
     const fsHolder = document.createElement('div');   // keeps the page the same height while the card is away
     const fsBtn = document.getElementById('pz-fs');
-    const FS_TXT = { en: ['Full screen', 'Exit full screen'], bn: ['ফুল স্ক্রিন', 'ফুল স্ক্রিন থেকে বের হও'] };
+    const FS_TXT = { en: ['Full screen', 'Exit game'], bn: ['ফুল স্ক্রিন', 'গেম থেকে বের হও'] };
     const isFull = () => card.classList.contains('pz-full');
     let savedY = 0;
 

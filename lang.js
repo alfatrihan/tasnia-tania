@@ -106,11 +106,24 @@
     });
   }
 
+  // percentages (the traits and the stubborn meter): Bangla digits in the Bangla version
+  const BN_DIGITS = '০১২৩৪৫৬৭৮৯';
+  const toBnDigits = t => t.replace(/[0-9]/g, d => BN_DIGITS[d]);
+  const toAsciiDigits = t => t.replace(/[\u09E6-\u09EF]/g, d => String(BN_DIGITS.indexOf(d)));
+  function applyDigits(l) {
+    document.querySelectorAll('#jedval, .mtop b, .pm-pct').forEach(el => {
+      const ascii = toAsciiDigits(el.textContent.trim());
+      const next = l === 'bn' ? toBnDigits(ascii) : ascii;
+      if (next !== el.textContent.trim()) el.textContent = next;
+    });
+  }
+
   function setLang(l) {
     lang = l;
     document.documentElement.lang = l;
     applyStatic(l);
     applyDyn(l);
+    applyDigits(l);
     btn.textContent = l === 'bn' ? 'English' : 'বাংলা';
     btn.setAttribute('aria-label', l === 'bn' ? 'Switch to English' : 'বাংলায় দেখুন');
     try { localStorage.setItem(KEY, l); } catch (e) { }
@@ -122,6 +135,11 @@
     if (el) new MutationObserver(() => applyDyn(lang))
       .observe(el, { childList: true, subtree: true, characterData: true });
   });
+
+  // the meter and the traits are written again when moved or on load: keep their digits in step
+  // (watches the whole page, because the ring percentages are created after this script runs)
+  new MutationObserver(() => applyDigits(lang))
+    .observe(document.body, { childList: true, characterData: true, subtree: true });
 
   btn.onclick = () => setLang(lang === 'en' ? 'bn' : 'en');
 

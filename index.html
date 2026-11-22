@@ -15,6 +15,7 @@
     rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="game.css">
+  <link rel="stylesheet" href="memory-game.css">
   <link rel="stylesheet" href="map.css">
   <link rel="stylesheet" href="tania.css">
   <link rel="stylesheet" href="birthday.css">
@@ -426,7 +427,7 @@
       <span class="bday-star s3" aria-hidden="true">&#10022;</span>
       <span class="bday-star s4" aria-hidden="true">&#10022;</span>
       <span class="bday-star s5" aria-hidden="true">&#10022;</span>
-      <h2 class="rv"><span class="lang-en">Counting Down to Her Special Day</span><span class="lang-bn">তার বিশেষ দিনের অপেক্ষা</span></h2>
+      <h2 class="rv"><span class="lang-en">Special Day</span><span class="lang-bn">বিশেষ দিন</span></h2>
       <div class="div rv">&#10022;</div>
       <p class="bday-sub rv"><span class="lang-en">A little closer to another beautiful chapter of her life.</span><span class="lang-bn">তার জীবনের আরেকটি সুন্দর অধ্যায়ের আরও একটু কাছে।</span></p>
 
@@ -573,6 +574,77 @@
             </div>
           </div>
           <p class="tap play-hide" id="pz-hint">Click a piece next to the gap, or use the arrow keys</p>
+        </div>
+        <div class="play-slide" id="play-slide-memory">
+          <div class="mm-fold">
+            <div class="play-stack">
+              <div class="mm-card-wrap" id="mm-root">
+                <button type="button" class="mm-exit" id="mm-exit" data-k="exitFull" aria-label="Exit full screen">Exit full screen</button>
+
+                <!-- outside the game: only the title, a short line and the PLAY button -->
+                <div class="mm-screen" id="mm-landing">
+                  <h3 class="mm-title" data-k="title">Tania's Pair Hunt</h3>
+                  <p class="mm-sub" data-k="pressPlay">Press PLAY to start</p>
+                  <button type="button" class="runner-play mm-play" id="mm-play" data-k="play" disabled>PLAY</button>
+                  <p class="mm-loading" id="mm-loading" data-k="loading">Gathering Tania's photos&hellip;</p>
+                </div>
+
+                <!-- after PLAY (full screen): difficulty, mode, names of the two players -->
+                <div class="mm-screen hidden" id="mm-start">
+                  <p class="mm-label" data-k="chooseDiff">Choose a difficulty</p>
+                  <div class="mm-diffs" role="group" aria-label="Difficulty">
+                    <button type="button" class="mm-diff" data-diff="easy" aria-pressed="false"><span class="mm-diff-name" data-k="easy">Easy</span><span class="mm-diff-sub"></span></button>
+                    <button type="button" class="mm-diff" data-diff="medium" aria-pressed="true"><span class="mm-diff-name" data-k="medium">Medium</span><span class="mm-diff-sub"></span></button>
+                    <button type="button" class="mm-diff" data-diff="hard" aria-pressed="false"><span class="mm-diff-name" data-k="hard">Hard</span><span class="mm-diff-sub"></span></button>
+                  </div>
+                  <p class="mm-label" data-k="chooseMode">Choose how to play</p>
+                  <div class="mm-modes">
+                    <button type="button" class="mm-mode" data-mode="friend" aria-pressed="true"><span data-k="friend">Play with Friend</span><small data-k="friendNote">Take turns on this device</small></button>
+                    <button type="button" class="mm-mode mm-mode-alt" data-mode="bot" aria-pressed="false"><span data-k="bot">Play with Bot</span><small data-k="botNote">Play against the computer</small></button>
+                  </div>
+                  <div class="mm-names" id="mm-names">
+                    <p class="mm-label" data-k="enterNames">Write your names</p>
+                    <div class="mm-name-row">
+                      <input type="text" id="mm-name0" maxlength="20" autocomplete="off" placeholder="Player 1" aria-label="Player 1 name">
+                      <input type="text" id="mm-name1" maxlength="20" autocomplete="off" placeholder="Player 2" aria-label="Player 2 name">
+                    </div>
+                  </div>
+                  <button type="button" class="runner-play mm-play mm-go" id="mm-go" data-k="start" disabled>START</button>
+                </div>
+
+                <div class="mm-screen hidden" id="mm-game">
+                <div class="mm-hud">
+                  <div class="mm-players">
+                    <div class="mm-player" id="mm-p0"><span class="mm-pname" id="mm-p0-name"></span><b id="mm-p0-score">0</b></div>
+                    <div class="mm-turn" id="mm-turn" aria-live="polite"></div>
+                    <div class="mm-player" id="mm-p1"><span class="mm-pname" id="mm-p1-name"></span><b id="mm-p1-score">0</b></div>
+                  </div>
+                  <div class="mm-stats">
+                    <span class="mm-chip"><span data-k="pairsLeft">Pairs left</span><b id="mm-left">0</b></span>
+                    <span class="mm-chip"><span data-k="moves">Moves</span><b id="mm-moves">0</b></span>
+                  </div>
+                </div>
+                <div class="mm-stage" id="mm-stage">
+                  <div class="mm-board" id="mm-board"></div>
+                  <div class="mm-count hidden" id="mm-count"></div>
+                  <div class="mm-end hidden" id="mm-end">
+                    <p class="mm-end-title" id="mm-end-title"></p>
+                    <p class="mm-end-win" id="mm-end-win"></p>
+                    <p class="mm-end-stats" id="mm-end-stats"></p>
+                    <div class="mm-end-btns">
+                      <button type="button" class="mm-btn" id="mm-end-again" data-k="playAgain">Play again</button>
+                      <button type="button" class="mm-btn mm-ghost" id="mm-end-change" data-k="changeMode">Change mode</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="mm-actions">
+                  <button type="button" class="mm-btn mm-ghost" id="mm-restart" data-k="restart">Restart Game</button>
+                  <button type="button" class="mm-btn mm-ghost" id="mm-back" data-k="backSel">Back to Game Selection</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
         </div>
       </div>
       <div class="g-dots play-dots" id="play-dots" aria-label="Swipe right to see the next game"></div>
@@ -791,6 +863,7 @@
   <script src="audio/puzzle/songs.js"></script>
   <script src="media/puzzle/pictures.js"></script>
   <script src="puzzle.js"></script>
+  <script src="memory-game.js"></script>
   <script>
     (function () {
       const audio = new Audio('audio/song.mp3');

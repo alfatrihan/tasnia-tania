@@ -27,8 +27,8 @@
     const THREE_MISSING = { en: 'The 3D game could not load. Check your internet connection.', bn: '3D গেমটি লোড হয়নি। ইন্টারনেট সংযোগ দেখুন।' };
 
     const TEXT = {
-        en: { title: "Tania's Run", hint: 'Tap, click or press Space to jump', start: 'Press PLAY to start', play: 'PLAY', over: 'Game over', again: 'tap or press Space to try again', best: 'BEST', greet: 'Hi, I am Tania. Tap me to play!', full: 'Full screen', exit: 'Exit full screen', rotate: 'Turn your phone sideways for the best view', score: 'Score', high: 'Highest', newBest: 'New best!', coins: 'Coins' },
-        bn: { title: 'তানিয়ার দৌড়', hint: 'লাফ দিতে ট্যাপ, ক্লিক বা স্পেস চাপুন', start: 'খেলা শুরু করতে প্লে চাপুন', play: 'প্লে করুন', over: 'খেলা শেষ', again: 'আবার খেলতে ট্যাপ করুন বা স্পেস চাপুন', best: 'সেরা', greet: 'হ্যালো, আমি তানিয়া। খেলতে আমাকে ট্যাপ করো!', full: 'ফুল স্ক্রিন', exit: 'ছোট করুন', rotate: 'ফোনটি পাশে ঘুরিয়ে খেলুন', score: 'স্কোর', high: 'সর্বোচ্চ', newBest: 'নতুন সেরা!', coins: 'কয়েন' }
+        en: { title: "Tania's Run", hint: 'Tap, click or press Space to jump', start: 'Press PLAY to start', play: 'PLAY', over: 'Game over', again: 'tap or press Space to try again', best: 'BEST', greet: 'Hi, I am Tania. Tap me to play!', full: 'Full screen', exit: 'Exit game', rotate: 'Turn your phone sideways for the best view', score: 'Score', high: 'Highest', newBest: 'New best!', coins: 'Coins' },
+        bn: { title: 'তানিয়ার দৌড়', hint: 'লাফ দিতে ট্যাপ, ক্লিক বা স্পেস চাপুন', start: 'খেলা শুরু করতে প্লে চাপুন', play: 'প্লে করুন', over: 'খেলা শেষ', again: 'আবার খেলতে ট্যাপ করুন বা স্পেস চাপুন', best: 'সেরা', greet: 'হ্যালো, আমি তানিয়া। খেলতে আমাকে ট্যাপ করো!', full: 'ফুল স্ক্রিন', exit: 'গেম থেকে বের হও', rotate: 'ফোনটি পাশে ঘুরিয়ে খেলুন', score: 'স্কোর', high: 'সর্বোচ্চ', newBest: 'নতুন সেরা!', coins: 'কয়েন' }
     };
     const lang = () => (document.documentElement.lang === 'bn' ? 'bn' : 'en');
 

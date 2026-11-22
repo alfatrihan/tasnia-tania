@@ -1,0 +1,1925 @@
+/* ===== Tania's Memory Match (third game in the Play carousel) =====
+   Uses the same colours, fonts, rounded cards, shadows and PLAY-button gradient as the other games. */
+
+.hidden {
+    display: none !important
+}
+
+#play-slide-memory .mm-fold {
+    position: relative;
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto
+}
+
+.mm-card-wrap {
+    position: relative;
+    width: 100%;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    box-shadow: 0 20px 50px #0008
+}
+
+/* ----- start screen ----- */
+.mm-screen {
+    padding: 26px 22px 22px;
+    text-align: center
+}
+
+.mm-title {
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
+    font-weight: 600;
+    font-size: clamp(1.7rem, 4vw, 2.2rem);
+    line-height: 1.2;
+    color: var(--blush);
+    letter-spacing: .5px
+}
+
+.mm-intro {
+    color: var(--mute);
+    font-size: .95rem;
+    max-width: 520px;
+    margin: 8px auto 4px
+}
+
+.mm-label {
+    margin-top: 18px;
+    font: 500 .72rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--mute)
+}
+
+.mm-diffs {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px
+}
+
+.mm-diff {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 110px;
+    padding: 9px 14px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: #1f162b;
+    color: var(--mute);
+    cursor: pointer;
+    font: inherit;
+    transition: transform .25s, border-color .25s, background .25s, box-shadow .25s
+}
+
+.mm-diff-name {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: .95rem
+}
+
+.mm-diff-sub {
+    font-size: .72rem;
+    opacity: .9
+}
+
+.mm-diff.on {
+    background: linear-gradient(135deg, #ee8fb5, #c2467f);
+    border-color: transparent;
+    box-shadow: 0 8px 22px #ee8fb555
+}
+
+.mm-diff.on .mm-diff-name,
+.mm-diff.on .mm-diff-sub {
+    color: #2b0f1e
+}
+
+.mm-modes {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 10px
+}
+
+.mm-mode {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 200px;
+    padding: 14px 24px;
+    border-radius: 99px;
+    border: 0;
+    cursor: pointer;
+    font: 600 1rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
+    letter-spacing: 1px;
+    color: #2b0f1e;
+    background: linear-gradient(135deg, #ee8fb5, #c2467f);
+    box-shadow: 0 10px 30px #ee8fb566;
+    transition: transform .3s, opacity .3s
+}
+
+.mm-mode small {
+    font-weight: 400;
+    font-size: .72rem;
+    letter-spacing: .3px;
+    opacity: .85
+}
+
+.mm-mode-alt {
+    background: linear-gradient(135deg, #cdb4f0, #9a7fd1);
+    box-shadow: 0 10px 30px #cdb4f055;
+    color: #1d1430
+}
+
+.mm-mode:hover:not(:disabled) {
+    transform: translateY(-2px)
+}
+
+.mm-mode:disabled {
+    opacity: .45;
+    cursor: default
+}
+
+.mm-loading {
+    margin-top: 16px;
+    color: var(--mute);
+    font-size: .9rem;
+    font-style: italic
+}
+
+/* ----- game screen ----- */
+#mm-game {
+    padding: 0
+}
+
+.mm-hud {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 12px;
+    background: #140e1c;
+    border-bottom: 1px solid var(--line)
+}
+
+.mm-players {
+    display: flex;
+    align-items: center;
+    gap: 8px
+}
+
+.mm-player {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: #1f162b;
+    color: var(--mute);
+    font-size: .78rem;
+    letter-spacing: .5px;
+    transition: border-color .3s, box-shadow .3s, color .3s
+}
+
+.mm-pname {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+.mm-player b {
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--blush)
+}
+
+.mm-player.on {
+    border-color: var(--rose);
+    color: var(--ink);
+    box-shadow: 0 0 0 1px var(--rose) inset, 0 0 16px #ee8fb533
+}
+
+.mm-turn {
+    flex: 0 0 auto;
+    min-width: 92px;
+    text-align: center;
+    font-size: .78rem;
+    line-height: 1.3;
+    letter-spacing: .5px;
+    color: var(--rose)
+}
+
+.mm-stats {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px
+}
+
+.mm-chip {
+    padding: 4px 11px;
+    border-radius: 99px;
+    border: 1px solid var(--line);
+    background: #1f162b;
+    color: var(--mute);
+    font-size: .74rem;
+    letter-spacing: 1px;
+    text-transform: uppercase
+}
+
+.mm-chip b {
+    margin-left: 4px;
+    color: var(--ink);
+    font-weight: 600;
+    letter-spacing: 0
+}
+
+.mm-stage {
+    position: relative;
+    padding: 14px 16px 6px
+}
+
+.mm-board {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto
+}
+
+/* ----- cards ----- */
+.mm-card {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    perspective: 900px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: transform .25s
+}
+
+.mm-card:focus-visible {
+    outline: 2px solid var(--rose);
+    outline-offset: 3px;
+    border-radius: 12px
+}
+
+.mm-card:active {
+    transform: scale(.96)
+}
+
+.mm-card.matched {
+    cursor: default;
+    animation: mmMatchGlow 1.6s cubic-bezier(.2, .8, .3, 1) both
+}
+@keyframes mmMatchGlow {
+    0%   { box-shadow: 0 0 0 0 rgba(238,143,181,.0); transform: scale(1) }
+    18%  { box-shadow: 0 0 0 6px rgba(238,143,181,.65); transform: scale(1.045) }
+    55%  { box-shadow: 0 0 0 10px rgba(238,143,181,.0); transform: scale(1) }
+    100% { box-shadow: none; transform: scale(1) }
+}
+
+@media (hover: hover) {
+    .mm-card:not(.open):not(.matched):hover {
+        transform: translateY(-2px)
+    }
+}
+
+.mm-inner {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transition: transform .62s cubic-bezier(.22, 1.4, .36, 1);
+    border-radius: 12px
+}
+
+.mm-card.open .mm-inner {
+    transform: rotateY(180deg)
+}
+
+.mm-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    box-shadow: 0 8px 20px #0007
+}
+
+/* card back: a plain night-blush surface, no pattern */
+.mm-back {
+    border: 1px solid rgba(238, 143, 181, .4);
+    background-color: #1e1430;
+    background-image: radial-gradient(circle at 30% 25%, #3d2458, #1b1229 72%)
+}
+
+.mm-back::after {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1px dashed rgba(255, 214, 228, .25);
+    border-radius: 8px
+}
+
+.mm-front {
+    transform: rotateY(180deg);
+    background: var(--bg2);
+    border: 1px solid var(--line)
+}
+
+.mm-front img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none
+}
+
+.mm-card.matched .mm-front {
+    box-shadow: 0 0 0 2px var(--rose), 0 0 22px #ee8fb5aa, 0 0 50px #ee8fb544;
+    animation: mmMatchPop .55s cubic-bezier(.2,1.4,.4,1) both
+}
+
+/* pop: a quick scale-bounce on the front face after it lands */
+@keyframes mmMatchPop {
+    0%   { transform: rotateY(180deg) scale(1) }
+    40%  { transform: rotateY(180deg) scale(1.07) }
+    100% { transform: rotateY(180deg) scale(1) }
+}
+
+/* shimmer: a diagonal light band sweeps across the matched photo via a pseudo-element */
+@keyframes mmMatchShimmer {
+    0%   { transform: rotateY(180deg) translateX(-160%) skewX(-18deg); opacity: 0 }
+    8%   { opacity: 1 }
+    85%  { opacity: .9 }
+    100% { transform: rotateY(180deg) translateX(260%) skewX(-18deg); opacity: 0 }
+}
+.mm-card.matched .mm-front::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: 12px;
+    overflow: hidden;
+    background: linear-gradient(
+        115deg,
+        transparent 30%,
+        rgba(255,255,255,.55) 48%,
+        rgba(255,220,235,.30) 56%,
+        transparent 70%
+    );
+    background-size: 55% 100%;
+    background-repeat: no-repeat;
+    animation: mmMatchShimmer 1.0s .06s cubic-bezier(.4, 0, .2, 1) both
+}
+
+/* ----- memorize countdown ----- */
+.mm-count {
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    padding: 6px 16px;
+    border-radius: 99px;
+    border: 1px solid var(--rose);
+    background: #140e1cdd;
+    color: var(--blush);
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    pointer-events: none
+}
+
+/* ----- completion screen ----- */
+.mm-end {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 20px;
+    text-align: center;
+    overflow: hidden;
+    background: radial-gradient(ellipse at center, #0e0a14e6, #0e0a14f5)
+}
+
+.mm-end-title {
+    max-width: 420px;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
+    font-size: clamp(1.4rem, 4vw, 1.9rem);
+    line-height: 1.25;
+    color: var(--blush);
+    position: relative;
+    z-index: 1
+}
+
+.mm-end-win {
+    color: var(--rose);
+    font-size: 1.05rem;
+    letter-spacing: .5px;
+    position: relative;
+    z-index: 1
+}
+
+.mm-end-stats {
+    color: var(--mute);
+    font-size: .86rem;
+    position: relative;
+    z-index: 1
+}
+
+.mm-end-btns {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+    position: relative;
+    z-index: 1
+}
+
+.mm-petal {
+    position: absolute;
+    top: -32px;
+    z-index: 6;
+    pointer-events: none;
+    opacity: .95;
+    animation: mmCelFall linear forwards
+}
+@keyframes mmCelFall {
+    0%   { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: .95 }
+    30%  { transform: translate3d(var(--cel-dx, 20px), 35%, 0) rotate(calc(var(--cel-rot, 120deg) * .4)) scale(1.1); opacity: .9 }
+    80%  { opacity: .7 }
+    100% { transform: translate3d(var(--cel-dx, 20px), 130%, 0) rotate(var(--cel-rot, 260deg)) scale(.8); opacity: 0 }
+}
+
+/* ----- buttons under the game ----- */
+.mm-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 16px 16px
+}
+
+.mm-btn {
+    padding: 10px 20px;
+    border-radius: 99px;
+    border: 0;
+    cursor: pointer;
+    font: 600 .9rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
+    letter-spacing: 1.5px;
+    color: #2b0f1e;
+    background: linear-gradient(135deg, #ee8fb5, #c2467f);
+    box-shadow: 0 8px 22px #ee8fb555;
+    transition: transform .25s
+}
+
+.mm-btn:hover {
+    transform: translateY(-1px)
+}
+
+.mm-ghost {
+    color: var(--blush);
+    background: #1f162b;
+    border: 1px solid var(--line);
+    box-shadow: none
+}
+
+/* ----- phones: the game fits the screen width, no sideways scrolling ----- */
+@media (max-width: 700px) {
+    #play-slide-memory .mm-fold {
+        margin: auto 0
+    }
+
+    .mm-screen {
+        padding: 18px 14px 16px
+    }
+
+    .mm-title {
+        font-size: 1.6rem
+    }
+
+    .mm-mode {
+        min-width: 0;
+        width: 100%;
+        max-width: 280px
+    }
+
+    .mm-hud {
+        padding: 8px 10px
+    }
+
+    .mm-player {
+        padding: 5px 8px
+    }
+
+    .mm-turn {
+        min-width: 66px;
+        font-size: .7rem
+    }
+
+    .mm-stage {
+        padding: 10px 10px 4px
+    }
+
+    .mm-board {
+        gap: 6px
+    }
+
+    .mm-actions {
+        padding: 8px 10px 12px
+    }
+
+    .mm-btn {
+        padding: 9px 14px;
+        font-size: .8rem
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mm-inner,
+    .mm-card,
+    .mm-diff,
+    .mm-mode,
+    .mm-btn {
+        transition: none !important
+    }
+
+    .mm-card.matched .mm-front,
+    .mm-petal {
+        animation: none !important;
+        background-image: none !important
+    }
+
+    .mm-petal {
+        display: none
+    }
+}
+
+/* ===== Full screen (PLAY / choosing a mode fills the screen, like Tania's Run and Straighten Tania) ===== */
+body.mm-lock {
+    overflow: hidden
+}
+
+/* the slide must not create its own stacking layer while the game is full screen, so the card sits above the site nav */
+#play-slide-memory:has(.mm-full) {
+    isolation: auto
+}
+
+.mm-exit {
+    display: none;
+    position: absolute;
+    top: calc(12px + env(safe-area-inset-top, 0px));
+    right: 12px;
+    z-index: 6;
+    padding: 6px 13px;
+    border-radius: 99px;
+    border: 1px solid rgba(255, 214, 228, .35);
+    background: #1f162b;
+    color: var(--blush);
+    font: 500 .8rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
+    letter-spacing: .5px;
+    cursor: pointer
+}
+
+.mm-card-wrap.mm-full {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    width: 100vw;
+    max-width: none;
+    height: 100vh;
+    height: 100dvh;
+    aspect-ratio: auto;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden
+}
+
+.mm-card-wrap.mm-full .mm-exit {
+    display: inline-block
+}
+
+.mm-card-wrap.mm-full .mm-screen {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow-y: auto;
+    padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px))
+}
+
+.mm-card-wrap.mm-full #mm-game {
+    justify-content: space-between
+}
+
+.mm-card-wrap.mm-full .mm-stage {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    padding: 10px 16px
+}
+
+.mm-card-wrap.mm-full .mm-board {
+    max-width: min(520px, calc(100dvh - 300px))
+}
+
+.mm-card-wrap.mm-full .mm-title {
+    margin-top: 28px
+}
+
+/* phones, normal size: the game card is the same tall shape as Tania's Run (5 : 7) */
+@media (max-width: 700px) {
+    #play-slide-memory .mm-fold {
+        width: 90%
+    }
+
+    .mm-card-wrap:not(.mm-full) {
+        aspect-ratio: 5 / 7;
+        overflow-y: auto
+    }
+}
+
+/* ===== PLAY button (outside the game) and the full-screen setup: names and START ===== */
+.mm-play {
+    margin-top: 20px;
+    min-width: 180px
+}
+
+.mm-play:disabled {
+    opacity: .45;
+    cursor: default
+}
+
+.mm-mode.on {
+    outline: 2px solid #ffd6e4;
+    outline-offset: 3px
+}
+
+.mm-names {
+    margin-top: 4px
+}
+
+.mm-names.hidden {
+    display: none !important
+}
+
+.mm-name-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 10px
+}
+
+.mm-name-row input {
+    width: min(230px, 100%);
+    padding: 11px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: #1f162b;
+    color: var(--blush);
+    font: 500 1rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
+    text-align: center;
+    outline: none
+}
+
+.mm-name-row input:focus {
+    border-color: var(--blush)
+}
+
+.mm-name-row input::placeholder {
+    color: var(--mute);
+    opacity: .7
+}
+
+.mm-go {
+    margin-top: 24px
+}
+
+/* ===== Phone fixes: the card is as wide as the other games' cards, and full screen is not
+   trapped inside the carousel's stacking layers ===== */
+@media (max-width: 700px) {
+    #play-slide-memory .mm-fold {
+        width: 100%;
+        max-width: none
+    }
+
+    .mm-card-wrap:not(.mm-full) {
+        aspect-ratio: 5 / 7;
+        width: 100%
+    }
+}
+
+#play-slide-memory:has(.mm-full) {
+    position: static;
+    isolation: auto;
+    z-index: auto
+}
+
+#play-slide-memory:has(.mm-full) .play-stack,
+#play-slide-memory:has(.mm-full) .mm-fold {
+    position: static;
+    z-index: auto;
+    transform: none
+}
+
+/* full screen must sit above the site's top bar and any stacking layer around the carousel */
+#game:has(.mm-full),
+#game:has(.mm-full) .play-track {
+    position: static;
+    z-index: auto;
+    transform: none;
+    filter: none;
+    contain: none
+}
+
+/* full screen: the Exit button sits at the top right, so the scores start a little lower */
+.mm-card-wrap.mm-full .mm-hud {
+    padding-top: calc(52px + env(safe-area-inset-top, 0px))
+}
+
+/* the "Memorize!" countdown uses the site's sans font, like the rest of the game */
+.mm-count {
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif
+}
+
+/* desktop: the start card is as tall as the other games' cards (16 : 10), not a short strip */
+@media (min-width: 701px) {
+    #mm-landing {
+        min-height: clamp(360px, 48vh, 420px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 40px 36px
+    }
+
+    .mm-title {
+        font-size: clamp(2.2rem, 3.4vw, 2.8rem)
+    }
+}
+
+/* full screen covers the whole phone screen with a solid background, and the page behind cannot scroll */
+.mm-card-wrap.mm-full {
+    background: var(--bg, #0d0a13);
+    height: 100vh;
+    height: 100dvh;
+    overscroll-behavior: contain
+}
+
+/* ===== Start card and setup screen: one centred column, on a blurred photo of Tania, like the other games ===== */
+#mm-landing,
+#mm-start {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 100%;
+    padding: 34px 26px
+}
+
+#mm-landing::before,
+#mm-start::before {
+    content: "";
+    position: absolute;
+    inset: -12px;
+    z-index: -2;
+    background: #120c19;   /* plain dark start card: no photo behind it */
+    filter: blur(12px) saturate(1.1);
+    transform: scale(1.04);
+    pointer-events: none
+}
+
+#mm-landing::after,
+#mm-start::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, rgba(13, 10, 19, .45) 0%, rgba(13, 10, 19, .78) 55%, rgba(13, 10, 19, .95) 100%);
+    pointer-events: none
+}
+
+.mm-title {
+    text-shadow: 0 2px 18px rgba(0, 0, 0, .55)
+}
+
+#mm-landing .mm-intro {
+    max-width: 30ch;
+    margin: 12px auto 0;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, .6)
+}
+
+.mm-play {
+    width: min(250px, 72%);
+    min-width: 0;
+    margin: 26px auto 0
+}
+
+#mm-landing .mm-loading {
+    margin-top: 14px
+}
+
+#mm-start .mm-diffs,
+#mm-start .mm-modes,
+#mm-start .mm-name-row {
+    width: 100%
+}
+
+#mm-start .mm-mode {
+    min-width: 0;
+    width: min(340px, 100%)
+}
+
+#mm-start .mm-go {
+    width: min(300px, 80%)
+}
+
+/* ===== Start card now uses the same frame and overlay as Tania's Run and Straighten Tania ===== */
+@media (min-width: 701px) {
+    .mm-card-wrap:not(.mm-full) {
+        aspect-ratio: 16 / 10
+    }
+}
+
+#mm-landing,
+#mm-start {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    align-items: center;
+    gap: 6px;
+    min-height: 100%;
+    height: 100%;
+    padding: 20px;
+    text-align: center
+}
+
+#mm-landing::before,
+#mm-start::before {
+    filter: blur(3px) saturate(1.05);
+    transform: none;
+    inset: 0
+}
+
+/* the same dark radial veil the other games put over their scene */
+#mm-landing::after,
+#mm-start::after {
+    background: radial-gradient(ellipse at center, #0e0a14b8, #0e0a14e6)
+}
+
+#mm-landing .mm-title {
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', serif;
+    font-weight: 600;
+    font-size: 2rem;
+    line-height: 1.2;
+    color: var(--blush);
+    margin: 0
+}
+
+#mm-landing .mm-intro {
+    color: var(--mute);
+    font-size: .92rem;
+    line-height: 1.6;
+    max-width: 34ch;
+    margin: 0
+}
+
+#mm-landing .div {
+    margin: 0
+}
+
+#mm-landing .mm-play {
+    margin-top: 18px;
+    padding: 12px 44px;
+    width: auto;
+    min-width: 0
+}
+
+#mm-landing .mm-loading {
+    margin: 4px 0 0
+}
+
+/* title and intro now sit above the card, like the other games; the card keeps the PLAY button and a short line */
+#mm-landing .mm-sub {
+    color: var(--mute);
+    font-size: .92rem;
+    margin: 0
+}
+
+/* Bangla start card: the same Bangla sans title and subtitle as the other games */
+html[lang="bn"] #mm-landing .mm-title {
+    font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0
+}
+
+html[lang="bn"] #mm-landing .mm-sub,
+html[lang="bn"] #mm-landing .mm-play,
+html[lang="bn"] #mm-landing .mm-loading {
+    font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
+    letter-spacing: 0
+}
+
+/* ===== Card flip: a real-feeling turn. The card is lifted off the board and tilts as it turns,
+   its shadow grows and then settles, the face catches the light, and the turn eases in and out
+   the way a real card does. Two picks that do not match turn back the same way. ===== */
+.mm-card {
+    transition: transform .25s ease
+}
+
+.mm-card:not(.open):not(.matched):active {
+    transform: scale(.965)
+}
+
+.mm-inner {
+    transition: transform .72s cubic-bezier(.45, .05, .2, 1)
+}
+
+.mm-face {
+    transition: box-shadow .45s ease, filter .6s ease
+}
+
+/* the face brightens a little when it lands, like light falling on paper */
+.mm-card.open .mm-front {
+    filter: brightness(1.06);
+    box-shadow: 0 0 22px #ee8fb566, 0 10px 22px #0008
+}
+
+.mm-card.lift {
+    z-index: 2;
+    animation: mmLift .72s cubic-bezier(.45, .05, .2, 1) both
+}
+
+/* lifted: a tilt, a rise and a deeper shadow at the middle of the turn, then it settles on the board */
+@keyframes mmLift {
+    0% { transform: translateY(0) rotateX(0deg) scale(1) }
+    35% { transform: translateY(-12px) rotateX(14deg) scale(1.07) }
+    70% { transform: translateY(-3px) rotateX(3deg) scale(1.02) }
+    100% { transform: translateY(0) rotateX(0deg) scale(1) }
+}
+
+.mm-card.lift .mm-face {
+    box-shadow: 0 26px 38px #0009
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mm-card.lift { animation: none }
+}
+
+/* ==========================================================================
+   Memory game: extra animation and polish (same palette, fonts and shapes as the rest of the site)
+   ========================================================================== */
+
+/* ----- screens fade and rise in ----- */
+.mm-enter {
+    animation: mmEnter .55s cubic-bezier(.2, .8, .25, 1) both
+}
+
+@keyframes mmEnter {
+    from { opacity: 0; transform: translateY(14px) scale(.985) }
+    to { opacity: 1; transform: none }
+}
+
+/* ----- petals drifting up behind the start card and setup screen ----- */
+.mm-float {
+    position: absolute;
+    bottom: -24px;
+    z-index: 0;
+    color: var(--rose);
+    opacity: 0;
+    pointer-events: none;
+    animation: mmFloat linear infinite
+}
+
+.mm-float:nth-of-type(3n) { color: var(--lil) }
+.mm-float:nth-of-type(3n+1) { color: var(--blush) }
+
+@keyframes mmFloat {
+    0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0 }
+    12% { opacity: .55 }
+    85% { opacity: .35 }
+    100% { transform: translate3d(26px, -420px, 0) rotate(200deg); opacity: 0 }
+}
+
+#mm-landing > *:not(.mm-float),
+#mm-start > *:not(.mm-float) {
+    position: relative;
+    z-index: 1
+}
+
+/* title and PLAY button breathe gently */
+#mm-landing .mm-title {
+    animation: mmTitle 4.5s ease-in-out infinite
+}
+
+@keyframes mmTitle {
+    0%, 100% { text-shadow: 0 2px 18px rgba(0, 0, 0, .55) }
+    50% { text-shadow: 0 2px 18px rgba(0, 0, 0, .55), 0 0 22px #ee8fb566 }
+}
+
+#mm-landing .mm-play:not(:disabled) {
+    animation: mmPulse 2.4s ease-in-out infinite
+}
+
+@keyframes mmPulse {
+    0%, 100% { box-shadow: 0 10px 30px #ee8fb566; transform: scale(1) }
+    50% { box-shadow: 0 12px 38px #ee8fb599, 0 0 0 7px #ee8fb51f; transform: scale(1.035) }
+}
+
+/* ----- setup choices respond when picked ----- */
+.mm-diff:hover {
+    transform: translateY(-2px);
+    border-color: var(--rose)
+}
+
+.mm-diff.on {
+    transform: translateY(-3px) scale(1.04)
+}
+
+.mm-mode.on {
+    transform: scale(1.03)
+}
+
+.mm-mode:active,
+.mm-diff:active,
+.mm-btn:active {
+    transform: scale(.96)
+}
+
+/* ----- the cards are dealt onto the board one by one ----- */
+.mm-card.deal {
+    animation: mmDeal .55s cubic-bezier(.2, .8, .25, 1) backwards;
+    animation-delay: calc(var(--i, 0) * 30ms);
+    pointer-events: none
+}
+
+@keyframes mmDeal {
+    from { opacity: 0; transform: translateY(-30px) scale(.55) rotate(-8deg) }
+    to { opacity: 1; transform: none }
+}
+
+
+/* the card the bot picks glows lilac, so you can follow what it does */
+.mm-card.open.bot-pick .mm-front {
+    box-shadow: 0 0 0 2px var(--lil), 0 0 22px #cdb4f088, 0 10px 22px #0008
+}
+
+/* ----- two cards that do not match: a quick shake and a rose edge ----- */
+.mm-card.shake .mm-front {
+    animation: mmShake .55s ease both;
+    box-shadow: 0 0 0 2px #c2467f, 0 0 20px #c2467f88
+}
+
+@keyframes mmShake {
+    0%, 100% { transform: rotateY(180deg) translateX(0) }
+    18% { transform: rotateY(180deg) translateX(-7px) rotate(-2deg) }
+    36% { transform: rotateY(180deg) translateX(7px) rotate(2deg) }
+    54% { transform: rotateY(180deg) translateX(-5px) rotate(-1deg) }
+    72% { transform: rotateY(180deg) translateX(4px) rotate(1deg) }
+}
+
+/* ----- a matched pair bursts: ring + inner sparks + outer scatter ----- */
+.mm-burst-ring {
+    position: absolute;
+    z-index: 3;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0);
+    box-shadow: 0 0 0 3px currentColor;
+    opacity: .9;
+    animation: mmRing .65s cubic-bezier(.2, .8, .2, 1) forwards
+}
+@keyframes mmRing {
+    0%   { transform: translate(-50%,-50%) scale(0);   opacity: .9 }
+    60%  { opacity: .7 }
+    100% { transform: translate(-50%,-50%) scale(5.5); opacity: 0 }
+}
+
+.mm-spark {
+    position: absolute;
+    z-index: 4;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    line-height: 1
+}
+.mm-spark-in {
+    animation: mmSparkIn .75s cubic-bezier(.15, .8, .3, 1) forwards
+}
+.mm-spark-out {
+    animation: mmSparkOut 1.1s cubic-bezier(.1, .7, .25, 1) forwards
+}
+@keyframes mmSparkIn {
+    0%   { transform: translate(-50%,-50%) scale(.2); opacity: 1 }
+    65%  { opacity: 1 }
+    100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1) rotate(200deg); opacity: 0 }
+}
+@keyframes mmSparkOut {
+    0%   { transform: translate(-50%,-50%) scale(.15); opacity: .9 }
+    55%  { opacity: .8 }
+    100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.85) rotate(300deg); opacity: 0 }
+}
+
+/* ----- combo message ----- */
+.mm-combo {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    z-index: 5;
+    padding: 6px 18px;
+    border-radius: 99px;
+    border: 1px solid var(--rose);
+    background: #140e1ce6;
+    color: var(--blush);
+    font: 600 1.05rem 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 0 22px #ee8fb577;
+    animation: mmCombo 1.2s cubic-bezier(.2, .8, .25, 1) forwards
+}
+
+@keyframes mmCombo {
+    0% { opacity: 0; transform: translate(-50%, 14px) scale(.6) }
+    18% { opacity: 1; transform: translate(-50%, 0) scale(1.12) }
+    32% { transform: translate(-50%, 0) scale(1) }
+    80% { opacity: 1; transform: translate(-50%, -4px) scale(1) }
+    100% { opacity: 0; transform: translate(-50%, -16px) scale(1) }
+}
+
+/* ----- score board: whose turn, score pops, progress ----- */
+.mm-player.on {
+    animation: mmTurnGlow 2s ease-in-out infinite
+}
+
+@keyframes mmTurnGlow {
+    0%, 100% { box-shadow: 0 0 0 1px var(--rose) inset, 0 0 12px #ee8fb522 }
+    50% { box-shadow: 0 0 0 1px var(--rose) inset, 0 0 22px #ee8fb566 }
+}
+
+.mm-bump {
+    display: inline-block;
+    animation: mmBump .45s cubic-bezier(.2, .9, .3, 1.4)
+}
+
+@keyframes mmBump {
+    0% { transform: scale(1) }
+    40% { transform: scale(1.45); color: var(--rose) }
+    100% { transform: scale(1) }
+}
+
+.mm-turn.pop {
+    animation: mmPop .4s ease
+}
+
+@keyframes mmPop {
+    from { opacity: 0; transform: translateY(5px) scale(.9) }
+    to { opacity: 1; transform: none }
+}
+
+.mm-turn.thinking {
+    animation: mmThink 1.1s ease-in-out infinite
+}
+
+@keyframes mmThink {
+    0%, 100% { opacity: .55 }
+    50% { opacity: 1 }
+}
+
+.mm-progress {
+    height: 4px;
+    border-radius: 99px;
+    background: #1f162b;
+    overflow: hidden
+}
+
+.mm-progress i {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--lil), var(--rose), var(--blush));
+    box-shadow: 0 0 10px #ee8fb588;
+    transition: width .6s cubic-bezier(.3, .7, .2, 1)
+}
+
+/* ----- completion screen ----- */
+.mm-end:not(.hidden) {
+    animation: mmEndIn .5s ease both
+}
+
+@keyframes mmEndIn {
+    from { opacity: 0 }
+    to { opacity: 1 }
+}
+
+.mm-end-icon {
+    position: relative;
+    z-index: 1;
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--rose);
+    text-shadow: 0 0 26px #ee8fb599;
+    animation: mmBloom 1.1s cubic-bezier(.2, .9, .3, 1.3) both
+}
+
+@keyframes mmBloom {
+    0% { transform: scale(0) rotate(-120deg); opacity: 0 }
+    100% { transform: scale(1) rotate(0); opacity: 1 }
+}
+
+.mm-end-title,
+.mm-end-win,
+.mm-end-stats,
+.mm-end-best,
+.mm-end-btns {
+    animation: mmRise .6s cubic-bezier(.2, .8, .25, 1) both
+}
+
+.mm-end-title { animation-delay: .25s }
+.mm-end-win { animation-delay: .4s }
+.mm-end-stats { animation-delay: .55s }
+.mm-end-best { animation-delay: .7s }
+.mm-end-btns { animation-delay: .85s }
+
+@keyframes mmRise {
+    from { opacity: 0; transform: translateY(14px) }
+    to { opacity: 1; transform: none }
+}
+
+.mm-end-win {
+    font-size: 1.25rem;
+    font-weight: 600
+}
+
+.mm-end-best {
+    position: relative;
+    z-index: 1;
+    min-height: 1.2em;
+    color: var(--lil);
+    font-size: .84rem;
+    letter-spacing: .5px
+}
+
+.mm-end-best.new {
+    color: var(--blush);
+    animation: mmRise .6s cubic-bezier(.2, .8, .25, 1) .7s both, mmTitle 2.4s ease-in-out 1.4s infinite
+}
+
+/* ----- motion preferences ----- */
+@media (prefers-reduced-motion: reduce) {
+    .mm-enter,
+    .mm-card.deal,
+    .mm-card.shake .mm-front,
+    .mm-player.on,
+    .mm-bump,
+    .mm-turn,
+    .mm-end:not(.hidden),
+    .mm-end-icon,
+    .mm-end-title,
+    .mm-end-win,
+    .mm-end-stats,
+    .mm-end-best,
+    .mm-end-btns,
+    #mm-landing .mm-title,
+    #mm-landing .mm-play {
+        animation: none !important
+    }
+
+    .mm-float,
+    .mm-spark,
+    .mm-spark-in,
+    .mm-spark-out,
+    .mm-burst-ring,
+    .mm-combo {
+        display: none
+    }
+    .mm-card.matched { animation: none }
+    .mm-back { animation: none }
+
+    .mm-progress i {
+        transition: none
+    }
+}
+
+/* ==========================================================================
+   Memory game: plain background (no animation, no moon, no hills)
+   ========================================================================== */
+.mm-card-wrap,
+.mm-card-wrap.mm-full {
+    background: var(--bg, #0e0a14)
+}
+
+.mm-card-wrap::before,
+.mm-card-wrap::after,
+.mm-bg-petals,
+.mm-aurora-canvas {
+    display: none !important
+}
+
+/* every screen sits above every hill layer */
+.mm-card-wrap > .mm-screen {
+    position: relative;
+    z-index: 2
+}
+
+/* the start card and setup screen let the background show through (no flat dark layer, lighter veil) */
+#mm-landing::before,
+#mm-start::before {
+    background: transparent;
+    filter: none
+}
+
+#mm-landing::after,
+#mm-start::after {
+    background: radial-gradient(ellipse at center, rgba(14, 10, 20, .18), rgba(14, 10, 20, .42))
+}
+
+/* the score bar is a soft glass strip instead of a solid block */
+.mm-hud {
+    background: rgba(20, 14, 28, .62);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px)
+}
+
+.mm-card-wrap.mm-paused,
+.mm-paused.mm-card-wrap,
+.mm-paused.mm-card-wrap::before,
+.mm-paused.mm-card-wrap::after,
+.mm-paused .mm-bg-petals::before,
+.mm-paused .mm-bg-petals::after {
+    animation-play-state: paused
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mm-card-wrap::before,
+    .mm-card-wrap::after,
+    .mm-bg-petals::before,
+    .mm-bg-petals::after {
+        animation: none !important
+    }
+}
+
+/* ==========================================================================
+   Turn colours: the whole game screen takes the colour of the player who is playing.
+   Player 1 = rose, Player 2 / Bot = lilac. The colour fades smoothly when the turn changes.
+   ========================================================================== */
+.mm-tint {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .9s ease
+}
+
+.mm-tint.p0 {
+    background: radial-gradient(120% 90% at 50% 0%, rgba(238, 143, 181, .40), rgba(194, 70, 127, .22) 55%, rgba(194, 70, 127, .34) 100%);
+    box-shadow: inset 0 0 110px rgba(238, 143, 181, .30)
+}
+
+.mm-tint.p1 {
+    background: radial-gradient(120% 90% at 50% 0%, rgba(205, 180, 240, .40), rgba(124, 92, 196, .24) 55%, rgba(124, 92, 196, .36) 100%);
+    box-shadow: inset 0 0 110px rgba(205, 180, 240, .30)
+}
+
+.mm-t0 .mm-tint.p0,
+.mm-t1 .mm-tint.p1 {
+    opacity: 1
+}
+
+/* the scoreboard, turn text and opened cards follow the same colour */
+#mm-p1.on {
+    border-color: var(--lil);
+    box-shadow: 0 0 0 1px var(--lil) inset, 0 0 16px #cdb4f044;
+    animation: mmTurnGlowLil 2s ease-in-out infinite
+}
+
+@keyframes mmTurnGlowLil {
+    0%, 100% { box-shadow: 0 0 0 1px var(--lil) inset, 0 0 12px #cdb4f022 }
+    50% { box-shadow: 0 0 0 1px var(--lil) inset, 0 0 22px #cdb4f066 }
+}
+
+.mm-t1 .mm-turn {
+    color: var(--lil)
+}
+
+.mm-t1 .mm-card.open:not(.matched):not(.shake) .mm-front {
+    box-shadow: 0 0 0 2px var(--lil), 0 0 22px #cdb4f088, 0 10px 22px #0008
+}
+
+.mm-t1 .mm-progress i {
+    background: linear-gradient(90deg, var(--rose), var(--lil), var(--blush))
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mm-tint { transition: none }
+    #mm-p1.on { animation: none !important }
+}
+
+/* ==========================================================================
+   Face-to-face play on a phone ("Play with Friend")
+   Two friends sit opposite each other with the phone flat between them:
+   - player 2's panel is at the top, turned 180 degrees so they can read it; player 1's is at the bottom
+   - the board turns 180 degrees to face whoever's turn it is
+   - the names on the setup screen and the result are also written for both sides
+   ========================================================================== */
+.mm-pturn,
+.mm-end-mirror {
+    display: none
+}
+
+/* ----- setup: the second name is written from the other side ----- */
+.mm-duel .mm-name-row {
+    flex-direction: column-reverse;
+    align-items: center
+}
+
+.mm-duel #mm-name1 {
+    transform: rotate(180deg)
+}
+
+/* ----- game screen ----- */
+.mm-card-wrap.mm-full.mm-duel #mm-game {
+    justify-content: space-between;
+    gap: 8px;
+    padding: calc(50px + env(safe-area-inset-top, 0px)) 12px calc(10px + env(safe-area-inset-bottom, 0px))
+}
+
+/* the score bar's three parts become separate rows of the screen */
+.mm-duel .mm-hud,
+.mm-duel .mm-players {
+    display: contents
+}
+
+.mm-duel .mm-turn {
+    display: none
+}
+
+.mm-duel .mm-player {
+    flex: 0 0 auto;
+    width: min(360px, 92%);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: 10px;
+    padding: 9px 16px;
+    border-radius: 16px;
+    font-size: .95rem;
+    background: rgba(31, 22, 43, .78);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px)
+}
+
+.mm-duel .mm-player b {
+    font-size: 1.6rem
+}
+
+.mm-duel .mm-pturn {
+    display: block;
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: .78rem;
+    letter-spacing: .6px;
+    color: var(--rose);
+    transition: opacity .3s
+}
+
+.mm-duel #mm-p1 .mm-pturn {
+    color: var(--lil)
+}
+
+.mm-duel .mm-pturn:empty {
+    display: none
+}
+
+/* order on screen: player 2 (upside down), board, player 1, then the shared bits */
+.mm-duel #mm-p1 { order: 1; transform: rotate(180deg) }
+.mm-duel .mm-stage { order: 2 }
+.mm-duel #mm-p0 { order: 3 }
+.mm-duel .mm-stats { order: 4 }
+.mm-duel .mm-progress { order: 5 }
+.mm-duel .mm-actions { order: 6; padding: 4px 8px 0 }
+
+.mm-duel .mm-chip {
+    padding: 3px 10px;
+    font-size: .68rem
+}
+
+.mm-card-wrap.mm-full.mm-duel .mm-stage {
+    padding: 4px 8px
+}
+
+.mm-card-wrap.mm-full.mm-duel .mm-board {
+    max-width: min(520px, calc(100vw - 32px), max(220px, calc(100dvh - 390px)));
+    transition: transform .9s cubic-bezier(.45, .05, .2, 1)
+}
+
+/* the board turns to face the player whose turn it is */
+.mm-duel.mm-flip .mm-board {
+    transform: rotate(180deg)
+}
+
+/* the combo message turns with them */
+.mm-duel.mm-flip .mm-combo {
+    animation-name: mmComboFlip
+}
+
+@keyframes mmComboFlip {
+    0% { opacity: 0; transform: translate(-50%, -14px) rotate(180deg) scale(.6) }
+    18% { opacity: 1; transform: translate(-50%, 0) rotate(180deg) scale(1.12) }
+    32% { transform: translate(-50%, 0) rotate(180deg) scale(1) }
+    80% { opacity: 1; transform: translate(-50%, 4px) rotate(180deg) scale(1) }
+    100% { opacity: 0; transform: translate(-50%, 16px) rotate(180deg) scale(1) }
+}
+
+/* ----- result: written once for each side ----- */
+.mm-duel .mm-end-mirror {
+    display: block;
+    order: -2;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 10px;
+    transform: rotate(180deg);
+    white-space: pre-line;
+    text-align: center;
+    color: var(--rose);
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.5;
+    animation: mmEndIn .8s ease .5s both
+}
+
+.mm-duel .mm-end-icon { order: -1 }
+
+@media (prefers-reduced-motion: reduce) {
+    .mm-card-wrap.mm-full.mm-duel .mm-board { transition: none }
+    .mm-duel .mm-end-mirror { animation: none !important }
+}
+
+/* ==========================================================================
+   UX polish (layout, touch and keyboard feel only; colours, photos and rules unchanged)
+   ========================================================================== */
+
+/* a little more air between cards on larger screens */
+@media (min-width: 700px) {
+    .mm-board { gap: 14px }
+}
+
+/* cards lift slightly under the mouse, only on devices that have a hover */
+@media (hover: hover) and (pointer: fine) {
+    .mm-card:not(:disabled):hover { transform: translateY(-3px) }
+}
+
+/* clear keyboard focus ring */
+.mm-card:focus-visible,
+.mm-btn:focus-visible {
+    outline: 2px solid var(--blush);
+    outline-offset: 3px
+}
+
+/* buttons: comfortable touch size and a visible press state */
+.mm-btn {
+    min-height: 44px;
+    min-width: 44px
+}
+.mm-btn:active { transform: scale(.97) }
+
+/* respect the phone's reduced-motion setting */
+@media (prefers-reduced-motion: reduce) {
+    .mm-card:hover { transform: none !important }
+    .mm-btn:active { transform: none }
+}
+
+/* ==========================================================================
+   Game background: a still, soft glow in the website's own theme colours
+   (same recipe as the outro card on the site: rose glow from the top, lilac from the bottom,
+   on the site's dark base). No animation.
+   ========================================================================== */
+.mm-card-wrap,
+.mm-card-wrap.mm-full {
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(238, 143, 181, .24), transparent 62%),
+        radial-gradient(ellipse at 50% 100%, rgba(205, 180, 240, .16), transparent 60%),
+        linear-gradient(180deg, #1a1226 0%, var(--bg, #0e0a14) 55%, #120c1a 100%);
+    background-color: var(--bg, #0e0a14)
+}
+
+/* ==========================================================================
+   Phone: the game card stays still instead of scrolling inside itself
+   ========================================================================== */
+@media (max-width: 700px) {
+    .mm-card-wrap:not(.mm-full) {
+        overflow: hidden;
+        overscroll-behavior: none
+    }
+
+    .mm-card-wrap.mm-full {
+        overflow: hidden;
+        overscroll-behavior: none;
+        touch-action: manipulation
+    }
+
+    .mm-card-wrap.mm-full .mm-stage,
+    .mm-card-wrap.mm-full #mm-game {
+        overflow: hidden;
+        overscroll-behavior: none
+    }
+}
+
+/* ==========================================================================
+   Falling petals behind the game (the site's petal drift, drawn on a canvas)
+   ========================================================================== */
+.mm-fx-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none
+}
+
+/* ==========================================================================
+   Turn card: a glowing pill that says whose turn it is, shown before each turn
+   ========================================================================== */
+.mm-announce {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    white-space: nowrap;
+    padding: 16px 30px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--ink, #f6ebf2) 14%, transparent);
+    background: linear-gradient(135deg, rgba(40, 24, 52, .82), rgba(20, 14, 28, .78));
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 18px 50px #0009, 0 0 40px var(--ann, rgba(238, 143, 181, .35));
+    font: 700 clamp(1.2rem, 4.8vw, 1.9rem) 'DM Sans', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
+    letter-spacing: .5px;
+    color: var(--ink, #f6ebf2);
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.9);
+    transition: opacity .3s ease, transform .45s cubic-bezier(.2, .9, .25, 1.15)
+}
+
+.mm-announce.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1)
+}
+
+/* the colour of the player whose turn it is */
+.mm-announce[data-who="p0"] { --ann: rgba(238, 143, 181, .45); border-color: rgba(238, 143, 181, .55) }
+.mm-announce[data-who="p1"] { --ann: rgba(205, 180, 240, .45); border-color: rgba(205, 180, 240, .55) }
+.mm-announce[data-who="bot"] { --ann: rgba(155, 184, 154, .4); border-color: rgba(155, 184, 154, .5) }
+
+.mm-ann-dot {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+    border-radius: 50%;
+    background: var(--ann-dot, #ee8fb5);
+    box-shadow: 0 0 14px var(--ann-dot, #ee8fb5)
+}
+.mm-announce[data-who="p0"] .mm-ann-dot { --ann-dot: #ee8fb5 }
+.mm-announce[data-who="p1"] .mm-ann-dot { --ann-dot: #cdb4f0 }
+.mm-announce[data-who="bot"] .mm-ann-dot { --ann-dot: #9bb89a }
+
+.mm-ann-txt {
+    text-shadow: 0 2px 10px #000a
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mm-announce { transition: opacity .2s ease }
+    .mm-announce.show { transform: translate(-50%, -50%) }
+}
+
+/* the turn card only ever appears inside the full-screen game */
+.mm-card-wrap:not(.mm-full) .mm-announce { display: none !important }
+
+/* ==========================================================================
+   Play with Bot: a green outline button; it turns solid green when selected (the default)
+   ========================================================================== */
+.mm-mode[data-mode="bot"] {
+    background: transparent;
+    border: 2px solid #cdb4f0;
+    color: #e6dbff;
+    box-shadow: 0 0 18px #cdb4f033
+}
+
+.mm-mode[data-mode="bot"]:not(.on):hover:not(:disabled) {
+    background: #cdb4f022;
+    box-shadow: 0 0 26px #cdb4f055
+}
+
+.mm-mode[data-mode="bot"].on {
+    background: linear-gradient(135deg, #cdb4f0, #9a7fd1);
+    border-color: #cdb4f0;
+    color: #1d1430;
+    box-shadow: 0 10px 30px #cdb4f066
+}
+
+/* ==========================================================================
+   Score numbers: a clean, bold number font (only the font changes)
+   ========================================================================== */
+.mm-player b {
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .5px
+}
+
+/* ==========================================================================
+   Mode buttons: an outline until chosen; the chosen one fills with its colour
+   (Play with Friend = rose, Play with Bot = green)
+   ========================================================================== */
+.mm-mode[data-mode="friend"] {
+    background: transparent;
+    border: 2px solid #ee8fb5;
+    color: #ffd6e4;
+    box-shadow: 0 0 18px #ee8fb533
+}
+
+.mm-mode[data-mode="friend"]:not(.on):hover:not(:disabled) {
+    background: #ee8fb522;
+    box-shadow: 0 0 26px #ee8fb555
+}
+
+.mm-mode[data-mode="friend"].on {
+    background: linear-gradient(135deg, #ee8fb5, #c2467f);
+    border-color: #ee8fb5;
+    color: #2b0f1e;
+    box-shadow: 0 10px 30px #ee8fb566
+}
+
+/* ==========================================================================
+   Mode buttons: one consistent shape for both (same size, border, radius and motion)
+   ========================================================================== */
+.mm-mode {
+    border: 2px solid transparent;
+    border-radius: 99px;
+    min-width: 200px;
+    min-height: 64px;
+    padding: 12px 24px;
+    outline: none;
+    transform: none;
+    transition: background .3s ease, color .3s ease, border-color .3s ease, box-shadow .3s ease
+}
+
+.mm-mode.on {
+    outline: none;
+    transform: none
+}
+
+.mm-mode:active { transform: scale(.98) }
+
+.mm-mode[data-mode="friend"],
+.mm-mode[data-mode="bot"] {
+    background: transparent
+}
+
+.mm-mode small {
+    opacity: .85;
+    font-size: .78rem;
+    font-weight: 400
+}
+
+/* keep the space for the player-name boxes when they are hidden (Play with Bot),
+   so the buttons do not jump up and down every time a mode is clicked */
+.mm-names.hidden {
+    display: block !important;
+    visibility: hidden;
+    pointer-events: none
+}
+
+/* the chosen button keeps its full colour even when the pointer is over it */
+.mm-mode[data-mode="friend"].on,
+.mm-mode[data-mode="bot"].on {
+    background: var(--mm-fill) !important;
+    color: var(--mm-ink) !important
+}
+.mm-mode[data-mode="friend"] { --mm-fill: linear-gradient(135deg, #ee8fb5, #c2467f); --mm-ink: #2b0f1e }
+.mm-mode[data-mode="bot"] { --mm-fill: linear-gradient(135deg, #cdb4f0, #9a7fd1); --mm-ink: #1d1430 }
+
+/* the end screen shows only the scores and stats (no title, no winner line) */
+.mm-end-title,
+.mm-end-win {
+    display: none !important
+}
+
+/* Same full-screen / exit button in all three games: bottom-centre pill in full screen */
+.mm-card-wrap.mm-full .mm-exit {
+    top: auto;
+    right: auto;
+    left: 50%;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    padding: 8px 20px;
+    font-size: .8rem;
+    color: #ffd6e4;
+    background: linear-gradient(135deg, rgba(238, 143, 181, .3), rgba(194, 70, 127, .3));
+    border: 1px solid rgba(238, 143, 181, .55);
+    box-shadow: 0 8px 24px rgba(238, 143, 181, .25)
+}
+
+/* leave room above that button so it never covers the game */
+.mm-card-wrap.mm-full .mm-screen {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px))
+}
+
+/* ==========================================================================
+   Restart and Back to game selection: round icon buttons at the top of the game
+   ========================================================================== */
+.mm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin: 0 0 6px
+}
+
+.mm-icon-btn {
+    width: 38px;
+    height: 38px;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0;
+    border: 1px solid rgba(255, 214, 228, .35);
+    background: #1f162b;
+    color: var(--blush);
+    box-shadow: none
+}
+
+.mm-icon-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round
+}
+
+.mm-icon-btn:hover { background: #2a1f3a }
+
+/* icons sit at the end of the top score strip: no extra row */
+.mm-stats .mm-icon-btn {
+    flex: 0 0 auto;
+    margin-left: 0
+}
+
+/* smaller, so the exit pill never sits on top of another button */
+.mm-card-wrap.mm-full .mm-exit {
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    padding: 4px 11px;
+    font-size: .64rem;
+    opacity: .85
+}
+
+.mm-card-wrap.mm-full .mm-screen {
+    padding-bottom: calc(50px + env(safe-area-inset-bottom, 0px))
+}

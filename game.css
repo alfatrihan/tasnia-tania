@@ -2627,3 +2627,119 @@ html[lang="bn"] .runner-angry-text .lang-en { display: none }
     .play-stack::before,
     .play-stack::after { transition: none }
 }
+
+/* ===== Play section: a softer, more colourful background in the site's own colours (rose, blush, lilac) ===== */
+#game::before {
+    content: "";
+    position: absolute;
+    inset: -10%;
+    z-index: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 42% 36% at 18% 28%, rgba(238, 143, 181, .17), transparent 70%),
+        radial-gradient(ellipse 38% 32% at 82% 72%, rgba(205, 180, 240, .15), transparent 70%),
+        radial-gradient(ellipse 30% 26% at 62% 14%, rgba(255, 214, 228, .09), transparent 70%);
+    filter: blur(16px);
+    animation: gameAurora 18s ease-in-out infinite alternate
+}
+
+@keyframes gameAurora {
+    0% { transform: translate3d(-2%, 0, 0) scale(1) }
+    100% { transform: translate3d(2%, -2%, 0) scale(1.06) }
+}
+
+/* tiny sparkles that breathe slowly, like dust in warm light */
+#game::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle, rgba(255, 214, 228, .9) 1px, transparent 1.7px) 0 0 / 137px 151px,
+        radial-gradient(circle, rgba(205, 180, 240, .8) 1px, transparent 1.7px) 61px 83px / 193px 167px,
+        radial-gradient(circle, rgba(238, 143, 181, .75) 1.2px, transparent 2px) 29px 107px / 241px 219px;
+    animation: gameSparkle 7s ease-in-out infinite alternate
+}
+
+@keyframes gameSparkle {
+    0% { opacity: .25 }
+    100% { opacity: .7 }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #game::before,
+    #game::after { animation: none }
+}
+
+/* ===== Play background, refined: a warm glow low on the screen, the sparkles drift very slowly ===== */
+#game::before {
+    background:
+        radial-gradient(ellipse 42% 36% at 18% 28%, rgba(238, 143, 181, .18), transparent 70%),
+        radial-gradient(ellipse 38% 32% at 84% 70%, rgba(205, 180, 240, .16), transparent 70%),
+        radial-gradient(ellipse 46% 28% at 50% 100%, rgba(238, 143, 181, .1), transparent 72%),
+        radial-gradient(ellipse 30% 26% at 62% 14%, rgba(255, 214, 228, .09), transparent 70%)
+}
+
+#game::after {
+    animation: gameSparkle 7s ease-in-out infinite alternate, gameDrift 40s linear infinite
+}
+
+@keyframes gameDrift {
+    0% { transform: translate3d(0, 0, 0) }
+    50% { transform: translate3d(-18px, -26px, 0) }
+    100% { transform: translate3d(0, 0, 0) }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #game::after { animation: none }
+}
+
+/* ===== Game cards only: a slow lotus and star texture on the game panel itself (Runner, Puzzle, Pair Hunt) ===== */
+.runner-wrap,
+.pz-card,
+.mm-card-wrap {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cg fill='none' stroke='%23ee8fb5' stroke-width='1.1' stroke-linecap='round' stroke-linejoin='round' opacity='.22'%3E%3Cg transform='translate(75 75) scale(.7) translate(-32 -32)'%3E%3Cpath d='M32 36C24 30 22 20 32 6C42 20 40 30 32 36Z'/%3E%3Cpath d='M32 36C20 34 12 26 12 14C22 16 29 24 32 36Z'/%3E%3Cpath d='M32 36C44 34 52 26 52 14C42 16 35 24 32 36Z'/%3E%3Cpath d='M4 26C12 36 24 38 32 36C40 38 52 36 60 26'/%3E%3C/g%3E%3C/g%3E%3Cpath transform='translate(10 10)' stroke='%23cdb4f0' d='M0-5L1.3-1.3L5 0L1.3 1.3L0 5L-1.3 1.3L-5 0L-1.3-1.3Z' fill='%23cdb4f0' stroke-width='.6' opacity='.3'/%3E%3Cpath transform='translate(140 140)' stroke='%23cdb4f0' d='M0-4L1 -1L4 0L1 1L0 4L-1 1L-4 0L-1 -1Z' fill='%23cdb4f0' stroke-width='.6' opacity='.3'/%3E%3C/svg%3E");
+    background-size: 150px 150px;
+    animation: gameCardTexture 60s linear infinite
+}
+
+@keyframes gameCardTexture {
+    from { background-position: 0 0 }
+    to { background-position: 150px 150px }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .runner-wrap,
+    .pz-card,
+    .mm-card-wrap { animation: none }
+}
+
+/* ==========================================================================
+   Same full-screen / exit button in all three games: a bottom-centre pill, same size,
+   colour and place in full screen (Tania's Run, Straighten Tania and Pair Hunt)
+   ========================================================================== */
+.runner-wrap.fake-full .runner-full,
+.pz-card.pz-full > .pz-fs {
+    left: 50%;
+    right: auto;
+    top: auto;
+    transform: translateX(-50%);
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    padding: 8px 20px;
+    font-size: .8rem;
+    opacity: 1;
+    color: #ffd6e4;
+    background: linear-gradient(135deg, rgba(238, 143, 181, .3), rgba(194, 70, 127, .3));
+    border: 1px solid rgba(238, 143, 181, .55);
+    box-shadow: 0 8px 24px rgba(238, 143, 181, .25)
+}
+
+/* smaller, so the full-screen / exit pill never sits on top of another button */
+.runner-wrap.fake-full .runner-full,
+.pz-card.pz-full > .pz-fs {
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    padding: 4px 11px;
+    font-size: .64rem;
+    opacity: .85
+}

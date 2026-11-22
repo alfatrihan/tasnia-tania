@@ -96,13 +96,24 @@ const P = [], B = []; let ptr = { x: -999, y: -999 }, sv = 0, lastY = scrollY, l
 function spawn(x, y, burst, amb) { const a = Math.random() * 6.283, s = burst ? 2 + Math.random() * 5 : 0; P.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - (burst ? 2 : 0), r: Math.random() * 6.3, vr: (Math.random() - .5) * .06, s: PS, ph: Math.random() * 6.3, c: PAL[Math.random() * 5 | 0], a: 1, amb }) }
 for (let i = 0; i < 34; i++)spawn(Math.random() * W, Math.random() * H, 0, 1);
 addEventListener('pointermove', e => { ptr.x = e.clientX; ptr.y = e.clientY; const n = Date.now(); if (e.pointerType === 'mouse' && n - lastT > 70) { lastT = n; spawn(e.clientX, e.clientY, 0, 0) } });
-addEventListener('click', e => {
+// Tap to bloom. On phones, 'click' does not fire on plain (non-button) areas, so a tap is read from
+// pointerup instead: a short touch that did not move (not a scroll) makes the flower.
+let tapDown = null;
+addEventListener('pointerdown', e => { tapDown = { x: e.clientX, y: e.clientY, t: Date.now(), id: e.pointerId }; }, { passive: true });
+addEventListener('pointercancel', () => { tapDown = null; });
+addEventListener('pointerup', e => {
+    const d = tapDown; tapDown = null;
+    if (!d || d.id !== e.pointerId) return;
+    if (Date.now() - d.t > 500 || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 10) return;
     if (e.target.closest('button,.flip,input,a,.modal-card,.runner-wrap')) return;
+    bloomAt(e.clientX, e.clientY);
+});
+function bloomAt(x, y) {
     // keep the bloom fully on screen so its petals are never cut off at the edge
-    const bx = Math.max(40, Math.min(W - 40, e.clientX)), by = Math.max(40, Math.min(H - 40, e.clientY));
+    const bx = Math.max(40, Math.min(W - 40, x)), by = Math.max(40, Math.min(H - 40, y));
     B.push({ x: bx, y: by, t: 0, R: 24 + Math.random() * 28, rot: Math.random() * 6 });
     for (let i = 0; i < 14; i++)spawn(bx, by, 1, 0);
-});
+}
 
 // Side vines: straight and fixed (no sideways sway)
 function vineX(side, y) { // gentle, fixed S-curve (static)
@@ -191,7 +202,7 @@ function draw(t) {
         if (q.amb) { if (q.y > H + 20) { q.y = -20; q.x = Math.random() * W } if (q.y < -40) q.y = H + 20 } else { q.a -= .005; if (q.a <= 0 || q.y > H + 30) { P.splice(i, 1); continue } }
         cx.save(); cx.translate(q.x, q.y); cx.rotate(q.r); cx.globalAlpha = (q.amb ? .55 : .9) * q.a; cx.fillStyle = q.c; petal(q.s, q.s * .5); cx.fill(); cx.restore()
     }
-    for (let i = B.length - 1; i >= 0; i--) { const o = B[i]; o.t += .016; flower(o.x, o.y, o.R, ease(Math.min(1, o.t / 1.3)), o.rot + o.t * .25, 2, 6, o.t > 5 ? 1 - (o.t - 5) : 1); if (o.t > 6) B.splice(i, 1) }
+    for (let i = B.length - 1; i >= 0; i--) { const o = B[i]; o.t += .016; flower(o.x, o.y, o.R, ease(Math.min(1, o.t / 0.6)), o.rot + o.t * .25, 2, 6, o.t > 1.4 ? Math.max(0, 1 - (o.t - 1.4) / 0.6) : 1); if (o.t > 2) B.splice(i, 1) }
     const tl = G('tl'), tr = tl.getBoundingClientRect(); tl.style.setProperty('--p', clamp((H * .7 - tr.top) / tr.height));
     // at the very bottom of the page every point is on screen, so all of them are shown in full (the last points
     // could otherwise stop short of the scroll that lights them)

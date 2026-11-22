@@ -3664,3 +3664,39 @@ html[lang="bn"] #outro .outro-tag {
     0%, 100% { transform: translateY(0) }
     50% { transform: translateY(-7px) }
 }
+
+/* ==========================================================================
+   Bangla text: never italic (Bangla has no true italic, so the browser slanted it),
+   and a little smaller so it sits neatly with the English layout
+   ========================================================================== */
+html[lang="bn"] *,
+html[lang="bn"] *::before,
+html[lang="bn"] *::after {
+    font-style: normal !important
+}
+
+html[lang="bn"] .lang-bn {
+    font-size: .92em
+}
+
+/* ==========================================================================
+   Bangla text: taller line spacing so the vowel signs and top marks are never cut off
+   ========================================================================== */
+html[lang="bn"] body,
+html[lang="bn"] p,
+html[lang="bn"] li,
+html[lang="bn"] span,
+html[lang="bn"] div,
+html[lang="bn"] small,
+html[lang="bn"] label,
+html[lang="bn"] button,
+html[lang="bn"] a {
+    line-height: 1.85
+}
+
+html[lang="bn"] h1,
+html[lang="bn"] h2,
+html[lang="bn"] h3,
+html[lang="bn"] h4 {
+    line-height: 1.5
+}

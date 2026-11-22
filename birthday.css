@@ -67,7 +67,8 @@
     font-family: 'Playfair Display', 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', serif;
     font-weight: 500;
     font-size: clamp(2rem, 7vw, 3.4rem);
-    line-height: 1;
+    line-height: 1.25;
+    padding: .08em 0;
     color: var(--blush);
     font-variant-numeric: lining-nums tabular-nums;
     text-shadow: 0 0 22px #ee8fb555;
@@ -84,6 +85,14 @@
     color: #cdb4f0
 }
 
+/* Bangla digits are drawn taller than the Latin ones, so the number tiles leave room for them */
+html[lang="bn"] .bday-unit b {
+    font-family: 'Noto Serif Bengali', 'Hind Siliguri', 'Noto Sans Bengali', 'Nirmala UI', Vrinda, serif;
+    font-weight: 500;
+    line-height: 1.35;
+    padding: .14em 0
+}
+
 /* a number that has just changed eases in */
 .bd-tick {
     animation: bdTick .45s ease both
@@ -92,6 +101,15 @@
 @keyframes bdTick {
     from { opacity: .35; transform: translateY(-6px) }
     to { opacity: 1; transform: none }
+}
+
+.bday-date .lang-bn {
+    font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: .86rem;
+    letter-spacing: .3px;
+    color: var(--mute)
 }
 
 .bday-date {
