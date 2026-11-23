@@ -1,0 +1,308 @@
+/* =====================================================================================
+   Birthday countdown (every 13 February). Styles only; birthday.js does the timing.
+   Colours come from the :root variables in style.css, so the section matches the site.
+   Only transform and opacity are animated (cheap on low-end phones).
+   ===================================================================================== */
+
+.bday {
+    position: relative;
+    overflow: hidden;
+    text-align: center
+}
+
+/* the hidden state must win over the display rules below */
+.bday [hidden] {
+    display: none !important
+}
+
+.bday-sub {
+    position: relative;
+    z-index: 1;
+    max-width: 560px;
+    margin: 0 auto;
+    color: var(--mute);
+    font-size: clamp(1.05rem, 3vw, 1.25rem);
+    line-height: 1.75
+}
+
+/* ----- the countdown card: same surface as .card in style.css ----- */
+.bday-card {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 36px auto 0;
+    padding: clamp(18px, 4vw, 30px);
+    background: #181221ee;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 18px 44px rgba(10, 6, 16, .45), inset 0 1px 0 #ffffff0d;
+    transition: opacity 1.2s, transform 1.2s cubic-bezier(.2, .7, .2, 1), filter 1.2s, border-color .4s
+}
+
+.bday-card.in:hover {
+    border-color: var(--rose)
+}
+
+.bday-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(8px, 2vw, 16px)
+}
+
+/* one number tile */
+.bday-unit {
+    min-width: 0;
+    padding: clamp(12px, 3vw, 20px) 4px;
+    border-radius: 14px;
+    background: linear-gradient(160deg, #2a1d36, #1a1224);
+    border: 1px solid #3a2b47;
+    box-shadow: 0 8px 22px rgba(10, 6, 16, .35), inset 0 1px 0 #ffffff12;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px
+}
+
+.bday-unit b {
+    font-family: 'Playfair Display', 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', serif;
+    font-weight: 500;
+    font-size: clamp(2rem, 7vw, 3.4rem);
+    line-height: 1.25;
+    padding: .08em 0;
+    color: var(--blush);
+    font-variant-numeric: lining-nums tabular-nums;
+    text-shadow: 0 0 22px #ee8fb555;
+    white-space: nowrap
+}
+
+.bday-unit span {
+    font-family: 'DM Sans', 'Hind Siliguri', 'Noto Sans Bengali', 'Nirmala UI', sans-serif;
+    font-size: clamp(.64rem, 2vw, .76rem);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #cdb4f0
+}
+
+/* Bangla digits are drawn taller than the Latin ones, so the number tiles leave room for them */
+html[lang="bn"] .bday-unit b {
+    font-family: 'Noto Serif Bengali', 'Hind Siliguri', 'Noto Sans Bengali', 'Nirmala UI', Vrinda, serif;
+    font-weight: 500;
+    line-height: 1.35;
+    padding: .14em 0
+}
+
+/* a number that has just changed eases in */
+.bd-tick {
+    animation: bdTick .45s ease both
+}
+
+@keyframes bdTick {
+    from { opacity: .35; transform: translateY(-6px) }
+    to { opacity: 1; transform: none }
+}
+
+.bday-date .lang-bn {
+    font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'Nirmala UI', 'Vrinda', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: .86rem;
+    letter-spacing: .3px;
+    color: var(--mute)
+}
+
+.bday-date {
+    margin-top: 20px;
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.12rem;
+    color: #e6d5ee
+}
+
+/* ----- birthday mode: replaces the card on 13 February ----- */
+.bday-celebrate {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 36px auto 0;
+    padding: clamp(24px, 5vw, 40px) clamp(18px, 4vw, 34px);
+    border-radius: 18px;
+    background: linear-gradient(160deg, #241a31ee, #181221ee);
+    border: 1px solid var(--rose);
+    box-shadow: 0 0 60px #ee8fb533, 0 18px 44px rgba(10, 6, 16, .45);
+    animation: bdRise 1.2s cubic-bezier(.2, .7, .2, 1) both
+}
+
+.bday-celebrate h3 {
+    font-size: clamp(2.1rem, 7vw, 3.3rem);
+    line-height: 1.2;
+    margin-bottom: 16px;
+    background: linear-gradient(90deg, var(--lil), var(--rose), var(--blush));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent
+}
+
+.bday-celebrate p {
+    max-width: 560px;
+    margin: 0 auto;
+    color: var(--ink);
+    font-size: clamp(1.05rem, 3.2vw, 1.25rem);
+    line-height: 1.8
+}
+
+@keyframes bdRise {
+    from { opacity: 0; transform: translateY(24px) scale(.97); filter: blur(4px) }
+    to { opacity: 1; transform: none; filter: none }
+}
+
+/* ----- confetti: small DOM pieces, removed after their fall ----- */
+.bday-confetti {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 2
+}
+
+.bd-piece {
+    position: absolute;
+    top: -14px;
+    width: 8px;
+    height: 12px;
+    border-radius: 2px;
+    opacity: 0;
+    animation: bdFall linear forwards
+}
+
+@keyframes bdFall {
+    0% { opacity: 1; transform: translate3d(0, 0, 0) rotate(0deg) }
+    85% { opacity: 1 }
+    100% { opacity: 0; transform: translate3d(var(--dx), 75vh, 0) rotate(var(--rot)) }
+}
+
+/* ----- a few twinkling stars around the section (decoration only) ----- */
+.bday-star {
+    position: absolute;
+    z-index: 0;
+    color: var(--lil);
+    font-size: 14px;
+    line-height: 1;
+    opacity: 0;
+    pointer-events: none;
+    text-shadow: 0 0 10px #cdb4f088;
+    animation: bdTwinkle 4.8s ease-in-out infinite
+}
+
+.bday-star.s1 { top: 12%; left: 7%; font-size: 12px }
+.bday-star.s2 { top: 30%; right: 9%; color: var(--rose); animation-delay: 1.3s }
+.bday-star.s3 { top: 58%; left: 12%; font-size: 10px; animation-delay: 2.4s }
+.bday-star.s4 { top: 72%; right: 14%; font-size: 13px; color: var(--blush); animation-delay: .7s }
+.bday-star.s5 { top: 9%; right: 22%; font-size: 9px; animation-delay: 3.1s }
+
+@keyframes bdTwinkle {
+    0%, 100% { opacity: 0; transform: scale(.6) rotate(0deg) }
+    50% { opacity: .75; transform: scale(1) rotate(45deg) }
+}
+
+/* ----- small screens: tighter spacing, no decoration that could crowd the numbers ----- */
+@media (max-width: 640px) {
+    .bday-card { margin-top: 28px }
+    .bday-grid { gap: 8px }
+    .bday-unit { border-radius: 12px; gap: 4px }
+    .bday-star.s3,
+    .bday-star.s4 { display: none }
+}
+
+@media (max-width: 360px) {
+    .bday-unit b { font-size: 1.75rem }
+    .bday-unit span { letter-spacing: .5px }
+}
+
+/* ----- blur-to-reveal: the countdown and the birthday message start softly blurred ----- */
+.bday-reveal {
+    position: relative;
+    cursor: pointer;
+    outline: none;
+    -webkit-tap-highlight-color: transparent
+}
+
+.bday-blur {
+    filter: blur(9px);
+    opacity: .9;
+    transition: filter 1.4s ease, opacity 1.4s ease
+}
+
+.bday-hint {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 3;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    padding: .55rem 1.25rem;
+    white-space: nowrap;
+    border-radius: 999px;
+    background: rgba(24, 18, 33, .55);
+    border: 1px solid rgba(238, 143, 181, .45);
+    box-shadow: 0 10px 28px rgba(10, 6, 16, .35), inset 0 1px 0 rgba(255, 255, 255, .06);
+    font-family: 'Cormorant Garamond', 'Hind Siliguri', 'Noto Serif Bengali', 'Noto Sans Bengali', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1.1rem, 3.4vw, 1.3rem);
+    line-height: 1.3;
+    color: var(--blush);
+    transition: opacity .9s ease, transform .9s ease
+}
+
+.bday-reveal:focus-visible .bday-hint {
+    box-shadow: 0 0 0 2px rgba(238, 143, 181, .6)
+}
+
+@media (hover: hover) {
+    .bday-reveal:not(.revealed):hover .bday-hint {
+        border-color: rgba(238, 143, 181, .8)
+    }
+}
+
+/* revealed: the blur lifts, the hint fades out, and the numbers keep a soft glow */
+.bday-reveal.revealed {
+    cursor: default
+}
+
+.bday-reveal.revealed .bday-blur {
+    filter: none;
+    opacity: 1
+}
+
+.bday-reveal.revealed .bday-hint {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% - 8px));
+    pointer-events: none
+}
+
+.bday-reveal.revealed .bday-unit b {
+    text-shadow: 0 0 26px #ee8fb566, 0 0 6px #ffd6e455
+}
+
+@media (max-width: 640px) {
+    .bday-hint { padding: .4rem .9rem; font-size: 1.1rem; white-space: nowrap; max-width: 94%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bday-blur,
+    .bday-hint { transition: none !important }
+}
+
+/* the hint's sparkle icon: an SVG drawn in the hint's colour, so it matches the text */
+.bday-hint-ico {
+    display: inline-block;
+    width: .9em;
+    height: .9em;
+    margin-left: .45em;
+    vertical-align: -.08em;
+    fill: currentColor;
+    color: var(--rose, #ee8fb5)
+}
