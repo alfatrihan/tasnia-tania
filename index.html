@@ -3,6 +3,14 @@
 
 <head>
   <meta charset="UTF-8">
+  <script>
+    (function () {
+      var low = (navigator.deviceMemory && navigator.deviceMemory <= 4)
+        || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
+        || (navigator.connection && navigator.connection.saveData);
+      if (low) document.documentElement.classList.add('low-power-device');
+    })();
+  </script>
   <meta name="viewport"
     content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>Tania</title>

@@ -1,4 +1,7 @@
 const $ = s => [...document.querySelectorAll(s)], G = id => document.getElementById(id);
+const LOW_POWER_DEVICE = (navigator.deviceMemory && navigator.deviceMemory <= 4)
+    || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
+    || (navigator.connection && navigator.connection.saveData);
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v)), seg = (p, a, b) => clamp((p - a) / (b - a)), ease = t => 1 - Math.pow(1 - t, 3);
 
 // ---------- Block pinch-zoom and double-tap zoom (mobile stability) ----------
@@ -10,7 +13,7 @@ document.addEventListener('touchend', e => { const n = Date.now(); if (n - lastT
 const navEl = G('nav');
 function centerNav(a) { const nr = navEl.getBoundingClientRect(), ar = a.getBoundingClientRect(); navEl.scrollTo({ left: navEl.scrollLeft + (ar.left - nr.left) - (navEl.clientWidth - ar.width) / 2, behavior: 'smooth' }) }
 const cv = G('fx'), cx = cv.getContext('2d'); let W = 0, H = 0, D = 1;
-const PS = 10; // every falling petal has the same size
+const PS = LOW_POWER_DEVICE ? 8 : 10; // smaller particles on low-memory phones
 
 // Canvas is sized only when the width changes, or when the screen gets taller.
 // Mobile address-bar show/hide changes only the height, so it no longer resets/shakes the drawing.
@@ -19,7 +22,7 @@ function size() {
     if (!widthChanged && nh <= H) return;
     W = nw; H = widthChanged ? nh : Math.max(H, nh);
     // petals and flowers do not need full sharpness: a lower resolution on phones keeps scrolling smooth (fill-rate)
-    D = Math.min(devicePixelRatio || 1, innerWidth < 760 ? 1 : 1.5);
+    D = LOW_POWER_DEVICE ? Math.min(devicePixelRatio || 1, .75) : Math.min(devicePixelRatio || 1, innerWidth < 760 ? 1 : 1.5);
     cv.width = W * D; cv.height = H * D;
     cv.style.width = W + 'px'; cv.style.height = H + 'px';
     cx.setTransform(D, 0, 0, D, 0, 0);
@@ -93,8 +96,8 @@ function butterfly(x, y, s, heading, flap, a) {
 }
 
 const P = [], B = []; let ptr = { x: -999, y: -999 }, sv = 0, lastY = scrollY, lastT = 0;
-function spawn(x, y, burst, amb) { const a = Math.random() * 6.283, s = burst ? 2 + Math.random() * 5 : 0; P.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - (burst ? 2 : 0), r: Math.random() * 6.3, vr: (Math.random() - .5) * .06, s: PS, ph: Math.random() * 6.3, c: PAL[Math.random() * 5 | 0], a: 1, amb }) }
-for (let i = 0; i < 34; i++)spawn(Math.random() * W, Math.random() * H, 0, 1);
+function spawn(x, y, burst, amb) { if (LOW_POWER_DEVICE && P.length >= 55) P.shift(); const a = Math.random() * 6.283, s = burst ? 2 + Math.random() * 5 : 0; P.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - (burst ? 2 : 0), r: Math.random() * 6.3, vr: (Math.random() - .5) * .06, s: PS, ph: Math.random() * 6.3, c: PAL[Math.random() * 5 | 0], a: 1, amb }) }
+for (let i = 0; i < (LOW_POWER_DEVICE ? 10 : 34); i++)spawn(Math.random() * W, Math.random() * H, 0, 1);
 addEventListener('pointermove', e => { ptr.x = e.clientX; ptr.y = e.clientY; const n = Date.now(); if (e.pointerType === 'mouse' && n - lastT > 70) { lastT = n; spawn(e.clientX, e.clientY, 0, 0) } });
 // Tap to bloom. On phones, 'click' does not fire on plain (non-button) areas, so a tap is read from
 // pointerup instead: a short touch that did not move (not a scroll) makes the flower.
@@ -112,7 +115,7 @@ function bloomAt(x, y) {
     // keep the bloom fully on screen so its petals are never cut off at the edge
     const bx = Math.max(40, Math.min(W - 40, x)), by = Math.max(40, Math.min(H - 40, y));
     B.push({ x: bx, y: by, t: 0, R: 24 + Math.random() * 28, rot: Math.random() * 6 });
-    for (let i = 0; i < 14; i++)spawn(bx, by, 1, 0);
+    for (let i = 0; i < (LOW_POWER_DEVICE ? 7 : 14); i++)spawn(bx, by, 1, 0);
 }
 
 // Side vines: straight and fixed (no sideways sway)
@@ -156,7 +159,10 @@ function vine(side, Y) {
     cx.stroke();
 }
 const hero = G('home'), core = G('core'), c1 = G('c1'), c2 = G('c2'), cue = G('cue'), bar = G('bar');
+let lastLowPowerFrame = 0;
 function draw(t) {
+    if (LOW_POWER_DEVICE && t - lastLowPowerFrame < 32) { requestAnimationFrame(draw); return; }
+    lastLowPowerFrame = t;
     cx.clearRect(0, 0, W, H);
     const dy = scrollY - lastY; lastY = scrollY; sv += (dy - sv) * .15;
     const sp = scrollY / ((document.documentElement.scrollHeight - innerHeight) || 1);

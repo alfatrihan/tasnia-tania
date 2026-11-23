@@ -202,7 +202,11 @@
     /* ---------- falling petals: the site's own petal drift, drawn on a small canvas behind the game ---------- */
     let petalsOn = false;
     function startPetals() {
-        if (root.querySelector('.mm-fx-canvas') || !window.requestAnimationFrame) return;
+        const lowPower = (navigator.deviceMemory && navigator.deviceMemory <= 4)
+            || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
+            || (navigator.connection && navigator.connection.saveData)
+            || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (lowPower || root.querySelector('.mm-fx-canvas') || !window.requestAnimationFrame) return;
         const cv = document.createElement('canvas');
         cv.className = 'mm-fx-canvas';
         cv.setAttribute('aria-hidden', 'true');
@@ -298,7 +302,11 @@
         // no clock on screen during play
         timeEl = null;
         // canvas aurora: smooth animated blobs in the site's rose / lilac / sage palette
-        if (!root.querySelector('.mm-aurora-canvas')) {
+        const lowPowerDevice = (navigator.deviceMemory && navigator.deviceMemory <= 4)
+            || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
+            || (navigator.connection && navigator.connection.saveData)
+            || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!lowPowerDevice && !root.querySelector('.mm-aurora-canvas')) {
             const cv = document.createElement('canvas');
             cv.className = 'mm-aurora-canvas';
             cv.setAttribute('aria-hidden', 'true');
@@ -460,16 +468,30 @@
         const list = Array.isArray(window.MEMORY_PICTURES) && window.MEMORY_PICTURES.length
             ? window.MEMORY_PICTURES : CANDIDATES;
         const unique = Array.from(new Set(list));
-        poolP = Promise.all(unique.map(src => new Promise(resolve => {
-            const im = new Image();
-            let done = false;
-            const finish = ok => { if (!done) { done = true; resolve(ok ? { src, im } : null); } };
-            im.onload = () => finish(true);
-            im.onerror = () => finish(false);
-            setTimeout(() => finish(false), 12000);
-            keepImgs.push(im);
-            im.src = src;
-        }))).then(results => {
+        poolP = (async () => {
+            const results = new Array(unique.length);
+            let next = 0;
+            const worker = async () => {
+                while (next < unique.length) {
+                    const index = next++;
+                    const src = unique[index];
+                    results[index] = await new Promise(resolve => {
+                        const im = new Image();
+                        let done = false;
+                        const finish = ok => { if (!done) { done = true; resolve(ok ? { src, im } : null); } };
+                        im.onload = () => finish(true);
+                        im.onerror = () => finish(false);
+                        const timeout = setTimeout(() => finish(false), 10000);
+                        im.onload = () => { clearTimeout(timeout); finish(true); };
+                        im.onerror = () => { clearTimeout(timeout); finish(false); };
+                        keepImgs.push(im);
+                        im.src = src;
+                    });
+                }
+            };
+            await Promise.all(Array.from({ length: Math.min(4, unique.length) }, worker));
+            return results;
+        })().then(results => {
             const loaded = results.filter(Boolean);
             // the same picture saved under two file names must not appear twice in the game
             const kept = [], hashes = [], dupes = [];
@@ -524,7 +546,8 @@
         if (!pool) { loadingEl.textContent = T('loading'); loadingEl.classList.remove('hidden'); }
         else if (!ready) { loadingEl.textContent = T('noPhotos'); loadingEl.classList.remove('hidden'); }
         else loadingEl.classList.add('hidden');
-        playEl.disabled = !ready;
+        // PLAY must remain available: it is the action that starts photo loading.
+        playEl.disabled = false;
         goEl.disabled = !ready;
     }
 
@@ -1070,7 +1093,29 @@
     /* ---------- wiring ---------- */
     diffBtns.forEach(b => b.addEventListener('click', () => setDiff(b.dataset.diff)));
     modeBtns.forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
-    playEl.addEventListener('click', () => { enterFull(); backToMenu(false); });   // PLAY opens the full-screen setup
+    playEl.addEventListener('click', () => {
+        enterFull();
+        backToMenu(false);
+        // Start fetching/validating photos only after an intentional PLAY tap.
+        if (!poolP) {
+            loadingEl.textContent = T('loading');
+            loadingEl.classList.remove('hidden');
+            playEl.disabled = true;
+            loadPool().then(() => {
+                playEl.disabled = false;
+                renderLoading();
+                setScene();
+            }).catch(err => {
+                console.warn("Tania's Pair Hunt: photo loading failed", err);
+                poolP = null;
+                pool = [];
+                loadingEl.textContent = T('noPhotos');
+                loadingEl.classList.remove('hidden');
+                playEl.disabled = false;
+                goEl.disabled = true;
+            });
+        }
+    });   // PLAY opens setup and begins photo loading
     goEl.addEventListener('click', startGame);
     boardEl.addEventListener('click', e => {
         const card = e.target.closest ? e.target.closest('.mm-card') : null;

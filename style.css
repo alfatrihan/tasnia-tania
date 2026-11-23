@@ -3700,3 +3700,44 @@ html[lang="bn"] h3,
 html[lang="bn"] h4 {
     line-height: 1.5
 }
+
+
+/* ===== Low-memory device profile (2–4 GB RAM phones) ===== */
+.low-power-device *,
+.low-power-device *::before,
+.low-power-device *::after {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.low-power-device #fx {
+  image-rendering: auto;
+}
+.low-power-device .mm-face,
+.low-power-device .mm-player,
+.low-power-device .mm-card.matched .mm-front {
+  box-shadow: 0 2px 6px #0005;
+}
+.low-power-device .mm-card.matched .mm-front::after {
+  display: none !important;
+}
+.low-power-device .mm-card.matched {
+  animation: none !important;
+}
+.low-power-device .mm-card.matched .mm-front {
+  animation: none !important;
+}
+.low-power-device .mm-petal {
+  display: none !important;
+}
+.low-power-device .mm-inner {
+  transition-duration: .28s !important;
+}
+.low-power-device .mm-card,
+.low-power-device .mm-diff,
+.low-power-device .mm-mode,
+.low-power-device .mm-btn {
+  transition-duration: .15s !important;
+}
+@media (max-width: 700px) {
+  .low-power-device .mm-board { gap: 5px; }
+}

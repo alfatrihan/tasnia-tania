@@ -1922,3 +1922,54 @@ html[lang="bn"] #mm-landing .mm-loading {
 .mm-card-wrap.mm-full .mm-screen {
     padding-bottom: calc(50px + env(safe-area-inset-bottom, 0px))
 }
+
+
+/* Low-power phones: reduce costly blur/glow/animation work while keeping gameplay intact. */
+@media (max-width: 700px), (prefers-reduced-motion: reduce) {
+    .mm-card.matched { animation: none !important; }
+    .mm-card.matched .mm-front { animation: none !important; box-shadow: 0 0 0 2px var(--rose); }
+    .mm-card.matched .mm-front::after { display: none !important; }
+    .mm-player.on { box-shadow: 0 0 0 1px var(--rose) inset; }
+    .mm-face { box-shadow: 0 2px 6px #0005; }
+}
+
+
+/* ===== Low-memory device profile (2–4 GB RAM phones) ===== */
+.low-power-device *,
+.low-power-device *::before,
+.low-power-device *::after {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.low-power-device #fx {
+  image-rendering: auto;
+}
+.low-power-device .mm-face,
+.low-power-device .mm-player,
+.low-power-device .mm-card.matched .mm-front {
+  box-shadow: 0 2px 6px #0005;
+}
+.low-power-device .mm-card.matched .mm-front::after {
+  display: none !important;
+}
+.low-power-device .mm-card.matched {
+  animation: none !important;
+}
+.low-power-device .mm-card.matched .mm-front {
+  animation: none !important;
+}
+.low-power-device .mm-petal {
+  display: none !important;
+}
+.low-power-device .mm-inner {
+  transition-duration: .28s !important;
+}
+.low-power-device .mm-card,
+.low-power-device .mm-diff,
+.low-power-device .mm-mode,
+.low-power-device .mm-btn {
+  transition-duration: .15s !important;
+}
+@media (max-width: 700px) {
+  .low-power-device .mm-board { gap: 5px; }
+}
