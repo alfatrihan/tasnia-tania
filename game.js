@@ -39,6 +39,9 @@
     const SPAWN_D = 42, KILL_D = 5, FIRST_D = 9;    // distance along the road where obstacles appear / disappear
     const WRAP = 112;                  // road lines repeat every WRAP units
 
+    // low-power device: phones / tablets, or a narrow screen -> fewer decorations, lighter rendering
+    const MOBILE = window.matchMedia('(max-width: 820px), (pointer: coarse)').matches;
+
     const clamp01 = (x, lo) => Math.min(1, Math.max(lo, x));
     let state = 'ready';               // ready | intro | running | over
     let v = SPEED0, distance = 0, score = 0, cooldown = 0, overAt = 0;
@@ -48,7 +51,7 @@
     try { hi = Number(localStorage.getItem('tania-runner-hi')) || 0; } catch (e) { hi = 0; }
 
     const hero = { y: 0, vy: 0, onGround: true, holding: false, run: 0, phase: 0, squash: 0 };
-    let obstacles = [], roadLines = [], trees = [], petalPos, petalGeo, PETAL_N = 90;
+    let obstacles = [], roadLines = [], trees = [], petalPos, petalGeo, PETAL_N = MOBILE ? 40 : 90;
     let W = 0, H = 0, DIR = 1;
 
     // ---------- Three.js (needs the three.js script loaded first) ----------
@@ -59,7 +62,7 @@
         return;
     }
 
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: !MOBILE, alpha: false, powerPreference: 'low-power' });
     renderer.setClearColor(0x140e1f, 1);
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x140e1f);
@@ -191,7 +194,7 @@
         const mat = new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 1, metalness: 0 });
         return new THREE.Mesh(geo, mat);
     }
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < (MOBILE ? 5 : 9); i++) {
         const r = 6 + Math.random() * 4, h = 8 + Math.random() * 8;
         const x = 30 + Math.random() * 10, z = -100 + i * 25 + Math.random() * 6;
         const main = ridgedMountain(r, h, i % 2 ? 0x2a1d3d : 0x3d2a4f);
@@ -204,8 +207,8 @@
         }
     }
     // rolling hills: low, lumpy, overlapping; the same deterministic noise keeps the seams closed
-    for (let i = 0; i < 7; i++) {
-        const base = new THREE.SphereGeometry(9, 16, 12);
+    for (let i = 0; i < (MOBILE ? 4 : 7); i++) {
+        const base = new THREE.SphereGeometry(9, MOBILE ? 10 : 16, MOBILE ? 8 : 12);
         const p = base.attributes.position;
         for (let v = 0; v < p.count; v++) {
             const x = p.getX(v), y = p.getY(v), z = p.getZ(v);
@@ -269,7 +272,7 @@
         }
         return g;
     }
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < (MOBILE ? 12 : 24); i++) {
         const kind = i % 3 === 0 ? 'blossom' : 'pine';
         const g = makeTree(kind, 0.7 + Math.random() * 0.4);
         g.scale.y = 0.9 + Math.random() * 0.2;
@@ -282,7 +285,7 @@
     // ---------- natural surroundings ----------
     {
         // dusk sky dome
-        const skyGeo = new THREE.SphereGeometry(180, 24, 16);
+        const skyGeo = new THREE.SphereGeometry(180, MOBILE ? 14 : 24, MOBILE ? 10 : 16);
         const pos = skyGeo.attributes.position, cols = [];
         const top = new THREE.Color(0x1a1030), mid = new THREE.Color(0x3b2450), low = new THREE.Color(0x8a4a6e);
         for (let i = 0; i < pos.count; i++) {
@@ -294,9 +297,9 @@
         scene.add(new THREE.Mesh(skyGeo, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false })));
     }
     const clouds = [];
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < (MOBILE ? 4 : 8); i++) {
         const cloud = new THREE.Group();
-        for (let k = 0; k < 4; k++) {
+        for (let k = 0; k < (MOBILE ? 3 : 4); k++) {
             const puff = new THREE.Mesh(new THREE.SphereGeometry(1.2 + Math.random() * 0.8, 8, 6), M.cloud);
             puff.position.set(k * 1.4 - 2, Math.random() * 0.4, Math.random() * 0.6);
             puff.scale.y = 0.55; cloud.add(puff);
@@ -339,7 +342,7 @@
     }
     const flora = [];
     const kinds = ['bush', 'grass', 'flowers', 'rock', 'bush', 'flowers', 'grass', 'rock'];
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < (MOBILE ? 12 : 24); i++) {
         const kind = kinds[i % kinds.length];
         const s = 0.8 + Math.random() * 0.6;
         const g = kind === 'bush' ? makeBush(s) : kind === 'grass' ? makeGrass(s) : kind === 'flowers' ? makeFlowers(s) : makeRock(s);
@@ -353,8 +356,9 @@
 
     // stars and moon (not affected by fog)
     const starGeo = new THREE.BufferGeometry();
-    const starPos = new Float32Array(240 * 3);
-    for (let i = 0; i < 240; i++) {
+    const STAR_N = MOBILE ? 90 : 240;
+    const starPos = new Float32Array(STAR_N * 3);
+    for (let i = 0; i < STAR_N; i++) {
         starPos[i * 3] = (Math.random() - 0.5) * 160;
         starPos[i * 3 + 1] = 8 + Math.random() * 40;
         starPos[i * 3 + 2] = -150 + Math.random() * 180;
@@ -610,7 +614,7 @@
         if (isFull()) { W = Math.floor(wrap.clientWidth || window.innerWidth); H = Math.floor(wrap.clientHeight || window.innerHeight); }
         else { W = Math.max(280, Math.floor(wrap.clientWidth)); const tall = window.matchMedia('(max-width: 700px)').matches; H = Math.round(Math.max(230, W * (tall ? 1.4 : 0.625))); /* phone: tall (portrait); desktop: 16:10 */ }
         if (!W || !H) return;
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MOBILE ? 1 : 2));
         renderer.setSize(W, H, false);
         canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
         camera.aspect = W / H;
@@ -1051,7 +1055,9 @@
     new IntersectionObserver(es => es.forEach(en => {
         inView = en.isIntersecting;
         if (!en.isIntersecting && (greetAudio || (gameMusic && !gameMusic.paused))) leaveGameAudio();   // scrolled away: game music stops
-    }), { threshold: 0.5 }).observe(wrap);
+        if (inView) wake();   // back in view: restart the render loop
+    }), { threshold: 0.1 }).observe(wrap);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) wake(); });
     new MutationObserver(updateTexts).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
     window.addEventListener('resize', layout);
     window.addEventListener('orientationchange', () => setTimeout(layout, 250));
@@ -1059,19 +1065,28 @@
     if (window.ResizeObserver) new ResizeObserver(layout).observe(wrap);
 
     // ---------- loop ----------
+    // the 3D scene only renders while it is actually on screen and the tab is visible: scrolled away
+    // or switched to another tab, it stops drawing completely instead of burning battery/CPU in the background
     let last = performance.now();
+    let rafId = 0;
     function frame(now) {
+        if (!inView || document.hidden) { rafId = 0; return; }
         const dt = Math.min(2.5, (now - last) / 16.667);   // frames; clamped so a hidden tab does not jump
         last = now;
         update(dt, now);
         render(now);
         updateHud();
-        requestAnimationFrame(frame);
+        rafId = requestAnimationFrame(frame);
+    }
+    function wake() {
+        if (rafId || document.hidden || !inView) return;
+        last = performance.now();
+        rafId = requestAnimationFrame(frame);
     }
 
     layout();
     updateTexts();
-    requestAnimationFrame(frame);
+    wake();
 })();
 
 /* ===== Swipe dots under the games: right / left swipe moves between games ===== */
@@ -1102,6 +1117,16 @@
     track.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update);
     update();
+
+    // the slide you are not looking at keeps its decorative CSS animations (sparkle, aurora, drifting
+    // petals...) running forever unless we stop them: pause everything inside a slide the moment it
+    // scrolls out of view, and let it resume the moment it is back, so only one slide ever costs anything
+    if ('IntersectionObserver' in window) {
+        const slideIO = new IntersectionObserver(es => es.forEach(en => {
+            en.target.classList.toggle('play-offscreen', !en.isIntersecting);
+        }), { root: track, threshold: 0.15 });
+        slides.forEach(s => slideIO.observe(s));
+    }
 })();
 
 /* ===== Theme petals behind the games (the same falling petals as the rest of the site) ===== */

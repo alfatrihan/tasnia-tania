@@ -1841,9 +1841,8 @@ html[lang="bn"] #mm-landing .mm-loading {
 .mm-mode[data-mode="friend"] { --mm-fill: linear-gradient(135deg, #ee8fb5, #c2467f); --mm-ink: #2b0f1e }
 .mm-mode[data-mode="bot"] { --mm-fill: linear-gradient(135deg, #cdb4f0, #9a7fd1); --mm-ink: #1d1430 }
 
-/* the end screen shows only the scores and stats (no title, no winner line) */
-.mm-end-title,
-.mm-end-win {
+/* the end screen shows no "Wonderful!" title, but the winner line stays visible */
+.mm-end-title {
     display: none !important
 }
 

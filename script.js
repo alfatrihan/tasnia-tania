@@ -207,15 +207,20 @@ function draw(t) {
     // at the very bottom of the page every point is on screen, so all of them are shown in full (the last points
     // could otherwise stop short of the scroll that lights them)
     const tlEnd = scrollY + innerHeight >= document.documentElement.scrollHeight - 4;
-    tl.querySelectorAll('li').forEach(li => { const s0 = tlEnd ? 1 : clamp((H * .88 - li.getBoundingClientRect().top) / (H * .46)); const q = s0 * s0 * (3 - 2 * s0); li.style.setProperty('--q', q.toFixed(3)); });   // scroll-linked, eased in and out: nothing shows before the year is in view
-    $('.tl-words').forEach(e => { const q = clamp((H * .85 - e.getBoundingClientRect().top) / (H * .45)), ws = e.children, n = ws.length * q; for (let i = 0; i < ws.length; i++)ws[i].classList.toggle('lit', i < n) });   // timeline lines light word by word, like the About text
-    $('.words').forEach(e => { const q = clamp((H * .85 - e.getBoundingClientRect().top) / (H * .45)), ws = e.children, n = ws.length * q; for (let i = 0; i < ws.length; i++)ws[i].classList.toggle('lit', i < n) });
-    requestAnimationFrame(draw)
+    tlLis.forEach(li => { const s0 = tlEnd ? 1 : clamp((H * .88 - li.getBoundingClientRect().top) / (H * .46)); const q = s0 * s0 * (3 - 2 * s0); li.style.setProperty('--q', q.toFixed(3)); });   // scroll-linked, eased in and out: nothing shows before the year is in view
+    tlWordsEls.forEach(e => { const q = clamp((H * .85 - e.getBoundingClientRect().top) / (H * .45)), ws = e.children, n = ws.length * q; for (let i = 0; i < ws.length; i++)ws[i].classList.toggle('lit', i < n) });   // timeline lines light word by word, like the About text
+    wordsEls.forEach(e => { const q = clamp((H * .85 - e.getBoundingClientRect().top) / (H * .45)), ws = e.children, n = ws.length * q; for (let i = 0; i < ws.length; i++)ws[i].classList.toggle('lit', i < n) });
+    // pause completely while this tab is in the background, instead of drawing invisibly forever
+    if (!document.hidden) requestAnimationFrame(draw); else loopPaused = true;
 }
-requestAnimationFrame(draw);
 $('.words').forEach(e => e.innerHTML = e.textContent.split(' ').map(w => '<span class="w">' + w + ' </span>').join(''));
 // timeline lines: split into words, lit by scroll exactly like the About text
 $('.tl-words').forEach(e => e.innerHTML = e.textContent.trim().split(/\s+/).map(w => '<span class="w">' + w + '</span>').join(' '));
+// these lists are static once the lines above have run, so the per-frame loop no longer re-queries the DOM for them
+const wordsEls = $('.words'), tlWordsEls = $('.tl-words'), tlLis = $('#tl li');
+let loopPaused = false;
+requestAnimationFrame(draw);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && loopPaused) { loopPaused = false; requestAnimationFrame(draw); } });
 const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in') }), { threshold: .2, rootMargin: '0px 0px -8% 0px' });
 $('.rv').forEach(e => io.observe(e));
 const links = $('#nav a');

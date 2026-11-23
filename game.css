@@ -768,6 +768,13 @@ html[lang="bn"] .play-tag .lang-en { display: none }
     text-align: center
 }
 
+/* a slide that has been swiped away stops animating completely (sparkle, aurora, drifting petals,
+   pulses...) instead of quietly costing CPU/GPU in the background forever */
+.play-slide.play-offscreen,
+.play-slide.play-offscreen * {
+    animation-play-state: paused !important
+}
+
 /* phones: each game is shown vertically (portrait) and you swipe right / left to the next game.
    The small dots under the game show which game you are on. */
 .play-track {

@@ -314,9 +314,8 @@
 
             let auroraFrame = null, auroraPaused = false;
             const drawAurora = (ts) => {
-                if (!cv.isConnected) return;
+                if (!cv.isConnected || auroraPaused) { auroraFrame = null; return; }
                 auroraFrame = requestAnimationFrame(drawAurora);
-                if (auroraPaused) return;
                 const W = cv.offsetWidth, H = cv.offsetHeight;
                 if (!W || !H) return;
                 if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
@@ -336,16 +335,21 @@
                     ctx.fillRect(0, 0, W, H);
                 }
             };
-            auroraFrame = requestAnimationFrame(drawAurora);
 
-            // pause when the game is paused
-            const pauseAurora  = () => { auroraPaused = true;  };
-            const resumeAurora = () => { auroraPaused = false; };
-            const mo = new MutationObserver(() => {
-                const p = root.classList.contains('mm-paused');
-                p ? pauseAurora() : resumeAurora();
-            });
+            // pause when the game is paused, scrolled off screen, or the tab is hidden
+            let auroraOffscreen = true;   // IntersectionObserver reports asynchronously, so start paused
+            const syncAurora = () => {
+                auroraPaused = auroraOffscreen || document.hidden || root.classList.contains('mm-paused');
+                if (!auroraPaused && !auroraFrame) auroraFrame = requestAnimationFrame(drawAurora);
+            };
+            const mo = new MutationObserver(syncAurora);
             mo.observe(root, { attributes: true, attributeFilter: ['class'] });
+            document.addEventListener('visibilitychange', syncAurora);
+            if ('IntersectionObserver' in window) {
+                new IntersectionObserver(entries => { auroraOffscreen = !entries[0].isIntersecting; syncAurora(); }).observe(root);
+            } else {
+                auroraOffscreen = false; syncAurora();
+            }
         }
 
         // two colour washes that fade in and out: rose for player 1, lilac for player 2 / the bot
@@ -836,9 +840,11 @@
     function renderEnd() {
         if (!endInfo) return;
         const nm = names();
-        // no "Wonderful!" title and no "who wins" line on the end screen: only the scores and stats
+        // no "Wonderful!" title on the end screen, but the scores are followed by who actually won
         endTitle.textContent = '';
-        endWin.textContent = '';
+        if (endInfo.winner === -1) endWin.textContent = T('tie');
+        else if (mode === 'bot') endWin.textContent = endInfo.winner === 0 ? T('winYou') : T('winBot');
+        else endWin.textContent = T('winName').replace('{n}', nm[endInfo.winner]);
         endStats.textContent = T('finalScore') + ': ' + nm[0] + ' ' + endInfo.s0 + '  ·  ' + nm[1] + ' ' + endInfo.s1
             + '  ·  ' + T('movesTaken') + ' ' + endInfo.mv;
         if (endMirror) endMirror.textContent = nm[0] + ' ' + endInfo.s0 + '  ·  ' + nm[1] + ' ' + endInfo.s1;

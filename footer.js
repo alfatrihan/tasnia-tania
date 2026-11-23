@@ -33,7 +33,9 @@
             devWrap.style.transform = 'translateY(' + ((1 - e) * 22).toFixed(1) + 'px)';
             devWrap.style.pointerEvents = bp > 0.5 ? 'auto' : 'none';
         }
-        requestAnimationFrame(frame);
+        if (!document.hidden) requestAnimationFrame(frame); else paused = true;
     }
+    let paused = false;
     requestAnimationFrame(frame);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && paused) { paused = false; requestAnimationFrame(frame); } });
 })();
