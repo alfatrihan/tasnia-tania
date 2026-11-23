@@ -631,6 +631,7 @@
     }
     function reset() {
         state = 'running'; v = SPEED0; distance = 0; score = 0; bonus = 0; coins = 0; coinCool = 2; coinMisses = 0; hideAngry();
+        wake();
         clearObstacles();
         hero.y = 0; hero.vy = 0; hero.onGround = true; hero.holding = false;
         overlay.classList.add('hidden');
@@ -661,6 +662,7 @@
             overlay.classList.add('hidden');
             setTip('save');
             bubble.classList.add('show');
+            wake();
         } else {
             // every later PLAY (replay): no voice, no bubble. Tania stands still and the run
             // starts only on the first tap, the same as the first time
@@ -671,6 +673,7 @@
             v = SPEED0; distance = 0; score = 0; bonus = 0; coins = 0; coinCool = 2; coinMisses = 0; hideAngry();
             overlay.classList.add('hidden');
             bubble.classList.remove('show');
+            wake();
         }
     }
     function startOrJump() {
@@ -1071,12 +1074,20 @@
     let rafId = 0;
     function frame(now) {
         if (!inView || document.hidden) { rafId = 0; return; }
-        const dt = Math.min(2.5, (now - last) / 16.667);   // frames; clamped so a hidden tab does not jump
+        const dt = Math.min(2.5, (now - last) / 16.667);   // clamp long frames after tab switches
         last = now;
-        update(dt, now);
-        render(now);
-        updateHud();
-        rafId = requestAnimationFrame(frame);
+        // The menu, intro and result screens are static: draw once, not 60 times per second.
+        if (state === 'running') {
+            update(dt, now);
+            render(now);
+            updateHud();
+            if (state === 'running') rafId = requestAnimationFrame(frame);
+            else rafId = 0;
+        } else {
+            render(now);
+            updateHud();
+            rafId = 0;
+        }
     }
     function wake() {
         if (rafId || document.hidden || !inView) return;

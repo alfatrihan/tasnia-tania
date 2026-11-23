@@ -339,7 +339,7 @@
             // pause when the game is paused, scrolled off screen, or the tab is hidden
             let auroraOffscreen = true;   // IntersectionObserver reports asynchronously, so start paused
             const syncAurora = () => {
-                auroraPaused = auroraOffscreen || document.hidden || root.classList.contains('mm-paused');
+                auroraPaused = auroraOffscreen || document.hidden || root.classList.contains('mm-paused') || getComputedStyle(cv).display === 'none';
                 if (!auroraPaused && !auroraFrame) auroraFrame = requestAnimationFrame(drawAurora);
             };
             const mo = new MutationObserver(syncAurora);
@@ -1092,12 +1092,11 @@
     if ('IntersectionObserver' in window) {
         new IntersectionObserver(entries => {
             inView = entries[0].isIntersecting;
-            if (inView) loadPool();          // photos are checked the first time the game is seen
+            // Defer image loading/decoding until the player actually starts Memory Game.
             sync();
         }, { threshold: 0.2 }).observe(slide);
     } else {
         inView = true;
-        loadPool();
     }
     document.addEventListener('visibilitychange', sync);
 
