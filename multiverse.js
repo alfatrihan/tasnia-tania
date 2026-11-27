@@ -33,13 +33,13 @@
     { file: 'business-woman.mp4', icon: 'film', label: 'Mini stories', en: "In this universe, Tania is a businesswoman.", bn: "এই জগতে তানিয়া একজন ব্যবসায়ী।" },
     { file: 'rapper.mp4', icon: 'camera', label: 'Snapshots', en: "In this universe, Tania is a rapper.", bn: "এই জগতে তানিয়া একজন র‍্যাপার।" },
     { file: 'teacher.mp4', icon: 'music', label: 'Melodies', en: "In this universe, Tania is a teacher.", bn: "এই জগতে তানিয়া একজন শিক্ষিকা।" },
-    { file: 'gamer.mp4', icon: 'plane', label: 'Adventures', en: "In this universe, Tania is a gamer, and she is streaming games online.", bn: "এই জগতে তানিয়া একজন গেমার, আর এখন সে অনলাইনে গেম স্ট্রিম করছে।" },
+    { file: 'gamer.mp4', icon: 'plane', label: 'Adventures', en: "In this universe, Tania is a gamer.", bn: "এই জগতে তানিয়া একজন গেমার।" },
     { file: 'vlogger.mp4', icon: 'heart', label: 'Sweet memories', en: "In this universe, Tania is a vlogger.", bn: "এই জগতে তানিয়া একজন ভ্লগার।" },
     { file: 'aline.mp4', icon: 'flower', label: 'Happy days', en: "In this universe, Tania is an alien.", bn: "এই জগতে তানিয়া একজন এলিয়েন।" },
     { file: 'water-queen.mp4', icon: 'sparkle', label: 'Surprises', en: "In this universe, Tania is the Water Queen.", bn: "এই জগতে তানিয়া একজন জলরানী।" }
   ];
   // Every planet has its own size (px on desktop), like a little solar system.
-  const SIZES = [50,68,58,44,76, 60,52,73,47,62, 70,55,44,65,58, 47,76,60,52,68, 58,44,70,62,50, 73,55,47,65,60];
+  const SIZES = [50, 68, 58, 44, 76, 60, 52, 73, 47, 62, 70, 55, 44, 65, 58, 47, 76, 60, 52, 68, 58, 44, 70, 62, 50, 73, 55, 47, 65, 60];
   // Planets that get Saturn-style rings (indexes into CLIPS), kept off the stage edges so rings are never cut off.
   const RINGED = new Set([1, 2, 7, 11, 13, 16, 18, 22]);
   // Eight real-planet looks, so neighbouring planets never match: gas giant, earth-like, mars, ice, moon, neptune, venus, lava.
@@ -268,9 +268,9 @@
     overlay.className = 'mg-overlay mv-overlay';
     overlay.innerHTML =
       '<div class="mg-card mv-card" role="dialog" aria-modal="true" aria-label="Tania&#39;s Multiverse video">' +
-        '<button type="button" class="mg-close mv-close" aria-label="Close video">&times;</button>' +
-        '<div class="mv-video-wrap"><video class="mv-video" playsinline webkit-playsinline preload="none"></video></div>' +
-        '<p class="mv-caption"></p>' +
+      '<button type="button" class="mg-close mv-close" aria-label="Close video">&times;</button>' +
+      '<div class="mv-video-wrap"><video class="mv-video" playsinline webkit-playsinline preload="none"></video></div>' +
+      '<p class="mv-caption"></p>' +
       '</div>';
     const video = overlay.querySelector('video');
     const close = overlay.querySelector('.mv-close');
