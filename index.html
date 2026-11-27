@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="map.css">
   <link rel="stylesheet" href="tania.css">
   <link rel="stylesheet" href="personality.css">
+  <link rel="stylesheet" href="multiverse.css">
 </head>
 
 <body>
@@ -377,6 +378,7 @@
           memories.</span><span class="lang-bn">কখনো কখনো ছোট ছোট মুহূর্তগুলোই সবচেয়ে মিষ্টি স্মৃতি হয়ে থাকে।</span>
       </p>
       <div class="magic-grid rv" id="magicGrid"></div>
+
       <h2 class="rv"><span class="lang-en">A Measure of Tania</span><span class="lang-bn">তানিয়ার মাপজোখ</span></h2>
       <div class="div rv">&#10022;</div>
       <p class="measure-sub rv"><span class="lang-en">A little map of who she is</span><span class="lang-bn">সে কেমন
@@ -463,6 +465,19 @@
     </section>
 
     <!-- ================= PLAY ================= -->
+    <!-- ================= TANIA MULTIVERSE (last part of Her World; multiverse.js / multiverse.css) ================= -->
+    <section id="multiverse" class="mv-section" data-tab="her">
+      <div class="multiverse-block rv" id="taniaMultiverse">
+        <h2 class="multiverse-title"><span class="lang-en">Tania&rsquo;s Multiverse</span><span class="lang-bn">তানিয়ার মাল্টিভার্স</span></h2>
+        <div class="div rv">&#10022;</div>
+        <p class="multiverse-sub">
+          <span class="lang-en">If a multiverse really exists, Tania would be something different on each of these planets. Tap to see how.</span>
+          <span class="lang-bn">যদি সত্যিই মাল্টিভার্স থাকে, তাহলে ভিন্ন ভিন্ন গ্রহে তানিয়া কেমন থাকতো, ট্যাপ করে দেখে নিন।</span>
+        </p>
+        <div class="multiverse-stage" id="multiverseStage" aria-label="Tania's Multiverse video planets"></div>
+      </div>
+    </section>
+
     <section id="quiz" data-tab="play">
       <h2 class="rv play-title"><span class="lang-en">Play</span><span class="lang-bn">খেলা</span></h2>
       <div class="div rv">&#10022;</div>
@@ -627,7 +642,6 @@
                   </div>
                   <div class="mm-stats">
                     <span class="mm-chip"><span data-k="pairsLeft">Pairs left</span><b id="mm-left">0</b></span>
-                    <span class="mm-chip"><span data-k="moves">Moves</span><b id="mm-moves">0</b></span>
                   </div>
                 </div>
                 <div class="mm-stage" id="mm-stage">
@@ -755,7 +769,7 @@
         <p class="words">Some people make the world feel a little softer just by being in it. They find their way into
           our lives during the darkest days, bringing a little light when everything feels heavy, and gently helping us
           find our way out of the darkness. They turn ordinary moments into beautiful memories and leave behind a
-          kindness that stays in the heart. Tania is one of those rare souls,</p>
+          kindness that stays in the heart.</p>
         <p class="outro-tag">someone whose presence makes life feel brighter, gentler, and more beautiful.</p>
       </div>
     </section>
@@ -968,6 +982,7 @@
   </script>
   <script src="lang.js"></script>
   <script src="magic.js"></script>
+  <script src="multiverse.js"></script>
   <script src="personality.js"></script>
   <script src="birthday.js"></script>
   <script>

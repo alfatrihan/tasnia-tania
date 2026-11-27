@@ -32,7 +32,7 @@
     const loadingEl = $('mm-loading');
     const turnEl = $('mm-turn');
     const leftEl = $('mm-left');
-    const movesEl = $('mm-moves');
+    const movesEl = $('mm-moves');   // the Moves chip was removed from the screen; the counter still runs for the end-of-game summary
     const pEls = [$('mm-p0'), $('mm-p1')];
     const pNameEls = [$('mm-p0-name'), $('mm-p1-name')];
     const pScoreEls = [$('mm-p0-score'), $('mm-p1-score')];
@@ -668,8 +668,7 @@
         root.classList.toggle('mm-t0', who === 0);
         root.classList.toggle('mm-t1', who === 1);
         leftEl.textContent = String(remaining);
-        bump(movesEl, String(moves));
-        movesEl.textContent = String(moves);
+        if (movesEl) { bump(movesEl, String(moves)); movesEl.textContent = String(moves); }
         if (progEl) progEl.style.width = (total ? ((total - remaining) / total) * 100 : 0).toFixed(1) + '%';
     }
 
@@ -699,7 +698,9 @@
     }
     function announceTurn(then) {
         // never show the card while the game is paused, closed or not on screen
-        if (paused || phase !== 'play' || !inView || !root.classList.contains('mm-full')) return;
+        if (paused || phase !== 'play') return;
+        // if the card cannot be shown here, still carry on so the bot never gets stuck waiting
+        if (!inView || !root.classList.contains('mm-full')) { if (then) then(); return; }
         if (!announceEl) {
             announceEl = document.createElement('div');
             announceEl.className = 'mm-announce';
@@ -828,6 +829,14 @@
         // less skilled: a guess, which can miss the partner it remembers
         return pick(candidates);
     }
+
+    // Safety net: if the bot's turn is due but nothing is scheduled to play it, start it again.
+    setInterval(() => {
+        if (phase === 'play' && mode === 'bot' && turn === 1 && !paused && !busy && !announcing
+            && !pendTimer && open.length < 2 && inView && !document.hidden) {
+            later(botStep, 600);
+        }
+    }, 1000);
 
     function botStep() {
         if (phase !== 'play' || paused || busy || turn !== 1) return;

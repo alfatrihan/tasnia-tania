@@ -1,0 +1,343 @@
+/* ===== Tania Multiverse: site-theme floating planets (rebuilt, pure-CSS motion) ===== */
+.multiverse-block {
+  max-width: 920px;
+  margin: 42px auto 18px;
+  padding: 0 12px;
+  text-align: center;
+}
+.multiverse-title {
+  margin: 0 0 5px;
+  color: var(--blush, #ffd6e4);
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+.multiverse-sub {
+  margin: 0 auto 28px;   /* a clear gap keeps the subtitle above the planets */
+  padding: 0 12px;
+  max-width: 520px;
+  color: var(--mute, #b3a5b8);
+  font-size: .94rem;
+  line-height: 1.6;
+}
+.multiverse-stage {
+  position: relative;
+  width: min(100%, 760px);
+  height: clamp(360px, 46vw, 460px);
+  margin: 4px auto 0;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse at 50% 48%, rgba(238,143,181,.12), transparent 58%),
+    radial-gradient(ellipse at 50% 50%, rgba(205,180,240,.07), transparent 72%);
+}
+
+/* ---- the planet button: shape, glow, icon ---- */
+.mv-planet {
+  position: absolute;
+  left: var(--x, 50%);
+  top: var(--y, 50%);
+  display: grid;
+  place-items: center;
+  /* each planet has its own size: --s is set per planet by multiverse.js, --k scales it on small screens */
+  width: calc(var(--s, 46) * var(--k, 1) * 1px);
+  height: calc(var(--s, 46) * var(--k, 1) * 1px);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--ink, #f6ebf2);
+  cursor: pointer;
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+  /* motion is driven by multiverse.js (a smooth orbit per planet), so it works on every device */
+  transform: translate(-50%, -50%);
+}
+
+/* ---- planet colours come from the four theme families above, shaded with a deep shade of that colour mixed into the site's dark
+   background (--bg). Each planet's glow uses its own colour (--c). ---- */
+/* Four colour families, two tones each: --c = main/light tone, --c2 = deeper tone used for
+   shading, bands and glow. Lavender / pink / rose come from the site's own variables. */
+.mv-planet:nth-child(4n + 1) { --c: var(--lil, #cdb4f0);  --c2: #8f62dc; }  /* Purple Dream: lavender + violet */
+.mv-planet:nth-child(4n + 2) { --c: color-mix(in srgb, var(--rose, #ee8fb5) 62%, var(--blush, #ffd6e4)); --c2: #d63fa6; }  /* Pink Fantasy: soft pink + magenta */
+.mv-planet:nth-child(4n + 3) { --c: var(--rose, #ee8fb5); --c2: #e0596f; }  /* Rose Blush: rose pink + soft red */
+.mv-planet:nth-child(4n)     { --c: #a5d4f0; --c2: #7f8fe0; }  /* Sky Blue Elegance: ice blue + periwinkle */
+
+.mv-planet-core {
+  background:
+    /* soft specular highlight */
+    radial-gradient(circle at 31% 25%, rgba(255,255,255,.55) 0, rgba(255,255,255,.12) 11%, transparent 22%),
+    /* faint surface bands in the deeper tone, like clouds on a gas planet */
+    linear-gradient(162deg, transparent 30%, color-mix(in srgb, var(--c2) 38%, transparent) 38%, transparent 46%,
+      rgba(0,0,0,.10) 56%, transparent 66%, rgba(255,255,255,.08) 74%, transparent 84%),
+    /* the sphere: light tone lit from top-left, sliding into the deeper tone, then shadow */
+    radial-gradient(circle at 33% 28%, color-mix(in srgb, var(--c) 80%, #fff) 0, var(--c) 28%,
+      color-mix(in srgb, var(--c2) 78%, var(--bg, #0e0a14)) 64%,
+      color-mix(in srgb, var(--c2) 30%, var(--bg, #0e0a14)) 100%);
+  box-shadow:
+    /* thin atmosphere glow */
+    0 0 10px color-mix(in srgb, var(--c2) 45%, transparent),
+    0 0 22px color-mix(in srgb, var(--c2) 18%, transparent),
+    /* night side shadow */
+    inset -10px -11px 16px color-mix(in srgb, var(--bg, #0e0a14) 78%, transparent),
+    /* soft rim light on the lit edge */
+    inset 2px 2px 4px rgba(255,255,255,.22);
+}
+
+/* ---- Saturn-style rings (only on some planets: multiverse.js adds the two ring halves).
+   The back half sits behind the planet body, the front half crosses in front of it, and the
+   whole ring is tilted, so it reads as a real ring around a sphere. ---- */
+.mv-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 226%;
+  height: 66%;
+  margin: -33% 0 0 -113%;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: rotate(-20deg);
+  /* two bands with a thin gap, light tone outside and deeper tone inside */
+  background: radial-gradient(ellipse closest-side, transparent 0, transparent 56%,
+    color-mix(in srgb, var(--c2) 85%, transparent) 58%, color-mix(in srgb, var(--c2) 85%, transparent) 70%,
+    transparent 72%,
+    color-mix(in srgb, var(--c) 92%, #fff) 75%, color-mix(in srgb, var(--c) 92%, #fff) 90%,
+    transparent 93%);
+}
+.mv-ring-back { z-index: 0; clip-path: inset(0 0 50% 0); opacity: .7; }
+.mv-ring-front { z-index: 2; clip-path: inset(50% 0 0 0); }
+
+.mv-planet-core {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  border-radius: inherit;
+  transition: transform .25s ease;
+}
+.mv-planet svg {
+  width: max(14px, calc(var(--s, 46) * var(--k, 1) * .42px));
+  height: max(14px, calc(var(--s, 46) * var(--k, 1) * .42px));
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.mv-planet:hover .mv-planet-core,
+.mv-planet:focus-visible .mv-planet-core { transform: scale(1.13); }
+.mv-planet:focus-visible { outline: 2px solid var(--blush, #ffd6e4); outline-offset: 3px; }
+
+/* The video popup uses .mg-card from the Magic section for an identical themed card. */
+.mv-card {
+  width: min(88vw, 360px);
+  max-height: 90vh;
+  padding: 46px 16px 18px;
+}
+.mv-video-wrap {
+  width: min(100%, 300px);
+  max-height: calc(90vh - 86px);
+  aspect-ratio: 9 / 16;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--bg, #0e0a14);
+  box-shadow: 0 10px 35px rgba(0,0,0,.35);
+}
+.mv-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--bg, #0e0a14);
+}
+.mv-caption {
+  /* one line, centred in the gap under the video (fitCaption in multiverse.js shrinks only very long ones) */
+  min-height: 2.6em;
+  margin: 18px auto 2px;
+  max-width: 100%;
+  padding: 0 4px;
+  color: var(--text, #f3ecf7);
+  font-size: .98rem;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: .01em;
+  text-align: center;
+  white-space: nowrap;
+}
+@media (max-width: 520px) {
+  .multiverse-block { margin-top: 32px; padding: 0 8px; }
+  .multiverse-stage { height: 500px; border-radius: 20px; }
+  .mv-planet { --k: .8; }
+  .mv-card { width: min(88vw, 340px); padding: 46px 12px 14px; }
+  .mv-video-wrap { width: min(100%, 270px); max-height: calc(88vh - 80px); }
+}
+.low-power-device .mv-planet-core {
+  box-shadow: 0 0 8px color-mix(in srgb, var(--c2) 35%, transparent),
+    inset -5px -6px 9px color-mix(in srgb, var(--bg, #0e0a14) 65%, transparent);
+}
+
+/* ===== Planet textures: the planets keep their original site colours (from the rule above).
+   A texture layer sits on top of each planet. Eight texture kinds cycle, and multiverse.js gives
+   every planet its own spot positions (--tx1..--ty3), so no two planets look the same. ===== */
+.mv-planet-core { overflow: hidden; }
+.mv-planet-core::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  /* soft-light blends the surface marks into the planet colour, so they look painted on the body, not stuck on top.
+     Two off-centre marks (one bright, one dark) travel with the spin, so the rotation is easy to see. */
+  background:
+    radial-gradient(circle at 74% 30%, rgba(255,255,255,.7) 0 9%, transparent 10%),
+    radial-gradient(circle at 26% 68%, rgba(0,0,0,.55) 0 8%, transparent 9%),
+    var(--tex, none);
+  opacity: .8;
+}
+/* self-spin: the surface marks turn around the planet's own axis (each planet has its own --spin speed and direction).
+   The light and shading layer (::after) stays still, so the sun side never moves. */
+@keyframes mvSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.mv-planet-core::before {
+  animation: mvSpin var(--spin, 16s) linear infinite;
+  animation-direction: var(--spindir, normal);
+}
+@media (prefers-reduced-motion: reduce) {
+  .mv-planet-core::before { animation-duration: calc(var(--spin, 24s) * 3); }
+}
+/* one light source from the top-left: highlight, limb darkening and a dark night side, like a real sphere */
+.mv-planet-core::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255,255,255,.26) 0, transparent 34%),
+    radial-gradient(circle at 50% 50%, transparent 58%, rgba(8,4,14,.5) 100%),
+    radial-gradient(circle at 80% 84%, rgba(8,4,14,.6) 0, transparent 58%);
+}
+.mv-planet svg { position: relative; z-index: 3; }
+
+/* gas: fine cloud bands */
+.mv-planet[data-type="gas"] .mv-planet-core::before {
+  --tex: repeating-linear-gradient(176deg, rgba(255,255,255,.16) 0 4px, transparent 4px 9px, rgba(0,0,0,.14) 9px 13px, transparent 13px 19px);
+}
+/* earth-like: a few pale land blobs */
+.mv-planet[data-type="earth"] .mv-planet-core::before {
+  --tex:
+    radial-gradient(ellipse at var(--tx1) var(--ty1), rgba(255,255,255,.4) 0 12%, transparent 13%),
+    radial-gradient(ellipse at var(--tx2) var(--ty2), rgba(255,255,255,.32) 0 9%, transparent 10%),
+    radial-gradient(ellipse at var(--tx3) var(--ty3), rgba(255,255,255,.26) 0 6%, transparent 7%);
+}
+/* crater: dark spots */
+.mv-planet[data-type="mars"] .mv-planet-core::before {
+  --tex:
+    radial-gradient(circle at var(--tx1) var(--ty1), rgba(0,0,0,.24) 0 7%, transparent 8%),
+    radial-gradient(circle at var(--tx2) var(--ty2), rgba(0,0,0,.2) 0 9%, transparent 10%),
+    radial-gradient(circle at var(--tx3) var(--ty3), rgba(0,0,0,.18) 0 5%, transparent 6%);
+}
+/* ice: crossing cracks */
+.mv-planet[data-type="ice"] .mv-planet-core::before {
+  --tex:
+    linear-gradient(var(--ang1, 118deg), transparent 36%, rgba(255,255,255,.55) 41%, transparent 47%),
+    linear-gradient(62deg, transparent 52%, rgba(255,255,255,.35) 57%, transparent 63%);
+}
+/* moon: rings of small craters */
+.mv-planet[data-type="moon"] .mv-planet-core::before {
+  --tex:
+    radial-gradient(circle at var(--tx1) var(--ty1), rgba(0,0,0,.22) 0 9%, rgba(255,255,255,.12) 10%, transparent 11%),
+    radial-gradient(circle at var(--tx2) var(--ty2), rgba(0,0,0,.18) 0 7%, transparent 8%),
+    radial-gradient(circle at var(--tx3) var(--ty3), rgba(0,0,0,.15) 0 5%, transparent 6%);
+}
+/* storm: one dark spot with a light band */
+.mv-planet[data-type="neptune"] .mv-planet-core::before {
+  --tex:
+    radial-gradient(ellipse at var(--tx1) var(--ty1), rgba(0,0,0,.3) 0 10%, transparent 11%),
+    linear-gradient(165deg, transparent 40%, rgba(255,255,255,.24) 46%, transparent 52%);
+}
+/* haze: soft light patch */
+.mv-planet[data-type="venus"] .mv-planet-core::before {
+  --tex:
+    linear-gradient(90deg, rgba(255,255,255,.22), transparent 60%),
+    radial-gradient(ellipse at var(--tx1) var(--ty1), rgba(255,255,255,.2) 0 25%, transparent 45%);
+}
+/* lava: bright cracks and a dark spot */
+.mv-planet[data-type="lava"] .mv-planet-core::before {
+  --tex:
+    radial-gradient(circle at var(--tx1) var(--ty1), rgba(255,255,255,.4) 0 4%, transparent 5%),
+    radial-gradient(circle at var(--tx2) var(--ty2), rgba(255,255,255,.32) 0 3%, transparent 4%),
+    radial-gradient(circle at var(--tx3) var(--ty3), rgba(0,0,0,.3) 0 8%, transparent 9%);
+}
+
+/* ===== Constellation links between planets (drawn by multiverse.js, always behind the planets) ===== */
+.mv-web {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+.mv-link-glow,
+.mv-link {
+  fill: none;
+  stroke-linecap: round;
+}
+.mv-link-glow {
+  stroke: #a5d4f0;
+  stroke-width: 4.5;
+  stroke-opacity: .13;
+}
+.mv-link {
+  stroke: #cfeaff;
+  stroke-width: 1.1;
+  stroke-opacity: .55;
+  animation: mvLinkShimmer 7s ease-in-out infinite;
+}
+.mv-link:nth-child(3n + 1) { animation-delay: -2.3s; }
+.mv-link:nth-child(3n + 2) { animation-delay: -4.6s; }
+.mv-pulse {
+  fill: #ffffff;
+  opacity: 0;
+}
+@keyframes mvLinkShimmer {
+  0%, 100% { stroke-opacity: .42; }
+  50%      { stroke-opacity: .72; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mv-link { animation: none; }
+}
+
+/* Smooth close: the card and its backdrop fade out before the popup is removed */
+@keyframes mvFadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes mvCardOut {
+  from { opacity: 1; transform: scale(1) translateY(0); }
+  to   { opacity: 0; transform: scale(.94) translateY(14px); }
+}
+.mv-overlay.mv-leaving {
+  animation: mvFadeOut .3s ease both;
+  pointer-events: none;
+}
+.mv-overlay.mv-leaving .mv-card {
+  animation: mvCardOut .3s cubic-bezier(.4, 0, .2, 1) both;
+}
+
+/* Bilingual video captions: the page language (html lang, set by lang.js) decides which one shows */
+html[lang="en"] .mv-caption .lang-bn { display: none; }
+html[lang="bn"] .mv-caption .lang-en { display: none; }
+
+/* Off screen: pause the planet spins and link shimmer too, so nothing is redrawn while the visitor is elsewhere */
+.multiverse-stage.mv-idle .mv-planet-core::before,
+.multiverse-stage.mv-idle .mv-link { animation-play-state: paused; }

@@ -610,11 +610,18 @@
 
     // ---------- layout ----------
     const isFull = () => wrap.classList.contains('fake-full');
+    let layoutKey = '';
     function layout() {
         if (isFull()) { W = Math.floor(wrap.clientWidth || window.innerWidth); H = Math.floor(wrap.clientHeight || window.innerHeight); }
         else { W = Math.max(280, Math.floor(wrap.clientWidth)); const tall = window.matchMedia('(max-width: 700px)').matches; H = Math.round(Math.max(230, W * (tall ? 1.4 : 0.625))); /* phone: tall (portrait); desktop: 16:10 */ }
         if (!W || !H) return;
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MOBILE ? 1 : 2));
+        // phones fire resize / visualViewport events every time the browser bar moves: only resize the
+        // WebGL buffer when the size really changed (resizing it each time makes the game stutter)
+        const pr = Math.min(window.devicePixelRatio || 1, MOBILE ? 1 : 2);
+        const key = W + 'x' + H + '@' + pr;
+        if (key === layoutKey) return;
+        layoutKey = key;
+        renderer.setPixelRatio(pr);
         renderer.setSize(W, H, false);
         canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
         camera.aspect = W / H;

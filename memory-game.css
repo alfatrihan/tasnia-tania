@@ -1973,3 +1973,25 @@ html[lang="bn"] #mm-landing .mm-loading {
 @media (max-width: 700px) {
   .low-power-device .mm-board { gap: 5px; }
 }
+
+/* ==========================================================================
+   Exit full screen button (Pair Hunt): in full screen it now sits in its own
+   strip at the bottom of the screen, below the game, so it never covers the board
+   ========================================================================== */
+.mm-card-wrap.mm-full .mm-exit {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    order: 99;
+    flex: 0 0 auto;
+    align-self: center;
+    transform: none;
+    margin: 4px auto calc(10px + env(safe-area-inset-bottom, 0px));
+    z-index: 6
+}
+
+.mm-card-wrap.mm-full .mm-screen {
+    padding-bottom: 12px
+}

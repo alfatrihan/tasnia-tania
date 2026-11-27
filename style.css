@@ -3189,9 +3189,9 @@ html[lang="bn"] .why-gallery .bk p {
     align-items: center;
     justify-content: center;
     padding: 16px;
-    background: rgba(12, 4, 18, .55);
-    -webkit-backdrop-filter: blur(7px);
-    backdrop-filter: blur(7px);
+    background: rgba(10, 6, 15, .72);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
     animation: mgFade .4s ease both
 }
 .mg-card {
@@ -3201,8 +3201,8 @@ html[lang="bn"] .why-gallery .bk p {
     overflow: hidden;
     padding: 46px 18px 20px;
     border-radius: 26px;
-    border: 1px solid rgba(238, 143, 181, .35);
-    background: linear-gradient(165deg, rgba(74, 28, 86, .95), rgba(26, 8, 34, .97));
+    border: 1px solid color-mix(in srgb, var(--rose) 42%, transparent);
+    background: linear-gradient(165deg, color-mix(in srgb, var(--bg2) 90%, var(--lil) 10%), var(--bg));
     box-shadow: 0 24px 70px rgba(0, 0, 0, .55), 0 0 40px rgba(238, 143, 181, .16), inset 0 1px 0 rgba(255, 255, 255, .08);
     color: #fbe9f3;
     text-align: center;
@@ -3740,4 +3740,9 @@ html[lang="bn"] h4 {
 }
 @media (max-width: 700px) {
   .low-power-device .mm-board { gap: 5px; }
+}
+
+/* the short line above the outro text is removed; the text itself stays */
+#outro .outro-tag::before {
+    display: none;
 }
